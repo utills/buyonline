@@ -1,0 +1,481 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── ENUMS ──────────────────────────────────────────────────────────
+
+enum MemberType {
+  SELF
+  SPOUSE
+  KID
+  FATHER
+  MOTHER
+  FATHER_IN_LAW
+  MOTHER_IN_LAW
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum PlanTier {
+  PREMIER
+  SIGNATURE
+  GLOBAL
+}
+
+enum CoverageLevel {
+  INDIVIDUAL
+  FLOATER
+}
+
+enum ApplicationStatus {
+  LEAD_CAPTURED
+  OTP_VERIFIED
+  ONBOARDING
+  QUOTE_GENERATED
+  PLAN_SELECTED
+  PAYMENT_PENDING
+  PAYMENT_COMPLETED
+  KYC_PENDING
+  KYC_COMPLETED
+  HEALTH_DECLARATION
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum KycMethod {
+  CKYC
+  EKYC
+  MANUAL
+}
+
+enum KycStatus {
+  PENDING
+  IN_PROGRESS
+  VERIFIED
+  FAILED
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum DocumentType {
+  PAN_CARD
+  AADHAR_CARD
+  PASSPORT
+  VOTER_ID
+  DRIVING_LICENSE
+  DISCHARGE_SUMMARY
+  ADDRESS_PROOF
+}
+
+enum OtpPurpose {
+  LOGIN
+  KYC
+}
+
+enum TobaccoType {
+  SMOKE
+  CHEW
+  BOTH
+}
+
+// ─── LEAD & AUTH ────────────────────────────────────────────────────
+
+model Lead {
+  id               String   @id @default(uuid())
+  mobile           String   @unique
+  countryCode      String   @default("+91")
+  selfSelected     Boolean  @default(false)
+  spouseSelected   Boolean  @default(false)
+  kidsCount        Int      @default(0)
+  eldestMemberAge  Int?
+  isVerified       Boolean  @default(false)
+  consentGiven     Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  applications Application[]
+  otpAttempts  OtpAttempt[]
+}
+
+model OtpAttempt {
+  id        String     @id @default(uuid())
+  leadId    String
+  lead      Lead       @relation(fields: [leadId], references: [id])
+  otp       String
+  purpose   OtpPurpose
+  expiresAt DateTime
+  verified  Boolean    @default(false)
+  attempts  Int        @default(0)
+  createdAt DateTime   @default(now())
+
+  @@index([leadId, purpose])
+}
+
+// ─── APPLICATION (CENTRAL ENTITY) ───────────────────────────────────
+
+model Application {
+  id          String            @id @default(uuid())
+  leadId      String
+  lead        Lead              @relation(fields: [leadId], references: [id])
+  status      ApplicationStatus @default(LEAD_CAPTURED)
+  currentStep String            @default("landing")
+  pincode     String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  members            ApplicationMember[]
+  selectedPlan       SelectedPlan?
+  selectedAddons     SelectedAddon[]
+  payment            Payment?
+  kyc                KycVerification?
+  healthDeclarations HealthDeclaration[]
+  proposerDetails    ProposerDetails?
+  bankDetails        BankDetails?
+  proposal           Proposal?
+  resumeTokens       ResumeToken[]
+
+  @@index([leadId])
+  @@index([status])
+}
+
+// ─── MEMBERS ────────────────────────────────────────────────────────
+
+model ApplicationMember {
+  id                  String      @id @default(uuid())
+  applicationId       String
+  application         Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  memberType          MemberType
+  label               String
+  age                 Int
+  gender              Gender?
+  title               String?
+  firstName           String?
+  lastName            String?
+  dob                 DateTime?
+  mobile              String?
+  heightFt            Int?
+  heightIn            Int?
+  weightKg            Float?
+  isEligible          Boolean     @default(true)
+  ineligibilityReason String?
+
+  preExistingDiseases  MemberDisease[]
+  criticalConditions   MemberCriticalCondition[]
+  healthAnswers        MemberHealthAnswer[]
+  lifestyleAnswers     MemberLifestyleAnswer[]
+
+  @@unique([applicationId, memberType, label])
+  @@index([applicationId])
+  @@index([mobile])
+}
+
+// ─── DISEASES ───────────────────────────────────────────────────────
+
+model Disease {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  category    String
+  description String?
+  isActive    Boolean @default(true)
+
+  memberDiseases           MemberDisease[]
+  memberCriticalConditions MemberCriticalCondition[]
+}
+
+model MemberDisease {
+  id        String            @id @default(uuid())
+  memberId  String
+  member    ApplicationMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  diseaseId String
+  disease   Disease           @relation(fields: [diseaseId], references: [id])
+  declared  Boolean           @default(true)
+
+  @@unique([memberId, diseaseId])
+}
+
+model MemberCriticalCondition {
+  id        String            @id @default(uuid())
+  memberId  String
+  member    ApplicationMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  diseaseId String
+  disease   Disease           @relation(fields: [diseaseId], references: [id])
+  declared  Boolean           @default(true)
+
+  @@unique([memberId, diseaseId])
+}
+
+// ─── PLANS & PRICING ────────────────────────────────────────────────
+
+model Plan {
+  id          String   @id @default(uuid())
+  name        String
+  tier        PlanTier
+  description String?
+  features    Json
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+
+  pricingTiers  PlanPricing[]
+  addons        PlanAddon[]
+  selectedPlans SelectedPlan[]
+}
+
+model PlanPricing {
+  id              String        @id @default(uuid())
+  planId          String
+  plan            Plan          @relation(fields: [planId], references: [id])
+  sumInsured      BigInt
+  sumInsuredLabel String
+  coverageLevel   CoverageLevel
+  tenureMonths    Int
+  basePremium     BigInt
+  discountPct     Float         @default(0)
+  gst             Float         @default(18)
+  isPopular       Boolean       @default(false)
+
+  @@unique([planId, sumInsured, coverageLevel, tenureMonths])
+  @@index([planId])
+}
+
+model Addon {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+
+  planAddons     PlanAddon[]
+  selectedAddons SelectedAddon[]
+}
+
+model PlanAddon {
+  id                 String  @id @default(uuid())
+  planId             String
+  plan               Plan    @relation(fields: [planId], references: [id])
+  addonId            String
+  addon              Addon   @relation(fields: [addonId], references: [id])
+  price              BigInt
+  isPreChecked       Boolean @default(false)
+  isIncludedInBundle Boolean @default(false)
+
+  @@unique([planId, addonId])
+}
+
+model SelectedPlan {
+  id             String        @id @default(uuid())
+  applicationId  String        @unique
+  application    Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  planId         String
+  plan           Plan          @relation(fields: [planId], references: [id])
+  sumInsured     BigInt
+  coverageLevel  CoverageLevel
+  tenureMonths   Int
+  basePremium    BigInt
+  addonPremium   BigInt        @default(0)
+  discountAmount BigInt        @default(0)
+  gstAmount      BigInt        @default(0)
+  totalPremium   BigInt
+
+  @@index([applicationId])
+}
+
+model SelectedAddon {
+  id            String      @id @default(uuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  addonId       String
+  addon         Addon       @relation(fields: [addonId], references: [id])
+  price         BigInt
+
+  @@unique([applicationId, addonId])
+}
+
+// ─── PAYMENT ────────────────────────────────────────────────────────
+
+model Payment {
+  id               String        @id @default(uuid())
+  applicationId    String        @unique
+  application      Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  amount           BigInt
+  currency         String        @default("INR")
+  status           PaymentStatus @default(INITIATED)
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  gatewaySignature String?
+  paymentMethod    String?
+  transactionId    String?       @unique
+  paidAt           DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([gatewayOrderId])
+}
+
+// ─── PROPOSER ───────────────────────────────────────────────────────
+
+model ProposerDetails {
+  id            String      @id @default(uuid())
+  applicationId String      @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  firstName     String
+  lastName      String
+  dob           DateTime
+  email         String
+  createdAt     DateTime    @default(now())
+}
+
+// ─── KYC ────────────────────────────────────────────────────────────
+
+model KycVerification {
+  id            String      @id @default(uuid())
+  applicationId String      @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  method        KycMethod
+  status        KycStatus   @default(PENDING)
+  panNumber     String?
+  panDob        DateTime?
+  aadharNumber  String?
+  digilockerRef String?
+  verifiedAt    DateTime?
+  failureReason String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  documents KycDocument[]
+}
+
+model KycDocument {
+  id            String          @id @default(uuid())
+  kycId         String
+  kyc           KycVerification @relation(fields: [kycId], references: [id], onDelete: Cascade)
+  documentType  DocumentType
+  fileName      String
+  fileUrl       String
+  fileSizeBytes Int
+  mimeType      String
+  uploadedAt    DateTime        @default(now())
+}
+
+// ─── BANK DETAILS ───────────────────────────────────────────────────
+
+model BankDetails {
+  id            String      @id @default(uuid())
+  applicationId String      @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  accountNumber String
+  bankName      String
+  ifscCode      String
+  createdAt     DateTime    @default(now())
+}
+
+// ─── HEALTH DECLARATION ─────────────────────────────────────────────
+
+model HealthQuestion {
+  id           String  @id @default(uuid())
+  category     String
+  questionText String
+  questionKey  String  @unique
+  sortOrder    Int     @default(0)
+  isActive     Boolean @default(true)
+
+  answers MemberHealthAnswer[]
+}
+
+model MemberHealthAnswer {
+  id         String            @id @default(uuid())
+  memberId   String
+  member     ApplicationMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  questionId String
+  question   HealthQuestion    @relation(fields: [questionId], references: [id])
+  answer     Boolean
+  details    String?
+  createdAt  DateTime          @default(now())
+
+  @@unique([memberId, questionId])
+}
+
+model MemberLifestyleAnswer {
+  id          String            @id @default(uuid())
+  memberId    String
+  member      ApplicationMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  questionKey String
+  answer      Boolean
+  subAnswer   TobaccoType?
+  createdAt   DateTime          @default(now())
+
+  @@unique([memberId, questionKey])
+}
+
+model HealthDeclaration {
+  id                    String      @id @default(uuid())
+  applicationId         String      @unique
+  application           Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  hospitalizationReason String?     @db.VarChar(200)
+  dischargeSummaryUrl   String?
+  medicationDetails     String?
+  hasDisability         Boolean     @default(false)
+  disabilityDetails     String?
+  hasPriorInsurance     Boolean     @default(false)
+  priorInsuranceDetails String?
+  createdAt             DateTime    @default(now())
+}
+
+// ─── PROPOSAL ───────────────────────────────────────────────────────
+
+model Proposal {
+  id             String      @id @default(uuid())
+  applicationId  String      @unique
+  application    Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  proposalNumber String      @unique
+  status         String      @default("UNDER_REVIEW")
+  submittedAt    DateTime    @default(now())
+  reviewedAt     DateTime?
+  reviewNotes    String?
+}
+
+// ─── RESUME TOKEN ──────────────────────────────────────────────────
+
+model ResumeToken {
+  id            String      @id @default(uuid())
+  token         String      @unique
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  expiresAt     DateTime
+  isRevoked     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+
+  @@index([token])
+  @@index([applicationId])
+}
+
+// ─── HOSPITAL NETWORK ───────────────────────────────────────────────
+
+model Hospital {
+  id                String  @id @default(uuid())
+  name              String
+  address           String
+  city              String
+  state             String
+  pincode           String
+  latitude          Float?
+  longitude         Float?
+  isNetworkHospital Boolean @default(true)
+  isActive          Boolean @default(true)
+
+  @@index([pincode])
+  @@index([city])
+}

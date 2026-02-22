@@ -1,0 +1,15 @@
+{
+  "name": "@buyonline/shared-types",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@buyonline/ts-config": "workspace:*",
+    "typescript": "^5.7.0"
+  }
+}

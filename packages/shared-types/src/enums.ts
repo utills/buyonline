@@ -1,0 +1,94 @@
+export enum MemberType {
+  SELF = 'SELF',
+  SPOUSE = 'SPOUSE',
+  KID = 'KID',
+  FATHER = 'FATHER',
+  MOTHER = 'MOTHER',
+  FATHER_IN_LAW = 'FATHER_IN_LAW',
+  MOTHER_IN_LAW = 'MOTHER_IN_LAW',
+}
+
+export enum Gender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER',
+}
+
+export enum PlanTier {
+  PREMIER = 'PREMIER',
+  SIGNATURE = 'SIGNATURE',
+  GLOBAL = 'GLOBAL',
+}
+
+export enum CoverageLevel {
+  INDIVIDUAL = 'INDIVIDUAL',
+  FLOATER = 'FLOATER',
+}
+
+export enum ApplicationStatus {
+  LEAD_CAPTURED = 'LEAD_CAPTURED',
+  OTP_VERIFIED = 'OTP_VERIFIED',
+  ONBOARDING = 'ONBOARDING',
+  QUOTE_GENERATED = 'QUOTE_GENERATED',
+  PLAN_SELECTED = 'PLAN_SELECTED',
+  PAYMENT_PENDING = 'PAYMENT_PENDING',
+  PAYMENT_COMPLETED = 'PAYMENT_COMPLETED',
+  KYC_PENDING = 'KYC_PENDING',
+  KYC_COMPLETED = 'KYC_COMPLETED',
+  HEALTH_DECLARATION = 'HEALTH_DECLARATION',
+  SUBMITTED = 'SUBMITTED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export enum KycMethod {
+  CKYC = 'CKYC',
+  EKYC = 'EKYC',
+  MANUAL = 'MANUAL',
+}
+
+export enum KycStatus {
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  VERIFIED = 'VERIFIED',
+  FAILED = 'FAILED',
+}
+
+export enum PaymentStatus {
+  INITIATED = 'INITIATED',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+}
+
+export enum DocumentType {
+  PAN_CARD = 'PAN_CARD',
+  AADHAR_CARD = 'AADHAR_CARD',
+  PASSPORT = 'PASSPORT',
+  VOTER_ID = 'VOTER_ID',
+  DRIVING_LICENSE = 'DRIVING_LICENSE',
+  DISCHARGE_SUMMARY = 'DISCHARGE_SUMMARY',
+  ADDRESS_PROOF = 'ADDRESS_PROOF',
+}
+
+export enum OtpPurpose {
+  LOGIN = 'LOGIN',
+  KYC = 'KYC',
+}
+
+export enum TobaccoType {
+  SMOKE = 'SMOKE',
+  CHEW = 'CHEW',
+  BOTH = 'BOTH',
+}
+
+export enum JourneyStep {
+  LANDING = 'landing',
+  ONBOARDING = 'onboarding',
+  QUOTE = 'quote',
+  PAYMENT = 'payment',
+  KYC = 'kyc',
+  HEALTH = 'health',
+  COMPLETE = 'complete',
+}
