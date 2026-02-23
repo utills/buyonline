@@ -4,10 +4,12 @@ import { useRouter } from 'next/navigation';
 import { useKycStore } from '@/stores/useKycStore';
 import { KycMethod } from '@buyonline/shared-types';
 import KycMethodCard from '@/components/kyc/KycMethodCard';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 export default function KycMethodPage() {
   const router = useRouter();
   const { method, setMethod } = useKycStore();
+  const { featureFlags } = useJourneyConfig();
 
   const handleContinue = () => {
     if (method) {
@@ -25,21 +27,25 @@ export default function KycMethodPage() {
       </div>
 
       <div className="space-y-3">
-        <KycMethodCard
-          method={KycMethod.CKYC}
-          title="CKYC (PAN Based)"
-          description="Verify instantly using your PAN card and date of birth"
-          isSelected={method === KycMethod.CKYC}
-          onSelect={setMethod}
-          badge="Fastest"
-        />
-        <KycMethodCard
-          method={KycMethod.EKYC}
-          title="eKYC (Aadhar Based)"
-          description="Verify using your Aadhar number or DigiLocker"
-          isSelected={method === KycMethod.EKYC}
-          onSelect={setMethod}
-        />
+        {featureFlags.ckycEnabled && (
+          <KycMethodCard
+            method={KycMethod.CKYC}
+            title="CKYC (PAN Based)"
+            description="Verify instantly using your PAN card and date of birth"
+            isSelected={method === KycMethod.CKYC}
+            onSelect={setMethod}
+            badge="Fastest"
+          />
+        )}
+        {featureFlags.ekycEnabled && (
+          <KycMethodCard
+            method={KycMethod.EKYC}
+            title="eKYC (Aadhar Based)"
+            description="Verify using your Aadhar number or DigiLocker"
+            isSelected={method === KycMethod.EKYC}
+            onSelect={setMethod}
+          />
+        )}
         <KycMethodCard
           method={KycMethod.MANUAL}
           title="Manual Upload"

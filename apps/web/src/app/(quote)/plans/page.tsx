@@ -11,6 +11,7 @@ import SumInsuredModal from '@/components/quote/SumInsuredModal';
 import TenureModal from '@/components/quote/TenureModal';
 import { apiClient } from '@/lib/api-client';
 import type { Plan, PlanPricing } from '@buyonline/shared-types';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 export default function PlansPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function PlansPage() {
     setPlans, setSelectedPlanId, setSelectedTier, setSumInsured, setTenureMonths, setPlanPricings,
   } = useQuoteStore();
   const { applicationId } = useJourneyStore();
+  const { isPlanEnabled } = useJourneyConfig();
   const [showSumInsured, setShowSumInsured] = useState(false);
   const [showTenure, setShowTenure] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -69,7 +71,7 @@ export default function PlansPage() {
   const safePlans = plans ?? [];
   const safePlanPricings = planPricings ?? [];
 
-  const filteredPlans = safePlans.filter((p) => p.tier === selectedTier);
+  const filteredPlans = safePlans.filter((p) => p.tier === selectedTier && isPlanEnabled(p.id));
   const filteredPricings = safePlanPricings.filter(
     (p) => p.sumInsured === sumInsured && p.tenureMonths === tenureMonths
   );

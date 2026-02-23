@@ -5,9 +5,20 @@ import { usePathname } from 'next/navigation';
 import { ChatWidget } from '@/features/chat';
 import RouteTracker from '@/components/RouteTracker';
 import ResumePrompt from '@/components/ResumePrompt';
+import { useConfigSync } from '@/features/configurator/hooks/useConfigSync';
+import { useConfigStore } from '@/features/configurator/store/useConfigStore';
 
 interface AppProvidersProps {
   children: React.ReactNode;
+}
+
+function ConfigSyncBridge() {
+  useConfigSync();
+  const primaryColor = useConfigStore((s) => s.config.branding.primaryColor);
+  useEffect(() => {
+    document.documentElement.style.setProperty('--brand-color', primaryColor);
+  }, [primaryColor]);
+  return null;
 }
 
 export default function AppProviders({ children }: AppProvidersProps) {
@@ -21,6 +32,7 @@ export default function AppProviders({ children }: AppProvidersProps) {
 
   return (
     <>
+      <ConfigSyncBridge />
       <RouteTracker />
       {mounted && <ResumePrompt />}
       {children}

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { JourneyStep } from '@buyonline/shared-types';
 import type { ChatMessage as ChatMessageType } from '@/features/chat/hooks/useChatStream';
 import ChatMessage from './ChatMessage';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 interface StepContext {
   greeting: string;
@@ -105,7 +106,17 @@ export default function ChatWindow({
   useAI,
   onToggleAI,
 }: ChatWindowProps) {
-  const ctx = STEP_CONTEXT[currentStep ?? JourneyStep.LANDING];
+  const { chatConfig } = useJourneyConfig();
+  const step = currentStep ?? JourneyStep.LANDING;
+  const baseCtx = STEP_CONTEXT[step];
+  // Override LANDING greeting/suggestions with admin-configured values if set
+  const ctx = step === JourneyStep.LANDING
+    ? {
+        greeting: chatConfig.welcomeMessage || baseCtx.greeting,
+        subtext: baseCtx.subtext,
+        suggestions: chatConfig.suggestedPrompts.length > 0 ? chatConfig.suggestedPrompts : baseCtx.suggestions,
+      }
+    : baseCtx;
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);

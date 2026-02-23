@@ -8,11 +8,13 @@ import AddonsList from '@/components/quote/AddonsList';
 import SkipAddonsModal from '@/components/quote/SkipAddonsModal';
 import { apiClient } from '@/lib/api-client';
 import type { Addon } from '@buyonline/shared-types';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 export default function AddonsPage() {
   const router = useRouter();
   const { addons, selectedAddonIds, selectedPlanId, setAddons, toggleAddon } = useQuoteStore();
   const { applicationId } = useJourneyStore();
+  const { isAddonEnabled } = useJourneyConfig();
   const [showSkipModal, setShowSkipModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -68,7 +70,7 @@ export default function AddonsPage() {
       </div>
 
       <AddonsList
-        addons={addons ?? []}
+        addons={(addons ?? []).filter((a) => isAddonEnabled(a.id))}
         selectedAddonIds={safeSelectedAddonIds}
         onToggle={toggleAddon}
       />

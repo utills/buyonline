@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useJourneyStore } from '@/stores/useJourneyStore';
 import { apiClient } from '@/lib/api-client';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 interface Hospital {
   id: string;
@@ -18,9 +19,21 @@ interface Hospital {
 export default function HospitalsPage() {
   const router = useRouter();
   const { applicationId } = useJourneyStore();
+  const { featureFlags } = useJourneyConfig();
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  if (!featureFlags.hospitalSearchEnabled) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8 text-center">
+        <p className="text-gray-500 text-sm">Hospital search is not available.</p>
+        <button onClick={() => router.back()} className="mt-4 text-[#E31837] text-sm font-medium">
+          Go back
+        </button>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const fetchHospitals = async () => {
