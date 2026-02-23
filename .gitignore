@@ -1,11 +1,218 @@
-node_modules
-dist
-.next
-.turbo
+# ============================================================
+# BuyOnline Monorepo — Comprehensive .gitignore
+# Stack: Turborepo · pnpm · Next.js · NestJS · Prisma · Docker
+# ============================================================
+
+# ─── Dependencies ───────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.*
+.pnp.cjs
+.pnp.loader.mjs
+
+# ─── pnpm ───────────────────────────────────────────────────
+.pnpm-store/
+.pnpm-debug.log*
+
+# ─── Yarn ───────────────────────────────────────────────────
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+yarn-error.log*
+yarn-debug.log*
+
+# ─── npm ────────────────────────────────────────────────────
+npm-debug.log*
+package-lock.json
+
+# ─── Turborepo ──────────────────────────────────────────────
+.turbo/
+**/.turbo/
+
+# ─── TypeScript ─────────────────────────────────────────────
 *.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# ─── Next.js (apps/web) ─────────────────────────────────────
+.next/
+out/
+next-env.d.ts
+.vercel/
+
+# ─── NestJS / Node build output (apps/api) ──────────────────
+dist/
+build/
+
+# ─── Prisma ─────────────────────────────────────────────────
+# Keep schema.prisma and migrations; ignore generated client
+apps/api/src/generated/
+apps/api/generated/
+
+# ─── Environment files ──────────────────────────────────────
 .env
 .env.local
+.env.development
+.env.test
+.env.production
+.env.staging
 .env.*.local
-coverage
+.env.*.development
+.env.*.production
+# Keep example/template env files
+!.env.example
+!.env.*.example
+
+# ─── Coverage & Testing ─────────────────────────────────────
+coverage/
+.nyc_output/
+lcov.info
+*.lcov
+junit.xml
+test-results/
+playwright-report/
+playwright/.cache/
+.jest-cache/
+
+# ─── Logs ───────────────────────────────────────────────────
+logs/
 *.log
+*.log.*
+lerna-debug.log*
+pnpm-debug.log*
+
+# ─── Docker ─────────────────────────────────────────────────
+# Keep Dockerfiles and docker-compose; ignore local overrides
+docker-compose.override.yml
+docker-compose.local.yml
+.docker/
+
+# ─── Kubernetes ─────────────────────────────────────────────
+# Keep k8s manifests; ignore generated/secrets
+k8s/secrets/
+k8s/*.secret.yaml
+k8s/*.secret.yml
+
+# ─── Certificates & Keys ────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+*.jks
+
+# ─── macOS ──────────────────────────────────────────────────
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Icon?
+.AppleDouble
+.LSOverride
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# ─── Windows ────────────────────────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# ─── Linux ──────────────────────────────────────────────────
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ─── VS Code ────────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ─── JetBrains IDEs (WebStorm, IntelliJ, etc.) ──────────────
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ─── Vim / Neovim ───────────────────────────────────────────
+*.swp
+*.swo
+*.swn
+Session.vim
+.netrwhist
+tags
+
+# ─── Emacs ──────────────────────────────────────────────────
+*~
+\#*\#
+.\#*
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ─── Sublime Text ───────────────────────────────────────────
+*.sublime-workspace
+*.sublime-project
+
+# ─── Claude Code ────────────────────────────────────────────
+.claude/projects/
+.claude/todos/
+# Keep settings and hooks
+!.claude/settings.json
+!.claude/settings.local.json
+
+# ─── Misc tooling ───────────────────────────────────────────
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.prettiercache
+.tscache/
+*.tgz
+*.zip
+.tmp/
+tmp/
+temp/
+.temp/
+
+# ─── Storybook ──────────────────────────────────────────────
+storybook-static/
+.storybook/node_modules/
+
+# ─── Sentry ─────────────────────────────────────────────────
+.sentryclirc
+
+# ─── PWA / Service Workers ──────────────────────────────────
+**/public/workbox-*.js
+**/public/sw.js
+**/public/worker-*.js
+**/public/fallback-*.js
+**/public/service-worker.js
+
+# ─── Miscellaneous ──────────────────────────────────────────
+*.local
+.history/
+.husky/_/
+.node_repl_history

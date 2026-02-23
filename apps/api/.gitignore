@@ -1,5 +1,12 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# Root .gitignore covers most rules.
+# API-app-specific overrides below.
 
+# NestJS build output
+dist/
+
+# Prisma generated client
 src/generated/
+generated/
+
+# Keep env example
+!.env.example
