@@ -10,6 +10,7 @@ import { FallbackChatService } from './fallback-chat.service.js';
 import { AgenticAuthToolsService } from './agentic-auth-tools.service.js';
 import { AgenticContextService } from './agentic-context.service.js';
 import { AgenticPlanToolsService } from './agentic-plan-tools.service.js';
+import { JourneyFlowService } from './journey-flow.service.js';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 import { PlanModule } from '../plan/plan.module.js';
 import { OtpModule } from '../otp/otp.module.js';
@@ -29,6 +30,7 @@ import { OnboardingModule } from '../onboarding/onboarding.module.js';
     AgenticAuthToolsService,
     AgenticContextService,
     AgenticPlanToolsService,
+    JourneyFlowService,
   ],
 })
 export class ChatModule {}

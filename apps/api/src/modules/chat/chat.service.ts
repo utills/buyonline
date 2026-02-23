@@ -4,6 +4,7 @@ import { Response } from 'express';
 import { StandardChatService } from './standard-chat.service.js';
 import { AgenticChatService } from './agentic-chat.service.js';
 import { FallbackChatService } from './fallback-chat.service.js';
+import { JourneyFlowService } from './journey-flow.service.js';
 
 // ─── SSE Header Setup ─────────────────────────────────────────────────────────
 function setSseHeaders(res: Response): void {
@@ -20,6 +21,7 @@ export class ChatService {
     private readonly standard: StandardChatService,
     private readonly agentic: AgenticChatService,
     private readonly fallback: FallbackChatService,
+    private readonly journeyFlow: JourneyFlowService,
     private readonly config: ConfigService,
   ) {}
 
@@ -40,7 +42,8 @@ export class ChatService {
     }
 
     if (journeyMode === 'agentic') {
-      await this.agentic.streamAgentic(sessionId, message, applicationId, res);
+      // Use deterministic journey flow — no LLM calls required
+      await this.journeyFlow.stream(sessionId, message, res);
     } else {
       await this.standard.streamStandard(sessionId, message, applicationId, res);
     }
