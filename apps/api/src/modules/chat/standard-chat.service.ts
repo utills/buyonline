@@ -35,7 +35,7 @@ export class StandardChatService {
   ): Promise<void> {
     try {
       const [history, systemPrompt] = await Promise.all([
-        this.conversation.getHistory(sessionId),
+        this.conversation.getHistory(sessionId, 'chat'),
         this.contextBuilder.build(applicationId),
       ]);
 
@@ -87,7 +87,7 @@ export class StandardChatService {
       res.end();
 
       this.conversation
-        .appendMessages(sessionId, message, fullResponse)
+        .appendMessages(sessionId, message, fullResponse, 'chat')
         .catch((err: Error) => this.logger.warn(`Failed to save history: ${err.message}`));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';

@@ -40,15 +40,15 @@ export class ConversationService implements OnModuleDestroy {
     });
   }
 
-  private key(sessionId: string): string {
-    return `chat:session:${sessionId}`;
+  private key(sessionId: string, ns: 'chat' | 'agentic' = 'chat'): string {
+    return `${ns}:session:${sessionId}`;
   }
 
   // H7: Returns full MessageParam[] (including tool_use/tool_result blocks)
-  async getHistory(sessionId: string): Promise<MessageParam[]> {
+  async getHistory(sessionId: string, ns: 'chat' | 'agentic' = 'chat'): Promise<MessageParam[]> {
     if (!this.redisAvailable) return [];
     try {
-      const data = await this.redis.get(this.key(sessionId));
+      const data = await this.redis.get(this.key(sessionId, ns));
       return data ? (JSON.parse(data) as MessageParam[]) : [];
     } catch {
       return [];
@@ -63,15 +63,16 @@ export class ConversationService implements OnModuleDestroy {
     sessionId: string,
     userMsg: string,
     assistantMsg: string,
+    ns: 'chat' | 'agentic' = 'chat',
   ): Promise<void> {
     if (!this.redisAvailable) return;
     try {
-      const history = await this.getHistory(sessionId);
+      const history = await this.getHistory(sessionId, ns);
       history.push({ role: 'user', content: userMsg });
       history.push({ role: 'assistant', content: assistantMsg });
 
       const trimmed = history.slice(-MAX_HISTORY);
-      await this.redis.setex(this.key(sessionId), SESSION_TTL, JSON.stringify(trimmed));
+      await this.redis.setex(this.key(sessionId, ns), SESSION_TTL, JSON.stringify(trimmed));
     } catch {
       // Non-fatal: conversation history just won't persist
     }
@@ -81,11 +82,11 @@ export class ConversationService implements OnModuleDestroy {
    * H7: Save the full messages array — preserves tool_use and tool_result blocks
    * so the agentic loop can resume with complete context.
    */
-  async saveMessages(sessionId: string, messages: MessageParam[]): Promise<void> {
+  async saveMessages(sessionId: string, messages: MessageParam[], ns: 'chat' | 'agentic' = 'chat'): Promise<void> {
     if (!this.redisAvailable) return;
     try {
       const trimmed = messages.slice(-MAX_HISTORY);
-      await this.redis.setex(this.key(sessionId), SESSION_TTL, JSON.stringify(trimmed));
+      await this.redis.setex(this.key(sessionId, ns), SESSION_TTL, JSON.stringify(trimmed));
     } catch {
       // Non-fatal: conversation history just won't persist
     }

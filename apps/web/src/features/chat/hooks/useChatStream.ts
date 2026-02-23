@@ -91,6 +91,7 @@ export function useChatStream(applicationId: string | null) {
             message: content.trim(),
             applicationId: applicationId ?? undefined,
             useAI,
+            journeyMode: 'standard',
           }),
           signal: abortRef.current.signal,
         });

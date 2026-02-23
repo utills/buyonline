@@ -168,6 +168,11 @@ export function useAgenticStream() {
               if (phase) agenticStore.setPhase(phase);
               const update = stateUpdateToCollectedData({ phase, ...collectedFields });
               agenticStore.updateCollectedData(update);
+              // Wire applicationId to shared journey store so chat widget gains context
+              if (data.stateUpdate.applicationId) {
+                useJourneyStore.getState().setApplicationId(data.stateUpdate.applicationId);
+                agenticStore.setApplicationId(data.stateUpdate.applicationId);
+              }
             }
 
             // ── Redirect ───────────────────────────────────────────────────────

@@ -70,7 +70,7 @@ export class AgenticChatService {
   ): Promise<void> {
     try {
       const [history, systemPrompt] = await Promise.all([
-        this.conversation.getHistory(sessionId),
+        this.conversation.getHistory(sessionId, 'agentic'),
         this.agenticContext.build(applicationId),
       ]);
 
@@ -160,7 +160,7 @@ export class AgenticChatService {
 
       // H7: Save the full messages array (including tool_use and tool_result blocks) to Redis
       this.conversation
-        .saveMessages(sessionId, messages)
+        .saveMessages(sessionId, messages, 'agentic')
         .catch((err: Error) => this.logger.warn(`Failed to save agentic history: ${err.message}`));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';

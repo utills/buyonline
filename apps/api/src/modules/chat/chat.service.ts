@@ -42,8 +42,7 @@ export class ChatService {
     }
 
     if (journeyMode === 'agentic') {
-      // Use deterministic journey flow — no LLM calls required
-      await this.journeyFlow.stream(sessionId, message, res);
+      await this.agentic.streamAgentic(sessionId, message, applicationId, res);
     } else {
       await this.standard.streamStandard(sessionId, message, applicationId, res);
     }
