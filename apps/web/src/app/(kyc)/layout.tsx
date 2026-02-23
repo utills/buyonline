@@ -5,17 +5,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const KYC_STEPS: Record<string, number> = {
-  '/otp': 1,
-  '/method': 2,
-  '/pan': 3,
-  '/manual': 3,
-  '/digilocker': 3,
+  '/method': 1,
+  '/details': 2,
+  '/otp': 3,
 };
 const TOTAL = 3;
 
 const BACK_PATHS: Record<string, string> = {
   '/method': '/payment-success',
-  '/otp': '/method',
+  '/details': '/method',
+  '/otp': '/details',
 };
 
 export default function KycLayout({

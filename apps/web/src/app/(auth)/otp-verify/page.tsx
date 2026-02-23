@@ -13,6 +13,12 @@ export default function OtpVerifyPage() {
   const { mobile } = useLeadStore();
   const { leadId, advanceTo, markStepComplete, setApplicationId } = useJourneyStore();
   const { formattedTime, canResend, startTimer } = useOtp();
+
+  // Guard: must have mobile from the lead capture step
+  if (!mobile) {
+    router.replace('/');
+    return null;
+  }
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -47,6 +53,11 @@ export default function OtpVerifyPage() {
   };
 
   const handleVerify = async (otpCode: string) => {
+    if (!leadId) {
+      setError('Session expired. Please start over.');
+      router.replace('/');
+      return;
+    }
     setIsVerifying(true);
     try {
       const data = await apiClient.post<{ sessionToken?: string }>('/api/v1/otp/verify', {

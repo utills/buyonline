@@ -12,8 +12,10 @@ const QUOTE_STEPS: Record<string, number> = {
 const TOTAL = 3;
 
 const BACK_PATHS: Record<string, string> = {
+  '/hospitals': '/plans',
   '/plans': '/eligibility',
   '/addons': '/plans',
+  '/summary': '/addons',
 };
 
 export default function QuoteLayout({

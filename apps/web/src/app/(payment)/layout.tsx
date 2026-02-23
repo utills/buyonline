@@ -12,7 +12,7 @@ const PAYMENT_STEPS: Record<string, number> = {
 const TOTAL = 3;
 
 const BACK_PATHS: Record<string, string> = {
-  '/proposer': '/addons',
+  '/proposer': '/summary',
   '/gateway': '/proposer',
 };
 

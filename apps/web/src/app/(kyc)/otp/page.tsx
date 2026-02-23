@@ -20,6 +20,10 @@ export default function KycOtpPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const sendOtp = useCallback(async () => {
+    if (!mobile) {
+      setError('Session expired. Please restart from the beginning.');
+      return;
+    }
     try {
       await apiClient.post('/api/v1/otp/send', { mobile, purpose: 'KYC' });
       startTimer();

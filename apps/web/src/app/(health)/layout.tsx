@@ -16,6 +16,7 @@ const HEALTH_STEPS: Record<string, number> = {
 const TOTAL = 7;
 
 const BACK_PATHS: Record<string, string> = {
+  '/personal': '/kyc-success',
   '/bank': '/personal',
   '/lifestyle': '/bank',
   '/medical': '/lifestyle',
