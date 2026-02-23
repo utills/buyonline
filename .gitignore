@@ -216,3 +216,9 @@ storybook-static/
 .history/
 .husky/_/
 .node_repl_history
+
+# Local test scripts and screenshots
+test_*.py
+test_report*.json
+test_screenshots/
+test_screenshots_full/
