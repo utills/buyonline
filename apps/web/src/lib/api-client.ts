@@ -42,6 +42,21 @@ async function request<T>(
     ...((customHeaders as Record<string, string>) || {}),
   };
 
+  // Auto-inject application ID for SessionGuard-protected endpoints
+  if (typeof window !== 'undefined' && !headers['x-application-id']) {
+    try {
+      const stored = sessionStorage.getItem('buyonline-journey');
+      if (stored) {
+        const { state } = JSON.parse(stored) as { state: { applicationId?: string } };
+        if (state.applicationId) {
+          headers['x-application-id'] = state.applicationId;
+        }
+      }
+    } catch {
+      // sessionStorage unavailable or parse error — proceed without header
+    }
+  }
+
   const response = await fetch(url, {
     ...restOptions,
     headers,
@@ -88,8 +103,17 @@ export const apiClient = {
 
   async upload<T>(endpoint: string, formData: FormData): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
+    const uploadHeaders: Record<string, string> = {};
+    try {
+      const stored = typeof window !== 'undefined' ? sessionStorage.getItem('buyonline-journey') : null;
+      if (stored) {
+        const { state } = JSON.parse(stored) as { state: { applicationId?: string } };
+        if (state.applicationId) uploadHeaders['x-application-id'] = state.applicationId;
+      }
+    } catch { /* ignore */ }
     const response = await fetch(url, {
       method: 'POST',
+      headers: uploadHeaders,
       body: formData,
     });
 

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'PRUHealth AI Assistant | BuyOnline',
+  title: 'PRUHealth AI Assistant',
   description: 'Get your personalised health insurance plan with our AI-powered assistant.',
 };
 
