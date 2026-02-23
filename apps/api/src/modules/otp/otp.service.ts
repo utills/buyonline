@@ -174,26 +174,28 @@ export class OtpService {
       // Clear the session from Redis after successful verification
       await this.redis.del(`otp-session:${dto.mobile}`);
     } else {
-      // Dev bypass: verify a recent unverified attempt exists (any OTP)
-      const attempt = await this.prisma.otpAttempt.findFirst({
-        where: {
-          leadId: lead.id,
-          verified: false,
-          expiresAt: { gte: new Date() },
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-
-      if (!attempt) {
-        throw new BadRequestException('No active OTP found. Please request a new OTP.');
+      // Dev bypass — unconditional in non-production environments
+      if (process.env['NODE_ENV'] === 'production') {
+        throw new BadRequestException('Invalid OTP');
       }
 
-      await this.prisma.otpAttempt.update({
-        where: { id: attempt.id },
-        data: { verified: true, attempts: { increment: 1 } },
-      });
+      this.logger.warn(`[DEV] OTP bypass used for ${dto.mobile}`);
 
-      this.logger.log(`OTP bypass used for ${dto.mobile} (123456)`);
+      // Best-effort: mark any pending attempt as verified (non-blocking)
+      try {
+        const attempt = await this.prisma.otpAttempt.findFirst({
+          where: { leadId: lead.id, verified: false },
+          orderBy: { createdAt: 'desc' },
+        });
+        if (attempt) {
+          await this.prisma.otpAttempt.update({
+            where: { id: attempt.id },
+            data: { verified: true, attempts: { increment: 1 } },
+          });
+        }
+      } catch {
+        // Ignore — bypass should work even if no attempt record exists
+      }
     }
 
     // Mark lead as verified
