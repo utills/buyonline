@@ -67,6 +67,13 @@ const IconPreview = () => (
   </svg>
 );
 
+const IconPosts = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="14" height="14" rx="2" />
+    <path d="M5 6h8M5 9h8M5 12h5" />
+  </svg>
+);
+
 /* ── Nav items ──────────────────────────────────────────────────────────── */
 
 const NAV_ITEMS = [
@@ -76,6 +83,7 @@ const NAV_ITEMS = [
   { href: '/configurator/health',    label: 'Health Questions', Icon: IconHealth    },
   { href: '/configurator/chat',      label: 'Chat & AI',        Icon: IconChat      },
   { href: '/configurator/branding',  label: 'Branding',         Icon: IconBranding  },
+  { href: '/configurator/posts',     label: 'Posts',            Icon: IconPosts     },
   { href: '/configurator/preview',   label: 'Preview & Export', Icon: IconPreview   },
 ];
 

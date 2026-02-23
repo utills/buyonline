@@ -497,3 +497,57 @@ model JourneyConfiguration {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ─── POSTS ───────────────────────────────────────────────────────────────────
+
+enum PostType {
+  INFORMATIVE
+  ACTIONABLE
+  LEAD_GEN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Post {
+  id          String     @id @default(uuid())
+  slug        String     @unique
+  type        PostType
+  status      PostStatus @default(DRAFT)
+  title       String
+  excerpt     String?
+  content     String     @db.Text
+  coverImage  String?
+  tags        String[]
+  ctaLabel    String?
+  ctaType     String?
+  ctaPlanId   String?
+  metaTitle   String?
+  metaDesc    String?
+  sortOrder   Int        @default(0)
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  leads PostLead[]
+
+  @@index([status, publishedAt])
+}
+
+model PostLead {
+  id          String   @id @default(uuid())
+  postId      String
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  name        String?
+  mobile      String
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime @default(now())
+
+  @@index([postId])
+  @@index([mobile])
+}

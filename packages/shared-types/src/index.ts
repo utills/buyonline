@@ -7,3 +7,4 @@ export * from './kyc.types';
 export * from './health.types';
 export * from './resume.types';
 export * from './configurator.types';
+export * from './posts.types';
