@@ -1,0 +1,106 @@
+/* ─── Configurator Dark Theme ────────────────────────────────────────────── */
+
+:root {
+  --cfg-bg: #0A0A0F;
+  --cfg-surface: #12121A;
+  --cfg-surface-2: #1A1A26;
+  --cfg-surface-3: #22223A;
+  --cfg-border: #2A2A3A;
+  --cfg-border-bright: #3A3A55;
+  --cfg-accent: #E31837;
+  --cfg-accent-dim: rgba(227, 24, 55, 0.15);
+  --cfg-accent-hover: #FF1F44;
+  --cfg-text: #E8E8F0;
+  --cfg-text-muted: #888899;
+  --cfg-text-faint: #555568;
+  --cfg-success: #10B981;
+  --cfg-success-dim: rgba(16, 185, 129, 0.15);
+  --cfg-warning: #F59E0B;
+  --cfg-warning-dim: rgba(245, 158, 11, 0.15);
+  --cfg-info: #6366F1;
+  --cfg-info-dim: rgba(99, 102, 241, 0.15);
+  --cfg-sidebar-width: 240px;
+  --cfg-header-height: 60px;
+}
+
+/* ─── Keyframe Animations ──────────────────────────────────────────────────── */
+
+@keyframes cfg-slide-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes cfg-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cfg-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cfg-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+@keyframes cfg-shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+@keyframes cfg-spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes cfg-drag-lift {
+  to {
+    transform: scale(1.03) rotate(0.8deg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  }
+}
+
+@keyframes cfg-toggle-slide-on {
+  from { transform: translateX(0); }
+  to   { transform: translateX(20px); }
+}
+
+@keyframes cfg-toggle-slide-off {
+  from { transform: translateX(20px); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes cfg-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes cfg-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(227, 24, 55, 0); }
+  50%       { box-shadow: 0 0 0 4px rgba(227, 24, 55, 0.25); }
+}
+
+/* ─── Utility Classes ─────────────────────────────────────────────────────── */
+
+.cfg-animate-slide-in  { animation: cfg-slide-in  0.3s ease both; }
+.cfg-animate-fade-up   { animation: cfg-fade-up   0.4s ease both; }
+.cfg-animate-fade-in   { animation: cfg-fade-in   0.25s ease both; }
+.cfg-animate-scale-in  { animation: cfg-scale-in  0.2s ease both; }
+.cfg-animate-spin-slow { animation: cfg-spin-slow 1.2s linear infinite; }
+.cfg-animate-pulse-dot { animation: cfg-pulse-dot 1.5s ease-in-out infinite; }
+
+/* Staggered delay helpers */
+.cfg-delay-1 { animation-delay: 60ms; }
+.cfg-delay-2 { animation-delay: 120ms; }
+.cfg-delay-3 { animation-delay: 180ms; }
+.cfg-delay-4 { animation-delay: 240ms; }
+.cfg-delay-5 { animation-delay: 300ms; }
+.cfg-delay-6 { animation-delay: 360ms; }
+
+/* Scrollbar styling for dark theme */
+.cfg-scroll::-webkit-scrollbar       { width: 6px; }
+.cfg-scroll::-webkit-scrollbar-track { background: var(--cfg-surface); }
+.cfg-scroll::-webkit-scrollbar-thumb { background: var(--cfg-border-bright); border-radius: 3px; }
+.cfg-scroll::-webkit-scrollbar-thumb:hover { background: var(--cfg-text-faint); }

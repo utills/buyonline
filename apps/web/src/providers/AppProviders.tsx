@@ -13,7 +13,7 @@ interface AppProvidersProps {
 export default function AppProviders({ children }: AppProvidersProps) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const showChatWidget = !pathname.startsWith('/ai-journey');
+  const showChatWidget = !pathname.startsWith('/ai-journey') && !pathname.startsWith('/configurator');
 
   useEffect(() => {
     setMounted(true);

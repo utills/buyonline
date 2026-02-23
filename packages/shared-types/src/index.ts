@@ -6,3 +6,4 @@ export * from './payment.types';
 export * from './kyc.types';
 export * from './health.types';
 export * from './resume.types';
+export * from './configurator.types';

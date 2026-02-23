@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useJourneyStore } from '@/stores/useJourneyStore';
 import { useChatStream } from '../hooks/useChatStream';
 import ChatWindow, { type ChatSize } from './ChatWindow';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 const SIZE_DIMENSIONS: Record<ChatSize, { w: string; h: string }> = {
   compact: { w: 'w-[340px]', h: 'h-[520px]' },
@@ -16,6 +17,10 @@ export default function ChatWidget() {
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const [size, setSize] = useState<ChatSize>('compact');
   const { applicationId, currentStep } = useJourneyStore();
+  const { chatConfig } = useJourneyConfig();
+
+  // Hide chat widget if AI is disabled in configurator
+  if (!chatConfig.aiEnabled) return null;
 
   const { messages, send, isStreaming, clear, useAI, setUseAI } = useChatStream(applicationId);
 
