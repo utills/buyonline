@@ -22,6 +22,7 @@ export default function PlansPage() {
   const [showSumInsured, setShowSumInsured] = useState(false);
   const [showTenure, setShowTenure] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function PlansPage() {
           description: p.description,
           features: Array.isArray(p.features)
             ? p.features
-            : Object.values(p.features as unknown as Record<string, string>),
+            : Object.entries(p.features as Record<string, string>).map(([k, v]) => `${k}: ${v}`),
           isActive: true,
         }));
         setPlans(plansData);
@@ -57,6 +58,8 @@ export default function PlansPage() {
         setPlanPricings(allPricings);
       } catch {
         setFetchError('Unable to load plans. Please refresh the page.');
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchPlans();
@@ -94,6 +97,20 @@ export default function PlansPage() {
     }
     router.push('/addons');
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 animate-pulse">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
+            <div className="h-5 bg-gray-200 rounded w-1/3" />
+            <div className="h-4 bg-gray-100 rounded w-2/3" />
+            <div className="h-10 bg-gray-200 rounded w-full" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -154,6 +171,14 @@ export default function PlansPage() {
             <line x1="9" y1="9" x2="15" y2="15" />
           </svg>
           <span>{fetchError}</span>
+        </div>
+      )}
+
+      {/* Empty state when plans loaded but no pricing tier matches */}
+      {filteredPlans.length > 0 && filteredPricings.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No plans available for the selected coverage amount.</p>
+          <p className="text-sm text-gray-400 mt-1">Try adjusting your sum insured or tenure.</p>
         </div>
       )}
 

@@ -1,6 +1,9 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { RedisModule } from './redis/redis.module.js';
 import { AppConfigModule } from './config/config.module.js';
 import { LeadModule } from './modules/lead/lead.module.js';
 import { OtpModule } from './modules/otp/otp.module.js';
@@ -20,6 +23,8 @@ import { CorrelationIdMiddleware } from './common/middleware/correlation-id.midd
   imports: [
     AppConfigModule,
     PrismaModule,
+    RedisModule,
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }]),
     LeadModule,
     OtpModule,
     OnboardingModule,
@@ -34,6 +39,7 @@ import { CorrelationIdMiddleware } from './common/middleware/correlation-id.midd
     ChatModule,
   ],
   controllers: [AppController],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

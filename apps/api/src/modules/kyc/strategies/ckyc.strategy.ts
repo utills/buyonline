@@ -49,8 +49,10 @@ export class CkycStrategy {
     };
   }
 
-  private simulateCkycCheck(_panNumber: string): boolean {
-    // Simulate: 80% success rate for development
-    return Math.random() > 0.2;
+  private simulateCkycCheck(panNumber: string): boolean {
+    // TODO: Integrate with CKYC registry API for production
+    if (panNumber.toUpperCase().startsWith('XXXXX')) return false; // test rejection path
+    if (panNumber.toUpperCase().startsWith('AAAAA')) return true;  // test approval path
+    return true; // optimistic for dev/staging — all other PANs succeed
   }
 }

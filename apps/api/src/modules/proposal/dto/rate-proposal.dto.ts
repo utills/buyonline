@@ -1,9 +1,10 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ProposalStatus } from '@buyonline/shared-types';
 
 export class RateProposalDto {
-  @IsString()
+  @IsEnum(ProposalStatus)
   @IsNotEmpty()
-  status!: string;
+  status!: ProposalStatus;
 
   @IsString()
   @IsOptional()

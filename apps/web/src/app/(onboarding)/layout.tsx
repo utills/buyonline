@@ -1,16 +1,34 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-const STEP = 1;
-const TOTAL = 5;
-const STEP_LABEL = '1 / 5';
-const PROGRESS = Math.round((STEP / TOTAL) * 100);
+const ONBOARDING_STEPS: Record<string, number> = {
+  '/pincode': 1,
+  '/pre-existing': 2,
+  '/critical-conditions': 3,
+  '/eligibility': 4,
+};
+const TOTAL = 4;
+
+const BACK_PATHS: Record<string, string> = {
+  '/pincode': '/',
+  '/pre-existing': '/pincode',
+  '/critical-conditions': '/pre-existing',
+  '/eligibility': '/critical-conditions',
+};
 
 export default function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const step = ONBOARDING_STEPS[pathname] ?? 1;
+  const progress = Math.round((step / TOTAL) * 100);
+  const backPath = BACK_PATHS[pathname] ?? '/';
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sticky header */}
@@ -18,7 +36,7 @@ export default function OnboardingLayout({
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           {/* Back button */}
           <Link
-            href="/"
+            href={backPath}
             aria-label="Go back"
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
           >
@@ -36,14 +54,14 @@ export default function OnboardingLayout({
           </div>
 
           {/* Step label */}
-          <span className="text-xs font-medium text-gray-500">1 / 5</span>
+          <span className="text-xs font-medium text-gray-500">{step} / {TOTAL}</span>
         </div>
 
         {/* Progress bar */}
         <div className="h-1 bg-gray-100">
           <div
             className="h-1 bg-[#E31837] transition-all duration-300"
-            style={{ width: `${PROGRESS}%` }}
+            style={{ width: `${progress}%` }}
           />
         </div>
       </header>

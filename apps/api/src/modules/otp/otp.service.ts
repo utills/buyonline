@@ -5,8 +5,10 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Inject,
 } from '@nestjs/common';
-import { createHash, randomInt } from 'crypto';
+import { createHash, randomInt, randomUUID } from 'crypto';
+import Redis from 'ioredis';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { SendOtpDto, OtpPurpose } from './dto/send-otp.dto.js';
 import { VerifyOtpDto } from './dto/verify-otp.dto.js';
@@ -19,7 +21,10 @@ const RATE_LIMIT_WINDOW_MINUTES = 10;
 export class OtpService {
   private readonly logger = new Logger(OtpService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject('REDIS_CLIENT') private readonly redis: Redis,
+  ) {}
 
   private hashOtp(otp: string): string {
     return createHash('sha256').update(otp).digest('hex');
@@ -76,8 +81,7 @@ export class OtpService {
     return {
       message: 'OTP sent successfully',
       expiresInSeconds: OTP_TTL_SECONDS,
-      // Remove in production -- only for development
-      otp,
+      ...(process.env['NODE_ENV'] !== 'production' && { otp }),
     };
   }
 
@@ -118,10 +122,15 @@ export class OtpService {
       data: { isVerified: true },
     });
 
+    // Generate session token and store in Redis with 24h TTL
+    const sessionToken = randomUUID();
+    await this.redis.set('session:' + sessionToken, lead.id, 'EX', 86400);
+
     return {
       message: 'OTP verified successfully',
       leadId: lead.id,
       isVerified: true,
+      sessionToken,
     };
   }
 

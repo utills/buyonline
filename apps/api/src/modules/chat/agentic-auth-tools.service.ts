@@ -2,6 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { OtpService } from '../otp/otp.service.js';
 import { OtpPurpose } from '../otp/dto/send-otp.dto.js';
+import { EligibilityService } from '../onboarding/eligibility.service.js';
 
 @Injectable()
 export class AgenticAuthToolsService {
@@ -10,6 +11,7 @@ export class AgenticAuthToolsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly otpService: OtpService,
+    private readonly eligibilityService: EligibilityService,
   ) {}
 
   canHandle(name: string): boolean {
@@ -21,6 +23,7 @@ export class AgenticAuthToolsService {
       'update_pincode',
       'declare_pre_existing',
       'check_eligibility',
+      'get_application_state',
     ].includes(name);
   }
 
@@ -40,6 +43,8 @@ export class AgenticAuthToolsService {
         return this.declarePreExisting(input);
       case 'check_eligibility':
         return this.checkEligibility(input);
+      case 'get_application_state':
+        return this.getApplicationState(input);
       default:
         return null;
     }
@@ -122,16 +127,16 @@ export class AgenticAuthToolsService {
       const existing = await this.prisma.lead.findFirst({ where: { mobile } });
 
       if (existing) {
-        await this.prisma.lead.update({
-          where: { id: existing.id },
-          data: {
-            selfSelected: members?.self ?? true,
-            spouseSelected: members?.spouse ?? false,
-            kidsCount: members?.kidsCount ?? 0,
-            eldestMemberAge: eldestMemberAge ?? existing.eldestMemberAge,
-            consentGiven: true,
-          },
-        });
+        // M16: Only update fields that were explicitly provided by the AI tool call
+        const updateData: Record<string, unknown> = { consentGiven: true };
+        if (members?.self !== undefined) updateData['selfSelected'] = members.self;
+        if (members?.spouse !== undefined) updateData['spouseSelected'] = members.spouse;
+        if (members?.kidsCount !== undefined) updateData['kidsCount'] = members.kidsCount;
+        if (eldestMemberAge !== undefined) updateData['eldestMemberAge'] = eldestMemberAge;
+        // Apply update only if there's something meaningful to update
+        if (Object.keys(updateData).length > 0) {
+          await this.prisma.lead.update({ where: { id: existing.id }, data: updateData });
+        }
         return { success: true, leadId: existing.id, mobile };
       }
 
@@ -165,6 +170,48 @@ export class AgenticAuthToolsService {
       const app = await this.prisma.application.create({
         data: { leadId, status: 'LEAD_CAPTURED', currentStep: 'pincode' },
       });
+
+      // M4: Create ApplicationMember records based on lead data
+      const membersToCreate: Array<{
+        applicationId: string;
+        memberType: 'SELF' | 'SPOUSE' | 'KID';
+        label: string;
+        isEligible: boolean;
+        age: number;
+      }> = [];
+
+      if (lead.selfSelected) {
+        membersToCreate.push({
+          applicationId: app.id,
+          memberType: 'SELF',
+          label: 'Self',
+          isEligible: true,
+          age: lead.eldestMemberAge ?? 30,
+        });
+      }
+      if (lead.spouseSelected) {
+        membersToCreate.push({
+          applicationId: app.id,
+          memberType: 'SPOUSE',
+          label: 'Spouse',
+          isEligible: true,
+          age: 30,
+        });
+      }
+      for (let i = 0; i < (lead.kidsCount ?? 0); i++) {
+        membersToCreate.push({
+          applicationId: app.id,
+          memberType: 'KID',
+          label: `Kid ${i + 1}`,
+          isEligible: true,
+          age: 10,
+        });
+      }
+
+      if (membersToCreate.length > 0) {
+        await this.prisma.applicationMember.createMany({ data: membersToCreate });
+      }
+
       return { success: true, applicationId: app.id, leadId, mobile: lead.mobile };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
@@ -259,20 +306,59 @@ export class AgenticAuthToolsService {
   ): Promise<Record<string, unknown>> {
     try {
       const applicationId = input['applicationId'] as string;
+      // H5: Delegate to real EligibilityService instead of returning hardcoded allEligible: true
+      const result = await this.eligibilityService.checkEligibility(applicationId);
+      return {
+        success: true,
+        allEligible: result.allEligible,
+        memberCount: result.members.length,
+        members: result.members,
+        applicationId,
+      };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      this.logger.error(`checkEligibility failed: ${msg}`);
+      return { success: false, error: 'Eligibility check failed.' };
+    }
+  }
+
+  // AI9: Returns structured current state of an application
+  private async getApplicationState(
+    input: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
+    try {
+      const applicationId = input['applicationId'] as string;
       const app = await this.prisma.application.findUnique({
         where: { id: applicationId },
-        include: { members: true, lead: true },
+        include: {
+          members: { select: { id: true, memberType: true, label: true, age: true, isEligible: true } },
+          selectedPlan: { include: { plan: { select: { name: true, tier: true } } } },
+        },
       });
+
       if (!app) return { success: false, error: 'Application not found.' };
 
       return {
         success: true,
-        allEligible: true,
-        memberCount: app.members?.length ?? 1,
-        applicationId,
+        applicationId: app.id,
+        status: app.status,
+        currentStep: app.currentStep,
+        pincode: app.pincode ?? null,
+        memberCount: app.members.length,
+        members: app.members,
+        selectedPlan: app.selectedPlan
+          ? {
+              planName: app.selectedPlan.plan.name,
+              planTier: app.selectedPlan.plan.tier,
+              sumInsured: Number(app.selectedPlan.sumInsured),
+              totalPremium: Number(app.selectedPlan.totalPremium),
+            }
+          : null,
       };
-    } catch {
-      return { success: false, error: 'Eligibility check failed.' };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      this.logger.error(`getApplicationState failed: ${msg}`);
+      return { success: false, error: 'Failed to fetch application state.' };
     }
   }
 }

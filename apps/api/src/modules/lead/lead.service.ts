@@ -50,9 +50,10 @@ export class LeadService {
 
   async update(id: string, dto: UpdateLeadDto) {
     await this.findById(id);
+    const { isVerified: _ignored, ...safeData } = dto as any;
     return this.prisma.lead.update({
       where: { id },
-      data: dto,
+      data: safeData,
     });
   }
 }

@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useLeadStore } from '@/stores/useLeadStore';
 import { useHealthStore } from '@/stores/useHealthStore';
 import { useJourneyStore } from '@/stores/useJourneyStore';
-import { JourneyStep } from '@buyonline/shared-types';
 import DisabilityForm from '@/components/health/DisabilityForm';
 import { apiClient } from '@/lib/api-client';
 
@@ -12,7 +11,7 @@ export default function DisabilityPage() {
   const router = useRouter();
   const { members } = useLeadStore();
   const { setDisabilityDetails } = useHealthStore();
-  const { applicationId, markStepComplete, advanceTo } = useJourneyStore();
+  const { applicationId } = useJourneyStore();
 
   const safeMembers = members ?? { self: true, spouse: false, kidsCount: 0 };
   const memberChips: { id: string; label: string }[] = [];
@@ -44,9 +43,7 @@ export default function DisabilityPage() {
     } catch {
       // Non-fatal
     }
-    markStepComplete(JourneyStep.HEALTH);
-    advanceTo(JourneyStep.COMPLETE);
-    router.push('/complete');
+    router.push('/declaration');
   };
 
   return (

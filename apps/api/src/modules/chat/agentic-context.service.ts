@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import Redis from 'ioredis';
 
-const AGENTIC_SYSTEM_PROMPT = `You are PRUHealth AI — a warm, conversational health insurance guide for BuyOnline.
+const AGENTIC_SYSTEM_PROMPT = `You are HealthGuide AI — a warm, conversational health insurance guide for BuyOnline.
 Your role is to collect information from the user step-by-step and help them purchase the right health insurance plan.
 
 ## Your Journey Steps (follow IN ORDER):
@@ -46,8 +48,29 @@ When recommending a plan, embed it like this:
 - If confused, ask one clarifying question at a time`;
 
 @Injectable()
-export class AgenticContextService {
-  constructor(private readonly prisma: PrismaService) {}
+export class AgenticContextService implements OnModuleDestroy {
+  private readonly redis: Redis;
+  private readonly logger = new Logger(AgenticContextService.name);
+  private redisAvailable = true;
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {
+    this.redis = new Redis(
+      this.config.get<string>('REDIS_URL', 'redis://localhost:6379'),
+      { lazyConnect: true, maxRetriesPerRequest: 1 },
+    );
+    this.redis.on('error', (err: Error) => {
+      this.logger.warn(`Redis error in AgenticContextService: ${err.message}`);
+      this.redisAvailable = false;
+    });
+    this.redis.on('connect', () => { this.redisAvailable = true; });
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    await this.redis.quit();
+  }
 
   async build(applicationId?: string): Promise<string> {
     const [planContext, userContext] = await Promise.all([
@@ -60,6 +83,15 @@ export class AgenticContextService {
 
   private async buildPlanContext(): Promise<string> {
     try {
+      // P2: Cache plan context in Redis with 5-minute TTL
+      const cacheKey = 'plan-context-cache';
+      if (this.redisAvailable) {
+        try {
+          const cached = await this.redis.get(cacheKey);
+          if (cached) return cached;
+        } catch { /* fall through to DB query */ }
+      }
+
       const plans = await this.prisma.plan.findMany({
         where: { isActive: true },
         include: {
@@ -90,7 +122,16 @@ export class AgenticContextService {
         return `${plan.name} (${plan.tier}): Pricing — ${pricing}. Add-ons: ${addons || 'none'}`;
       });
 
-      return `---\nAvailable Plans:\n${sections.join('\n')}`;
+      const result = `---\nAvailable Plans:\n${sections.join('\n')}`;
+
+      // Cache for 5 minutes
+      if (this.redisAvailable) {
+        try {
+          await this.redis.set(cacheKey, result, 'EX', 300);
+        } catch { /* non-fatal */ }
+      }
+
+      return result;
     } catch {
       return '';
     }

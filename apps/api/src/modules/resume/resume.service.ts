@@ -97,7 +97,6 @@ export class ResumeService {
     return {
       applicationId: application.id,
       maskedMobile,
-      mobile,
       status: application.status as ApplicationStatus,
       currentStep: application.currentStep,
     };

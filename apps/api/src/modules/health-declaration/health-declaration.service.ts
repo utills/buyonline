@@ -71,7 +71,8 @@ export class HealthDeclarationService {
       if (!member) throw new NotFoundException('Member not found in this application');
     }
 
-    const results = await Promise.all(
+    // P5: Batch lifestyle answer upserts in a single transaction
+    const results = await this.prisma.$transaction(
       dto.answers.map((a) =>
         this.prisma.memberLifestyleAnswer.upsert({
           where: {
@@ -84,11 +85,11 @@ export class HealthDeclarationService {
             memberId: a.memberId,
             questionKey: a.questionKey,
             answer: a.answer,
-            subAnswer: a.subAnswer as any,
+            subAnswer: a.subAnswer as import('@prisma/client').TobaccoType | null | undefined,
           },
           update: {
             answer: a.answer,
-            subAnswer: a.subAnswer as any,
+            subAnswer: a.subAnswer as import('@prisma/client').TobaccoType | null | undefined,
           },
         }),
       ),
@@ -108,7 +109,8 @@ export class HealthDeclarationService {
       if (!member) throw new NotFoundException('Member not found in this application');
     }
 
-    const results = await Promise.all(
+    // P5: Batch medical history answer upserts in a single transaction
+    const results = await this.prisma.$transaction(
       dto.answers.map((a) =>
         this.prisma.memberHealthAnswer.upsert({
           where: {
@@ -137,24 +139,15 @@ export class HealthDeclarationService {
   async saveHospitalization(applicationId: string, dto: HospitalizationDto) {
     await this.ensureApplicationExists(applicationId);
 
-    const existing = await this.prisma.healthDeclaration.findFirst({
+    return this.prisma.healthDeclaration.upsert({
       where: { applicationId },
-    });
-
-    if (existing) {
-      return this.prisma.healthDeclaration.update({
-        where: { id: existing.id },
-        data: {
-          hospitalizationReason: dto.hospitalizationReason,
-          dischargeSummaryUrl: dto.dischargeSummaryUrl,
-          medicationDetails: dto.medicationDetails,
-        },
-      });
-    }
-
-    return this.prisma.healthDeclaration.create({
-      data: {
+      create: {
         applicationId,
+        hospitalizationReason: dto.hospitalizationReason,
+        dischargeSummaryUrl: dto.dischargeSummaryUrl,
+        medicationDetails: dto.medicationDetails,
+      },
+      update: {
         hospitalizationReason: dto.hospitalizationReason,
         dischargeSummaryUrl: dto.dischargeSummaryUrl,
         medicationDetails: dto.medicationDetails,
@@ -165,23 +158,14 @@ export class HealthDeclarationService {
   async saveDisability(applicationId: string, dto: DisabilityDto) {
     await this.ensureApplicationExists(applicationId);
 
-    const existing = await this.prisma.healthDeclaration.findFirst({
+    return this.prisma.healthDeclaration.upsert({
       where: { applicationId },
-    });
-
-    if (existing) {
-      return this.prisma.healthDeclaration.update({
-        where: { id: existing.id },
-        data: {
-          hasDisability: dto.hasDisability,
-          disabilityDetails: dto.disabilityDetails,
-        },
-      });
-    }
-
-    return this.prisma.healthDeclaration.create({
-      data: {
+      create: {
         applicationId,
+        hasDisability: dto.hasDisability,
+        disabilityDetails: dto.disabilityDetails,
+      },
+      update: {
         hasDisability: dto.hasDisability,
         disabilityDetails: dto.disabilityDetails,
       },

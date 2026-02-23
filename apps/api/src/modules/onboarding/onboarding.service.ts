@@ -40,24 +40,23 @@ export class OnboardingService {
   ) {
     await this.getApplication(applicationId);
 
-    // Remove existing members and re-create
-    await this.prisma.applicationMember.deleteMany({
+    // P4: Atomic delete+recreate using $transaction to prevent partial state
+    const membersData = members.map((m) => ({
+      applicationId,
+      memberType: m.memberType as MemberType,
+      label: m.label,
+      age: m.age,
+      gender: m.gender as Gender | undefined,
+    }));
+
+    await this.prisma.$transaction([
+      this.prisma.applicationMember.deleteMany({ where: { applicationId } }),
+      this.prisma.applicationMember.createMany({ data: membersData }),
+    ]);
+
+    const created = await this.prisma.applicationMember.findMany({
       where: { applicationId },
     });
-
-    const created = await Promise.all(
-      members.map((m) =>
-        this.prisma.applicationMember.create({
-          data: {
-            applicationId,
-            memberType: m.memberType as MemberType,
-            label: m.label,
-            age: m.age,
-            gender: m.gender as Gender | undefined,
-          },
-        }),
-      ),
-    );
 
     await this.prisma.application.update({
       where: { id: applicationId },

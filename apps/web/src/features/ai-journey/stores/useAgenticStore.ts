@@ -111,7 +111,11 @@ export const useAgenticStore = create<AgenticStore>()(
     }),
     {
       name: 'buyonline-agentic',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

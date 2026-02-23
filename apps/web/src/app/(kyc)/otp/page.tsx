@@ -16,6 +16,7 @@ export default function KycOtpPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [forceCanResend, setForceCanResend] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const sendOtp = useCallback(async () => {
@@ -54,14 +55,30 @@ export default function KycOtpPage() {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pasted.length === 6) {
+      const newOtp = pasted.split('');
+      setOtp(newOtp);
+      setError('');
+      inputRefs.current[5]?.focus();
+      handleVerify(pasted);
+    }
+  };
+
   const handleVerify = async (otpCode: string) => {
     setIsVerifying(true);
     try {
-      await apiClient.post('/api/v1/otp/verify', { mobile, otp: otpCode });
+      const data = await apiClient.post<{ sessionToken?: string }>('/api/v1/otp/verify', { mobile, otp: otpCode });
+      if (data.sessionToken) {
+        sessionStorage.setItem('buyonline-session-token', data.sessionToken);
+      }
       setStatus(KycStatus.VERIFIED);
       router.push('/kyc-success');
     } catch {
       setError('Invalid OTP. Please try again.');
+      setForceCanResend(true); // allow immediate resend after failure
     } finally {
       setIsVerifying(false);
     }
@@ -87,6 +104,7 @@ export default function KycOtpPage() {
             value={digit}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
             className={`w-12 h-14 text-center text-xl font-bold rounded-lg border-2 focus:outline-none ${
               error ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#E31837]'
             }`}
@@ -107,11 +125,12 @@ export default function KycOtpPage() {
       )}
 
       <div className="text-center">
-        {canResend ? (
+        {(canResend || forceCanResend) ? (
           <button
             onClick={() => {
               setOtp(['', '', '', '', '', '']);
               setError('');
+              setForceCanResend(false);
               inputRefs.current[0]?.focus();
               sendOtp();
             }}

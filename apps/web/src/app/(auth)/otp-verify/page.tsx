@@ -49,10 +49,13 @@ export default function OtpVerifyPage() {
   const handleVerify = async (otpCode: string) => {
     setIsVerifying(true);
     try {
-      await apiClient.post('/api/v1/otp/verify', {
+      const data = await apiClient.post<{ sessionToken?: string }>('/api/v1/otp/verify', {
         mobile,
         otp: otpCode,
       });
+      if (data.sessionToken) {
+        sessionStorage.setItem('buyonline-session-token', data.sessionToken);
+      }
 
       // Create application from lead
       const appResponse = await apiClient.post<{ id: string }>('/api/v1/applications', {

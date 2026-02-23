@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
@@ -43,13 +44,28 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  // TODO: run `pnpm add @nestjs/swagger` then uncomment below to enable Swagger UI at /api/docs
-  // const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger');
-  // const swaggerConfig = new DocumentBuilder()
-  //   .setTitle('BuyOnline API').setDescription('Health insurance purchase platform API')
-  //   .setVersion('1.0').addTag('chat').addTag('lead').addTag('otp').addTag('onboarding')
-  //   .addTag('plan').addTag('payment').addTag('kyc').addTag('health-declaration').build();
-  // SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, swaggerConfig));
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('BuyOnline API')
+    .setDescription('Health insurance purchase platform API — v1')
+    .setVersion('1.0')
+    .addTag('health', 'System health')
+    .addTag('leads', 'Lead management')
+    .addTag('otp', 'OTP authentication')
+    .addTag('applications', 'Application lifecycle')
+    .addTag('plans', 'Plan selection')
+    .addTag('payments', 'Payment processing')
+    .addTag('kyc', 'KYC verification')
+    .addTag('health-declaration', 'Health declarations')
+    .addTag('resume', 'Resume journey')
+    .addTag('chat', 'AI chat')
+    .addApiKey({ type: 'apiKey', name: 'x-session-token', in: 'header' }, 'session-token')
+    .addApiKey({ type: 'apiKey', name: 'x-application-id', in: 'header' }, 'application-id')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document, {
+    swaggerOptions: { persistAuthorization: true },
+  });
+  logger.log('Swagger docs available at /api/docs');
 
   const port = Number(process.env['PORT'] ?? 3001);
   await app.listen(port);

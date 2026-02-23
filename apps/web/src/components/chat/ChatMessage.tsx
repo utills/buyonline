@@ -1,6 +1,6 @@
 'use client';
 
-import type { ChatMessage as ChatMessageType } from '@/hooks/useChatStream';
+import type { ChatMessage as ChatMessageType } from '@/features/chat/hooks/useChatStream';
 
 export default function ChatMessage({ message }: { message: ChatMessageType }) {
   const isUser = message.role === 'user';

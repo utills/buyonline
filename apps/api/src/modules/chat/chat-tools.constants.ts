@@ -177,4 +177,14 @@ export const AGENTIC_TOOLS: Anthropic.Tool[] = [
       required: ['applicationId'],
     },
   },
+  // AI9: Query current application state from DB
+  {
+    name: 'get_application_state',
+    description: 'Get the current status, step, selected plan summary, and member count for an application.',
+    input_schema: {
+      type: 'object',
+      properties: { applicationId: { type: 'string', description: 'The application UUID' } },
+      required: ['applicationId'],
+    },
+  },
 ];

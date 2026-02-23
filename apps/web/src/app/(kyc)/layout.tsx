@@ -1,16 +1,33 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-const STEP = 4;
-const TOTAL = 5;
-const STEP_LABEL = '4 / 5';
-const PROGRESS = Math.round((STEP / TOTAL) * 100);
+const KYC_STEPS: Record<string, number> = {
+  '/otp': 1,
+  '/method': 2,
+  '/pan': 3,
+  '/manual': 3,
+  '/digilocker': 3,
+};
+const TOTAL = 3;
+
+const BACK_PATHS: Record<string, string> = {
+  '/method': '/payment-success',
+  '/otp': '/method',
+};
 
 export default function KycLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const step = KYC_STEPS[pathname] ?? 1;
+  const progress = Math.round((step / TOTAL) * 100);
+  const backPath = BACK_PATHS[pathname] ?? '/';
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sticky header */}
@@ -18,7 +35,7 @@ export default function KycLayout({
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           {/* Back button */}
           <Link
-            href="/"
+            href={backPath}
             aria-label="Go back"
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
           >
@@ -36,14 +53,14 @@ export default function KycLayout({
           </div>
 
           {/* Step label */}
-          <span className="text-xs font-medium text-gray-500">4 / 5</span>
+          <span className="text-xs font-medium text-gray-500">{step} / {TOTAL}</span>
         </div>
 
         {/* Progress bar */}
         <div className="h-1 bg-gray-100">
           <div
             className="h-1 bg-[#E31837] transition-all duration-300"
-            style={{ width: `${PROGRESS}%` }}
+            style={{ width: `${progress}%` }}
           />
         </div>
       </header>

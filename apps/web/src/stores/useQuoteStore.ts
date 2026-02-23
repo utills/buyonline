@@ -37,7 +37,7 @@ interface QuoteState {
 const initialState = {
   plans: [] as Plan[],
   selectedPlanId: null as string | null,
-  sumInsured: 500_0000,
+  sumInsured: 5_000_000,
   tenureMonths: 12,
   coverageLevel: CoverageLevel.FLOATER,
   selectedTier: PlanTier.SIGNATURE,

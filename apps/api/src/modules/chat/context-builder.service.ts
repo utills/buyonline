@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
-const STATIC_PROMPT = `You are PRUHealth Assistant — a friendly, knowledgeable guide for BuyOnline, Prudential's health insurance platform.
+const STATIC_PROMPT = `You are HealthGuide AI — a friendly, knowledgeable guide for BuyOnline's health insurance platform.
 
 Your responsibilities:
 - Explain health insurance plans, coverage, premiums, addons, and eligibility

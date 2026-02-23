@@ -6,6 +6,7 @@ import { existsSync } from 'fs';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const UPLOAD_DIR = join(process.cwd(), 'uploads');
+const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'heic'];
 
 @Injectable()
 export class UploadService {
@@ -17,6 +18,11 @@ export class UploadService {
     mimetype: string;
     size: number;
   }) {
+    const ext = file.originalname.split('.').pop()?.toLowerCase();
+    if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
+      throw new BadRequestException('File type not allowed. Allowed types: jpg, jpeg, png, pdf, heic');
+    }
+
     if (file.size > MAX_FILE_SIZE) {
       throw new BadRequestException(
         `File size exceeds maximum of ${MAX_FILE_SIZE / (1024 * 1024)}MB`,

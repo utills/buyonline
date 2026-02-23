@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { JourneyStep } from '@buyonline/shared-types';
-import type { ChatMessage as ChatMessageType } from '@/hooks/useChatStream';
+import type { ChatMessage as ChatMessageType } from '@/features/chat/hooks/useChatStream';
 import ChatMessage from './ChatMessage';
 
 interface StepContext {

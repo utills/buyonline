@@ -11,6 +11,9 @@ export function validateEnv(): void {
   }
 
   if (!process.env['JWT_SECRET']) {
+    if (process.env['NODE_ENV'] === 'production') {
+      throw new Error('[Config] JWT_SECRET is required in production.');
+    }
     console.warn('[Config] JWT_SECRET is not set — JWT authentication will use an insecure default.');
   }
 

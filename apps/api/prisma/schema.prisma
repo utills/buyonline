@@ -93,6 +93,13 @@ enum TobaccoType {
   BOTH
 }
 
+enum ProposalStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
 // ─── LEAD & AUTH ────────────────────────────────────────────────────
 
 model Lead {
@@ -441,7 +448,7 @@ model Proposal {
   applicationId  String      @unique
   application    Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   proposalNumber String      @unique
-  status         String      @default("UNDER_REVIEW")
+  status         ProposalStatus @default(UNDER_REVIEW)
   submittedAt    DateTime    @default(now())
   reviewedAt     DateTime?
   reviewNotes    String?

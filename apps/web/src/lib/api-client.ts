@@ -57,6 +57,14 @@ async function request<T>(
     }
   }
 
+  // Auto-inject session token for authenticated requests
+  const sessionToken = typeof window !== 'undefined'
+    ? sessionStorage.getItem('buyonline-session-token')
+    : null;
+  if (sessionToken && !headers['x-session-token']) {
+    headers['x-session-token'] = sessionToken;
+  }
+
   const response = await fetch(url, {
     ...restOptions,
     headers,
@@ -111,6 +119,12 @@ export const apiClient = {
         if (state.applicationId) uploadHeaders['x-application-id'] = state.applicationId;
       }
     } catch { /* ignore */ }
+    const uploadSessionToken = typeof window !== 'undefined'
+      ? sessionStorage.getItem('buyonline-session-token')
+      : null;
+    if (uploadSessionToken) {
+      uploadHeaders['x-session-token'] = uploadSessionToken;
+    }
     const response = await fetch(url, {
       method: 'POST',
       headers: uploadHeaders,

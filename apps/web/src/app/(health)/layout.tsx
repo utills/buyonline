@@ -1,16 +1,39 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-const STEP = 3;
-const TOTAL = 5;
-const STEP_LABEL = '3 / 5';
-const PROGRESS = Math.round((STEP / TOTAL) * 100);
+const HEALTH_STEPS: Record<string, number> = {
+  '/personal': 1,
+  '/bank': 2,
+  '/lifestyle': 3,
+  '/medical': 4,
+  '/hospitalization': 5,
+  '/disability': 6,
+  '/declaration': 7,
+};
+const TOTAL = 7;
+
+const BACK_PATHS: Record<string, string> = {
+  '/bank': '/personal',
+  '/lifestyle': '/bank',
+  '/medical': '/lifestyle',
+  '/hospitalization': '/medical',
+  '/disability': '/hospitalization',
+  '/declaration': '/disability',
+};
 
 export default function HealthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const step = HEALTH_STEPS[pathname] ?? 1;
+  const progress = Math.round((step / TOTAL) * 100);
+  const backPath = BACK_PATHS[pathname] ?? '/';
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sticky header */}
@@ -18,7 +41,7 @@ export default function HealthLayout({
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           {/* Back button */}
           <Link
-            href="/"
+            href={backPath}
             aria-label="Go back"
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
           >
@@ -36,14 +59,14 @@ export default function HealthLayout({
           </div>
 
           {/* Step label */}
-          <span className="text-xs font-medium text-gray-500">3 / 5</span>
+          <span className="text-xs font-medium text-gray-500">{step} / {TOTAL}</span>
         </div>
 
         {/* Progress bar */}
         <div className="h-1 bg-gray-100">
           <div
             className="h-1 bg-[#E31837] transition-all duration-300"
-            style={{ width: `${PROGRESS}%` }}
+            style={{ width: `${progress}%` }}
           />
         </div>
       </header>

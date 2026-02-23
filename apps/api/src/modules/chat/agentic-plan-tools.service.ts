@@ -116,17 +116,16 @@ export class AgenticPlanToolsService {
 
       await this.prisma.selectedAddon.deleteMany({ where: { applicationId } });
 
+      // Resolve the application's selected plan so we can look up PlanAddon prices
+      const selectedPlan = await this.prisma.selectedPlan.findUnique({
+        where: { applicationId },
+      });
+
+      if (!selectedPlan) {
+        return { success: false, error: 'No plan selected for this application. Please select a plan first.' };
+      }
+
       if (addonIds.length > 0) {
-        // Resolve the application's selected plan so we can look up PlanAddon prices
-        const selectedPlan = await this.prisma.selectedPlan.findUnique({
-          where: { applicationId },
-          select: { planId: true },
-        });
-
-        if (!selectedPlan) {
-          return { success: false, error: 'No plan selected for this application. Please select a plan first.' };
-        }
-
         // Fetch PlanAddon records to get actual prices for the chosen addons
         const planAddons = await this.prisma.planAddon.findMany({
           where: { planId: selectedPlan.planId, addonId: { in: addonIds } },
@@ -147,6 +146,23 @@ export class AgenticPlanToolsService {
           skipDuplicates: true,
         });
       }
+
+      // Compute addon total and update SelectedPlan
+      const savedAddons = await this.prisma.selectedAddon.findMany({
+        where: { applicationId },
+        select: { price: true },
+      });
+      const addonTotal = savedAddons.reduce((sum, a) => sum + Number(a.price), 0);
+      const basePremium = Number(selectedPlan.basePremium);
+      const discountAmount = Number(selectedPlan.discountAmount);
+      const gstAmount = Number(selectedPlan.gstAmount);
+      await this.prisma.selectedPlan.update({
+        where: { applicationId },
+        data: {
+          addonPremium: BigInt(addonTotal),
+          totalPremium: BigInt(basePremium - discountAmount + gstAmount + addonTotal),
+        },
+      });
 
       await this.prisma.application.update({
         where: { id: applicationId },

@@ -4,10 +4,11 @@ import { KycService } from './kyc.service.js';
 import { CkycStrategy } from './strategies/ckyc.strategy.js';
 import { EkycStrategy } from './strategies/ekyc.strategy.js';
 import { ManualKycStrategy } from './strategies/manual-kyc.strategy.js';
+import { SessionGuard } from '../../common/guards/session.guard.js';
 
 @Module({
   controllers: [KycController],
-  providers: [KycService, CkycStrategy, EkycStrategy, ManualKycStrategy],
+  providers: [KycService, CkycStrategy, EkycStrategy, ManualKycStrategy, SessionGuard],
   exports: [KycService],
 })
 export class KycModule {}

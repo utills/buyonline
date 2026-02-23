@@ -79,6 +79,15 @@ export default function GatewayPage() {
     );
   }
 
+  if (!amount || amount <= 0) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-red-600">Payment amount not set. Please go back and select a plan.</p>
+        <button onClick={() => router.push('/proposer')} className="mt-4 text-[#E31837] underline">Go Back</button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -89,7 +98,7 @@ export default function GatewayPage() {
       </div>
 
       <PaymentGatewayComponent
-        amount={amount ?? 14160}
+        amount={amount}
         onSuccess={handleSuccess}
         onFailure={handleFailure}
       />

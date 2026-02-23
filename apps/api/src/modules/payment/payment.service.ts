@@ -2,9 +2,10 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  UnauthorizedException,
   Logger,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { randomUUID, createHmac } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto.js';
 import { PaymentCallbackDto } from './dto/payment-callback.dto.js';
@@ -61,8 +62,10 @@ export class PaymentService {
     }
 
     if (!app.selectedPlan) {
-      throw new BadRequestException('No plan selected for this application');
+      throw new BadRequestException('No plan selected');
     }
+
+    const amount = app.selectedPlan.totalPremium;
 
     // Generate a mock gateway order ID
     const gatewayOrderId = `order_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
@@ -72,7 +75,7 @@ export class PaymentService {
       where: { applicationId: dto.applicationId },
       create: {
         applicationId: dto.applicationId,
-        amount: BigInt(dto.amount),
+        amount,
         currency: dto.currency ?? 'INR',
         status: 'INITIATED',
         gatewayOrderId,
@@ -80,7 +83,7 @@ export class PaymentService {
         paymentMethod: dto.paymentMethod,
       },
       update: {
-        amount: BigInt(dto.amount),
+        amount,
         status: 'INITIATED',
         gatewayOrderId,
         transactionId,
@@ -111,6 +114,21 @@ export class PaymentService {
 
     if (!payment) {
       throw new NotFoundException('Payment not found');
+    }
+
+    // HMAC-SHA256 signature verification
+    if (dto.gatewaySignature) {
+      const secret = process.env['PAYMENT_GATEWAY_SECRET'] ?? 'dev-secret';
+      const expectedSignature = createHmac('sha256', secret)
+        .update(dto.gatewayOrderId + '|' + dto.gatewayPaymentId)
+        .digest('hex');
+      if (dto.gatewaySignature !== expectedSignature) {
+        throw new UnauthorizedException('Invalid payment signature');
+      }
+    } else {
+      this.logger.warn(
+        `Payment callback received without signature for order ${dto.gatewayOrderId}`,
+      );
     }
 
     const isSuccess = dto.status === 'SUCCESS';

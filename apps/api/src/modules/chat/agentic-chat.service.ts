@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { Response } from 'express';
-import { ConversationService } from './conversation.service.js';
+import { ConversationService, MessageParam } from './conversation.service.js';
 import { ChatToolsService } from './chat-tools.service.js';
 import { FallbackChatService } from './fallback-chat.service.js';
 import { AgenticAuthToolsService } from './agentic-auth-tools.service.js';
@@ -10,15 +10,36 @@ import { AgenticContextService } from './agentic-context.service.js';
 import { AgenticPlanToolsService } from './agentic-plan-tools.service.js';
 import { AGENTIC_TOOLS } from './chat-tools.constants.js';
 
-type ApiMessage = { role: 'user' | 'assistant'; content: string | Anthropic.ContentBlock[] };
+/** Balanced-bracket parser for [STATE:{...}] markers — safe when JSON contains ']'. */
+function extractStateJson(text: string): string | null {
+  const prefix = '[STATE:';
+  const start = text.indexOf(prefix);
+  if (start === -1) return null;
+  let depth = 0;
+  const jsonStart = start + prefix.length;
+  for (let i = jsonStart; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}') {
+      depth--;
+      if (depth === 0) return text.slice(jsonStart, i + 1);
+    }
+  }
+  return null;
+}
 
-/** Extract [STATE:{...}] markers from LLM text and return parsed updates + cleaned text. */
+/** Extract [STATE:{...}] markers from LLM text and return parsed updates. */
 function extractStateUpdates(text: string): Record<string, unknown>[] {
   const updates: Record<string, unknown>[] = [];
-  text.replace(/\[STATE:([\s\S]*?)\]/g, (_, json: string) => {
+  // Use balanced-bracket parser to avoid breaking on JSON containing ']'
+  let remaining = text;
+  while (remaining.includes('[STATE:')) {
+    const json = extractStateJson(remaining);
+    if (!json) break;
     try { updates.push(JSON.parse(json) as Record<string, unknown>); } catch { /* ignore */ }
-    return '';
-  });
+    // Advance past the matched segment to find additional STATE markers
+    const markerEnd = remaining.indexOf('[STATE:') + '[STATE:'.length + json.length + 1;
+    remaining = remaining.slice(markerEnd);
+  }
   return updates;
 }
 
@@ -55,11 +76,18 @@ export class AgenticChatService {
 
       const model = this.config.get<string>('CHAT_MODEL', 'claude-sonnet-4-6');
       const maxTokens = parseInt(this.config.get<string>('CHAT_MAX_TOKENS') ?? '2048', 10);
-      const messages: ApiMessage[] = [...history, { role: 'user', content: message }];
+      const messages: MessageParam[] = [...history, { role: 'user', content: message }];
       let fullResponse = '';
       let handoffEmitted = false;
 
+      const MAX_TOOL_ITERATIONS = 10;
+      let iterations = 0;
       while (true) {
+        iterations++;
+        if (iterations > MAX_TOOL_ITERATIONS) {
+          res.write(`data: ${JSON.stringify({ token: '\n\n_I\'ve reached my processing limit for this request. Please try again or contact support._' })}\n\n`);
+          break;
+        }
         const stream = this.anthropic.messages.stream({
           model,
           max_tokens: maxTokens,
@@ -130,8 +158,9 @@ export class AgenticChatService {
       if (!handoffEmitted) res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
 
+      // H7: Save the full messages array (including tool_use and tool_result blocks) to Redis
       this.conversation
-        .appendMessages(sessionId, message, fullResponse)
+        .saveMessages(sessionId, messages)
         .catch((err: Error) => this.logger.warn(`Failed to save agentic history: ${err.message}`));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';

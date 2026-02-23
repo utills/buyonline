@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
+import type Anthropic from '@anthropic-ai/sdk';
 
 type MessageRole = 'user' | 'assistant';
 
@@ -8,6 +9,12 @@ export interface ConversationMessage {
   role: MessageRole;
   content: string;
 }
+
+// H7: Full typed message param — matches Anthropic SDK MessageParam
+export type MessageParam = {
+  role: 'user' | 'assistant';
+  content: string | Anthropic.ContentBlock[];
+};
 
 const SESSION_TTL = 1800; // 30 minutes
 const MAX_HISTORY = 20;   // 10 exchanges
@@ -37,16 +44,21 @@ export class ConversationService implements OnModuleDestroy {
     return `chat:session:${sessionId}`;
   }
 
-  async getHistory(sessionId: string): Promise<ConversationMessage[]> {
+  // H7: Returns full MessageParam[] (including tool_use/tool_result blocks)
+  async getHistory(sessionId: string): Promise<MessageParam[]> {
     if (!this.redisAvailable) return [];
     try {
       const data = await this.redis.get(this.key(sessionId));
-      return data ? (JSON.parse(data) as ConversationMessage[]) : [];
+      return data ? (JSON.parse(data) as MessageParam[]) : [];
     } catch {
       return [];
     }
   }
 
+  /**
+   * Legacy method — saves a single user+assistant text exchange.
+   * Kept for backward compatibility with standard (non-agentic) chat paths.
+   */
   async appendMessages(
     sessionId: string,
     userMsg: string,
@@ -59,6 +71,20 @@ export class ConversationService implements OnModuleDestroy {
       history.push({ role: 'assistant', content: assistantMsg });
 
       const trimmed = history.slice(-MAX_HISTORY);
+      await this.redis.setex(this.key(sessionId), SESSION_TTL, JSON.stringify(trimmed));
+    } catch {
+      // Non-fatal: conversation history just won't persist
+    }
+  }
+
+  /**
+   * H7: Save the full messages array — preserves tool_use and tool_result blocks
+   * so the agentic loop can resume with complete context.
+   */
+  async saveMessages(sessionId: string, messages: MessageParam[]): Promise<void> {
+    if (!this.redisAvailable) return;
+    try {
+      const trimmed = messages.slice(-MAX_HISTORY);
       await this.redis.setex(this.key(sessionId), SESSION_TTL, JSON.stringify(trimmed));
     } catch {
       // Non-fatal: conversation history just won't persist

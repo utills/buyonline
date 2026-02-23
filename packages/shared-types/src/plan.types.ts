@@ -5,7 +5,7 @@ export interface Plan {
   name: string;
   tier: PlanTier;
   description?: string;
-  features: string[];
+  features: Record<string, string> | string[];
   isActive: boolean;
 }
 
@@ -66,10 +66,13 @@ export const SUM_INSURED_OPTIONS = [
   { value: 10000000, label: 'Rs 1 Crore' },
 ] as const;
 
+// All 5 tenures are seeded in the database (12, 24, 36, 48, 60 months).
+// The discountPct values here are for UI display only; authoritative discounts
+// are stored per-pricing-tier in the database (see seed-data/plans.data.ts DISCOUNT_MAP).
 export const TENURE_OPTIONS = [
   { months: 12, label: '1 year', discountPct: 0 },
-  { months: 24, label: '2 years', discountPct: 7.5 },
-  { months: 36, label: '3 years', discountPct: 10, isPopular: true },
-  { months: 48, label: '4 years', discountPct: 12.5 },
-  { months: 60, label: '5 years', discountPct: 15 },
+  { months: 24, label: '2 years', discountPct: 5 },
+  { months: 36, label: '3 years', discountPct: 8, isPopular: true },
+  { months: 48, label: '4 years', discountPct: 10 },
+  { months: 60, label: '5 years', discountPct: 12 },
 ] as const;

@@ -8,9 +8,13 @@ import { UploadChatWidget } from './UploadChatWidget';
 import { renderMarkdown } from '@/lib/renderMarkdown';
 
 // ─── Streaming Dots ───────────────────────────────────────────────────────────
-function StreamingDots() {
+function StreamingDots({ visible = true }: { visible?: boolean }) {
   return (
-    <span className="flex items-center gap-1 py-0.5" aria-label="Loading response" role="status">
+    <span
+      className={`flex items-center gap-1 py-0.5 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      aria-label="Loading response"
+      role="status"
+    >
       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -97,6 +101,12 @@ interface AgentChatProps {
 export default function AgentChat({ messages, isStreaming, phase, onSend, onReset }: AgentChatProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const handleReset = () => {
+    if (window.confirm('Start a new conversation? Your current progress will be lost.')) {
+      onReset?.();
+    }
+  };
+
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -121,7 +131,7 @@ export default function AgentChat({ messages, isStreaming, phase, onSend, onRese
       {messages.length > 1 && onReset && (
         <div className="sticky top-0 flex justify-end z-10 pointer-events-none">
           <button
-            onClick={onReset}
+            onClick={handleReset}
             className="pointer-events-auto text-xs text-gray-400 hover:text-gray-600 transition-colors bg-white/80 backdrop-blur-sm rounded-full px-3 py-1"
           >
             New conversation
@@ -147,7 +157,7 @@ export default function AgentChat({ messages, isStreaming, phase, onSend, onRese
 
       {/* Streaming indicator when last message is from user and we're waiting */}
       {isStreaming && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
-        <div className="flex justify-start mb-3">
+        <div className="flex justify-start mb-3 transition-opacity duration-300">
           <div className="w-7 h-7 rounded-full bg-[#E31837] flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
             <span className="text-white font-bold text-xs">P</span>
           </div>

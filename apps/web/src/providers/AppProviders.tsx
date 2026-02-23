@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { ChatWidget } from '@/features/chat';
 import RouteTracker from '@/components/RouteTracker';
 import ResumePrompt from '@/components/ResumePrompt';
@@ -11,6 +12,8 @@ interface AppProvidersProps {
 
 export default function AppProviders({ children }: AppProvidersProps) {
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const showChatWidget = !pathname.startsWith('/ai-journey');
 
   useEffect(() => {
     setMounted(true);
@@ -21,7 +24,7 @@ export default function AppProviders({ children }: AppProvidersProps) {
       <RouteTracker />
       {mounted && <ResumePrompt />}
       {children}
-      {mounted && <ChatWidget />}
+      {mounted && showChatWidget && <ChatWidget />}
     </>
   );
 }

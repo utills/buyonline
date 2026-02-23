@@ -6,6 +6,6 @@ import { EligibilityService } from './eligibility.service.js';
 @Module({
   controllers: [OnboardingController],
   providers: [OnboardingService, EligibilityService],
-  exports: [OnboardingService],
+  exports: [OnboardingService, EligibilityService],
 })
 export class OnboardingModule {}

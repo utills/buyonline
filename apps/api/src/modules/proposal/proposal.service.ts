@@ -124,7 +124,7 @@ export class ProposalService {
 
   async rateProposal(
     proposalId: string,
-    rating: { status: string; reviewNotes?: string },
+    rating: { status: ProposalStatus; reviewNotes?: string },
   ) {
     const proposal = await this.prisma.proposal.findUnique({
       where: { id: proposalId },

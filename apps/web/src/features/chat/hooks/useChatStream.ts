@@ -140,6 +140,15 @@ export function useChatStream(applicationId: string | null) {
                   )
                 );
               }
+
+              if (data.done === true) {
+                // Mark the last message as no longer streaming
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId ? { ...m, isStreaming: false } : m
+                  )
+                );
+              }
             } catch {
               // Ignore malformed SSE lines
             }
