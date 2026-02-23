@@ -486,3 +486,14 @@ model Hospital {
   @@index([pincode])
   @@index([city])
 }
+
+// ─── CONFIGURATOR ────────────────────────────────────────────────────────────
+
+model JourneyConfiguration {
+  id        String   @id @default(uuid())
+  version   Int      @default(1)
+  config    Json
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

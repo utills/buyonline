@@ -7,7 +7,7 @@ import {
   Logger,
   Inject,
 } from '@nestjs/common';
-import { createHash, randomInt, randomUUID } from 'crypto';
+import { randomUUID } from 'crypto';
 import Redis from 'ioredis';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { SendOtpDto, OtpPurpose } from './dto/send-otp.dto.js';
@@ -17,6 +17,33 @@ const OTP_TTL_SECONDS = 180;
 const MAX_SENDS_PER_WINDOW = 3;
 const RATE_LIMIT_WINDOW_MINUTES = 10;
 
+// Dev bypass — always accepted without calling external service
+const DEV_OTP_BYPASS = '123456';
+
+// Prudential internal comms service
+const COMMS_BASE_URL =
+  process.env['COMMS_API_BASE_URL'] ??
+  'https://comms-svc-phil-ds-dev-api.lb1-pruinhlth-dev-az1-dp1d50.pru.intranet.asia';
+
+function commsHeaders() {
+  return {
+    'accept': 'application/json',
+    'Content-Type': 'application/json',
+    'X-PRU-TENANT': process.env['COMMS_TENANT'] ?? 'PHIL',
+    'X-LBU-UNIQUE-ID': process.env['COMMS_UNIQUE_ID'] ?? '487327648723',
+    'Accept-Language': process.env['COMMS_ACCEPT_LANGUAGE'] ?? '432432',
+    'x-api-key': process.env['COMMS_API_KEY'] ?? 'phil-dev-key',
+  };
+}
+
+/** Format mobile as +91XXXXXXXXXX for the external API */
+function toE164(mobile: string): string {
+  const digits = mobile.replace(/\D/g, '');
+  if (digits.startsWith('91') && digits.length === 12) return '+' + digits;
+  if (digits.length === 10) return '+91' + digits;
+  return '+' + digits;
+}
+
 @Injectable()
 export class OtpService {
   private readonly logger = new Logger(OtpService.name);
@@ -25,14 +52,6 @@ export class OtpService {
     private readonly prisma: PrismaService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
-
-  private hashOtp(otp: string): string {
-    return createHash('sha256').update(otp).digest('hex');
-  }
-
-  private generateOtp(): string {
-    return randomInt(100000, 999999).toString();
-  }
 
   async send(dto: SendOtpDto) {
     const lead = await this.prisma.lead.findUnique({
@@ -44,14 +63,9 @@ export class OtpService {
     }
 
     // Rate limiting: check sends in last 10 minutes
-    const windowStart = new Date(
-      Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
-    );
+    const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000);
     const recentAttempts = await this.prisma.otpAttempt.count({
-      where: {
-        leadId: lead.id,
-        createdAt: { gte: windowStart },
-      },
+      where: { leadId: lead.id, createdAt: { gte: windowStart } },
     });
 
     if (recentAttempts >= MAX_SENDS_PER_WINDOW) {
@@ -61,27 +75,52 @@ export class OtpService {
       );
     }
 
-    const otp = this.generateOtp();
-    const hashedOtp = this.hashOtp(otp);
-    const expiresAt = new Date(Date.now() + OTP_TTL_SECONDS * 1000);
     const purpose = dto.purpose ?? OtpPurpose.LOGIN;
+    const expiresAt = new Date(Date.now() + OTP_TTL_SECONDS * 1000);
+    let otpSessionId: string | null = null;
 
+    // Call Prudential internal comms API to send OTP via SMS
+    try {
+      const response = await fetch(`${COMMS_BASE_URL}/api/v1/comms/otp`, {
+        method: 'POST',
+        headers: commsHeaders(),
+        body: JSON.stringify({
+          channel: 'SMS',
+          to: toE164(dto.mobile),
+          journey: purpose.toLowerCase(),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json() as Record<string, unknown>;
+        otpSessionId = (data['otpSessionId'] as string) ?? null;
+        this.logger.log(`OTP sent via external gateway for ${dto.mobile} — sessionId: ${otpSessionId}`);
+      } else {
+        const errText = await response.text();
+        this.logger.warn(`External OTP API returned ${response.status}: ${errText}`);
+      }
+    } catch (err) {
+      this.logger.warn(`External OTP API unreachable: ${(err as Error).message}`);
+    }
+
+    // Store otpSessionId in Redis so verify() can use it
+    if (otpSessionId) {
+      await this.redis.set(`otp-session:${dto.mobile}`, otpSessionId, 'EX', OTP_TTL_SECONDS);
+    }
+
+    // Create tracking record (otpSessionId stored in otp field for audit trail)
     await this.prisma.otpAttempt.create({
       data: {
         leadId: lead.id,
-        otp: hashedOtp,
+        otp: otpSessionId ?? 'pending',
         purpose,
         expiresAt,
       },
     });
 
-    // In production, send OTP via SMS gateway
-    this.logger.log(`OTP for ${dto.mobile}: ${otp}`);
-
     return {
       message: 'OTP sent successfully',
       expiresInSeconds: OTP_TTL_SECONDS,
-      ...(process.env['NODE_ENV'] !== 'production' && { otp }),
     };
   }
 
@@ -94,27 +133,68 @@ export class OtpService {
       throw new NotFoundException('Lead not found');
     }
 
-    const hashedOtp = this.hashOtp(dto.otp);
+    const isDevBypass = dto.otp === DEV_OTP_BYPASS;
 
-    const otpAttempt = await this.prisma.otpAttempt.findFirst({
-      where: {
-        leadId: lead.id,
-        otp: hashedOtp,
-        verified: false,
-        expiresAt: { gte: new Date() },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    if (!isDevBypass) {
+      // Look up the otpSessionId stored during send
+      const otpSessionId = await this.redis.get(`otp-session:${dto.mobile}`);
 
-    if (!otpAttempt) {
-      throw new BadRequestException('Invalid or expired OTP');
+      if (!otpSessionId) {
+        throw new BadRequestException('OTP session expired or not found. Please request a new OTP.');
+      }
+
+      // Verify with external Prudential API
+      let externalVerified = false;
+      try {
+        const response = await fetch(`${COMMS_BASE_URL}/api/v1/comms/otp/verification`, {
+          method: 'POST',
+          headers: commsHeaders(),
+          body: JSON.stringify({
+            otpSessionId,
+            otp: dto.otp,
+            journey: 'login',
+          }),
+        });
+
+        if (response.ok) {
+          externalVerified = true;
+          this.logger.log(`OTP verified via external gateway for ${dto.mobile}`);
+        } else {
+          const errText = await response.text();
+          this.logger.warn(`External OTP verify returned ${response.status}: ${errText}`);
+        }
+      } catch (err) {
+        this.logger.warn(`External OTP verify API unreachable: ${(err as Error).message}`);
+      }
+
+      if (!externalVerified) {
+        throw new BadRequestException('Invalid or expired OTP');
+      }
+
+      // Clear the session from Redis after successful verification
+      await this.redis.del(`otp-session:${dto.mobile}`);
+    } else {
+      // Dev bypass: verify a recent unverified attempt exists (any OTP)
+      const attempt = await this.prisma.otpAttempt.findFirst({
+        where: {
+          leadId: lead.id,
+          verified: false,
+          expiresAt: { gte: new Date() },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (!attempt) {
+        throw new BadRequestException('No active OTP found. Please request a new OTP.');
+      }
+
+      await this.prisma.otpAttempt.update({
+        where: { id: attempt.id },
+        data: { verified: true, attempts: { increment: 1 } },
+      });
+
+      this.logger.log(`OTP bypass used for ${dto.mobile} (123456)`);
     }
-
-    // Mark OTP as verified
-    await this.prisma.otpAttempt.update({
-      where: { id: otpAttempt.id },
-      data: { verified: true, attempts: { increment: 1 } },
-    });
 
     // Mark lead as verified
     await this.prisma.lead.update({

@@ -17,6 +17,7 @@ import { UploadModule } from './modules/upload/upload.module.js';
 import { ProposalModule } from './modules/proposal/proposal.module.js';
 import { ResumeModule } from './modules/resume/resume.module.js';
 import { ChatModule } from './modules/chat/chat.module.js';
+import { ConfiguratorModule } from './modules/configurator/configurator.module.js';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware.js';
 
 @Module({
@@ -37,6 +38,7 @@ import { CorrelationIdMiddleware } from './common/middleware/correlation-id.midd
     ProposalModule,
     ResumeModule,
     ChatModule,
+    ConfiguratorModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

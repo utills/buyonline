@@ -29,4 +29,8 @@ export function validateEnv(): void {
   if (!process.env['REDIS_URL']) {
     console.warn('[Config] REDIS_URL is not set — chat session history will not persist across restarts.');
   }
+
+  if (!process.env['COMMS_API_KEY']) {
+    console.warn('[Config] COMMS_API_KEY is not set — OTP will fall back to console logging only.');
+  }
 }

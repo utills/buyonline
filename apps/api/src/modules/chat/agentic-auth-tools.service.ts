@@ -68,7 +68,6 @@ export class AgenticAuthToolsService {
           success: true,
           message: `OTP sent to ${mobile}`,
           expiresInSeconds: result.expiresInSeconds,
-          devOtp: result.otp, // only present in development
         };
       } catch (err: unknown) {
         if (err instanceof NotFoundException) {

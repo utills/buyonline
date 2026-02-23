@@ -68,7 +68,7 @@ export default function PlanCard({
 
       {/* Features */}
       <ul className="space-y-2">
-        {plan.features.slice(0, 4).map((feature) => (
+        {(Array.isArray(plan.features) ? plan.features : Object.values(plan.features)).slice(0, 4).map((feature) => (
           <li key={feature} className="flex items-start gap-2 text-sm text-gray-600">
             <svg
               className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0"
