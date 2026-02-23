@@ -1,3 +1,5 @@
+import JourneyPicker from './JourneyPicker';
+
 export default function HeroSection() {
   return (
     <section
@@ -44,83 +46,10 @@ export default function HeroSection() {
             </ul>
           </div>
 
-          {/* Right: AI chat mockup illustration */}
+          {/* Right: Journey picker — AI or Classic with lead capture */}
           <div className="flex justify-center md:justify-end">
-            <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
-              {/* Chat header */}
-              <div
-                className="flex items-center gap-3 px-4 py-3"
-                style={{ backgroundColor: '#E31837' }}
-              >
-                <div className="w-8 h-8 bg-white/25 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-white text-sm font-semibold">BuyOnline AI</p>
-                  <p className="text-red-200 text-xs">Online now</p>
-                </div>
-                <div className="ml-auto w-2.5 h-2.5 bg-green-400 rounded-full"></div>
-              </div>
-
-              {/* Chat bubbles */}
-              <div className="bg-gray-50 px-4 py-5 space-y-3 min-h-[180px]">
-                <div className="flex gap-2 items-end">
-                  <div className="w-7 h-7 rounded-full bg-red-100 shrink-0 flex items-center justify-center text-xs font-bold text-red-700">
-                    AI
-                  </div>
-                  <div className="bg-white rounded-2xl rounded-bl-sm px-3 py-2 shadow-sm max-w-[75%]">
-                    <p className="text-gray-800 text-sm">Hi! How many people need coverage?</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 items-end justify-end">
-                  <div
-                    className="rounded-2xl rounded-br-sm px-3 py-2 max-w-[75%]"
-                    style={{ backgroundColor: '#E31837' }}
-                  >
-                    <p className="text-white text-sm">My family of 4</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 items-end">
-                  <div className="w-7 h-7 rounded-full bg-red-100 shrink-0 flex items-center justify-center text-xs font-bold text-red-700">
-                    AI
-                  </div>
-                  <div className="bg-white rounded-2xl rounded-bl-sm px-3 py-2 shadow-sm max-w-[75%]">
-                    <p className="text-gray-800 text-sm">Great! I found 3 plans starting at</p>
-                    <p className="font-bold text-sm mt-0.5" style={{ color: '#E31837' }}>
-                      Rs. 8,200/year
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Input bar */}
-              <div className="border-t border-gray-100 px-4 py-3 flex items-center gap-2 bg-white">
-                <div className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-xs text-gray-400">
-                  Type your answer…
-                </div>
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: '#E31837' }}
-                >
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                  </svg>
-                </div>
-              </div>
+            <div className="w-full max-w-sm">
+              <JourneyPicker />
             </div>
           </div>
         </div>
