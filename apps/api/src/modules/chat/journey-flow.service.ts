@@ -415,7 +415,7 @@ export class JourneyFlowService implements OnModuleDestroy {
     plans.forEach((p, i) => {
       planText += `**${i + 1}. ${p.name}**\n`;
       planText += `   • Sum Insured: ${p.siLabel}\n`;
-      planText += `   • Annual Premium: ₹${(p.premium / 100).toLocaleString('en-IN')}\n`;
+      planText += `   • Annual Premium: ₹${p.premium.toLocaleString('en-IN')}\n`;
       planText += `   • ${p.highlight}\n\n`;
     });
     planText += `Which plan would you like? Reply with **1**, **2**, or the plan name.`;
@@ -459,7 +459,7 @@ export class JourneyFlowService implements OnModuleDestroy {
 
     await streamText(res,
       `✅ **${result['planName']}** selected!\n\n` +
-      `Annual premium: **₹${(premium / 100).toLocaleString('en-IN')}**\n\n` +
+      `Annual premium: **₹${(premium as number).toLocaleString('en-IN')}**\n\n` +
       `Would you like to add any optional riders? These enhance your coverage:\n\n` +
       `• **Hospital Cash** — Daily cash allowance during admission\n` +
       `• **Critical Illness** — Lump sum on diagnosis of 40+ critical illnesses\n` +
@@ -530,48 +530,70 @@ export class JourneyFlowService implements OnModuleDestroy {
 
   // ── Plan Recommendation ─────────────────────────────────────────────────────
 
+  /** Pick a recommended sum insured based on age */
+  private recommendedSI(age: number): number {
+    if (age < 30) return 500000;      // ₹5L
+    if (age < 40) return 1000000;     // ₹10L
+    if (age < 50) return 2500000;     // ₹25L
+    return 5000000;                   // ₹50L
+  }
+
   private async getRecommendedPlans(state: FlowState) {
     try {
       const age = state.eldestAge ?? 30;
       const isFamily = (state.members?.spouse || (state.members?.kidsCount ?? 0) > 0);
       const coverageLevel = isFamily ? 'FLOATER' : 'INDIVIDUAL';
+      const targetSI = BigInt(this.recommendedSI(age));
 
+      // Fetch all 3 plans at the recommended SI tier (12-month tenure)
       const pricings = await this.prisma.planPricing.findMany({
         where: {
           coverageLevel: coverageLevel as 'INDIVIDUAL' | 'FLOATER',
           tenureMonths: 12,
+          sumInsured: targetSI,
         },
         include: { plan: true },
         orderBy: { basePremium: 'asc' },
-        take: 15,
       });
 
-      // Deduplicate by plan, keep lowest SI tier
-      const seen = new Set<string>();
-      const unique = pricings.filter((p) => {
-        if (seen.has(p.planId)) return false;
-        seen.add(p.planId);
-        return true;
-      });
+      if (pricings.length === 0) {
+        // Fallback: nearest SI tier
+        const fallback = await this.prisma.planPricing.findMany({
+          where: { coverageLevel: coverageLevel as 'INDIVIDUAL' | 'FLOATER', tenureMonths: 12 },
+          include: { plan: true },
+          orderBy: [{ sumInsured: 'asc' }, { basePremium: 'asc' }],
+          take: 9,
+        });
+        const seen = new Set<string>();
+        const unique = fallback.filter((p) => {
+          if (seen.has(p.planId)) return false;
+          seen.add(p.planId);
+          return true;
+        });
+        return unique.slice(0, 3).map((p) => this.toPlanOption(p));
+      }
 
-      return unique.slice(0, 3).map((p) => ({
-        id: p.planId,
-        name: p.plan.name,
-        sumInsured: Number(p.sumInsured),
-        siLabel: p.sumInsuredLabel,
-        premium: Number(p.basePremium),
-        highlight: p.plan.tier === 'PREMIER' ? 'Great value coverage'
-          : p.plan.tier === 'SIGNATURE' ? 'Comprehensive benefits'
-          : 'Premium all-inclusive plan',
-      }));
+      return pricings.slice(0, 3).map((p) => this.toPlanOption(p));
     } catch (err) {
       this.logger.warn(`Plan fetch failed: ${err instanceof Error ? err.message : err}`);
-      // Fallback static plans
       return [
-        { id: 'basic', name: 'PHI Basic', sumInsured: 300000, siLabel: '₹3 Lakh', premium: 599900, highlight: 'Great value coverage' },
-        { id: 'flagship1', name: 'PHI Flagship 1', sumInsured: 500000, siLabel: '₹5 Lakh', premium: 899900, highlight: 'Comprehensive benefits' },
-        { id: 'flagship2', name: 'PHI Flagship 2', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: 1299900, highlight: 'Premium all-inclusive plan' },
+        { id: 'plan-premier', name: 'PRUHealth Premier', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: 12500, highlight: 'Essential coverage, great value' },
+        { id: 'plan-signature', name: 'PRUHealth Signature', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: 18500, highlight: 'Enhanced benefits, no room limit' },
+        { id: 'plan-global', name: 'PRUHealth Global', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: 28000, highlight: 'Worldwide coverage, no limits' },
       ];
     }
+  }
+
+  private toPlanOption(p: { planId: string; plan: { name: string; tier: string }; sumInsured: bigint; sumInsuredLabel: string; basePremium: bigint }) {
+    return {
+      id: p.planId,
+      name: p.plan.name,
+      sumInsured: Number(p.sumInsured),
+      siLabel: p.sumInsuredLabel,
+      premium: Number(p.basePremium),   // stored in rupees, display as-is
+      highlight: p.plan.tier === 'PREMIER' ? 'Essential coverage, great value'
+        : p.plan.tier === 'SIGNATURE' ? 'Enhanced benefits, no room rent limit'
+        : 'Worldwide coverage, no limits',
+    };
   }
 }
