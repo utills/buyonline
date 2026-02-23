@@ -100,7 +100,22 @@
 .cfg-delay-6 { animation-delay: 360ms; }
 
 /* Scrollbar styling for dark theme */
-.cfg-scroll::-webkit-scrollbar       { width: 6px; }
-.cfg-scroll::-webkit-scrollbar-track { background: var(--cfg-surface); }
-.cfg-scroll::-webkit-scrollbar-thumb { background: var(--cfg-border-bright); border-radius: 3px; }
-.cfg-scroll::-webkit-scrollbar-thumb:hover { background: var(--cfg-text-faint); }
+.cfg-scroll::-webkit-scrollbar              { width: 6px; height: 6px; }
+.cfg-scroll::-webkit-scrollbar-track        { background: var(--cfg-surface); }
+.cfg-scroll::-webkit-scrollbar-thumb        { background: var(--cfg-border-bright); border-radius: 3px; }
+.cfg-scroll::-webkit-scrollbar-thumb:hover  { background: var(--cfg-text-faint); }
+
+/* Card hover highlight */
+.cfg-card-hover {
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cfg-card-hover:hover {
+  border-color: var(--cfg-border-bright) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Monospace code style */
+.cfg-mono {
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+  font-size: 11px;
+}
