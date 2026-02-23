@@ -86,6 +86,8 @@ export interface AgenticStateUpdate {
   kycVerified?: boolean;
   healthSubmitted?: boolean;
   paymentDone?: boolean;
+  applicationId?: string;
+  leadId?: string;
 }
 
 // ─── SSE Event ────────────────────────────────────────────────────────────────

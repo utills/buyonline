@@ -95,7 +95,11 @@
       "Bash(psql:*)",
       "Bash(/opt/homebrew/Cellar/postgresql@17/17.8/bin/psql:*)",
       "Bash(kill 24129:*)",
-      "Bash(/usr/bin/curl:*)"
+      "Bash(/usr/bin/curl:*)",
+      "Bash(jobs:*)",
+      "Bash(git:*)",
+      "Bash(grep location\\\\.:*)",
+      "Bash(echo Session: $SID:*)"
     ]
   }
 }

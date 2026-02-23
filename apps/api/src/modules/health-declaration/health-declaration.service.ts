@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Gender } from '@prisma/client';
+import { Gender, MemberType } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { PersonalDetailsDto } from './dto/personal-details.dto.js';
 import { LifestyleDto } from './dto/lifestyle.dto.js';
@@ -63,24 +63,22 @@ export class HealthDeclarationService {
   async saveLifestyleAnswers(applicationId: string, dto: LifestyleDto) {
     await this.ensureApplicationExists(applicationId);
 
-    const uniqueMemberIds = [...new Set(dto.answers.map((a) => a.memberId))];
-    for (const memberId of uniqueMemberIds) {
-      const member = await this.prisma.applicationMember.findFirst({
-        where: { id: memberId, applicationId },
-      });
-      if (!member) throw new NotFoundException('Member not found in this application');
-    }
+    // Resolve string keys ('self', 'spouse', 'kid-1') to actual member UUIDs
+    const resolved = (
+      await Promise.all(
+        dto.answers.map(async (a) => {
+          const memberId = await this.resolveMemberId(applicationId, a.memberId);
+          return memberId ? { ...a, memberId } : null;
+        }),
+      )
+    ).filter((a): a is NonNullable<typeof a> => a !== null);
 
-    // P5: Batch lifestyle answer upserts in a single transaction
+    if (resolved.length === 0) return [];
+
     const results = await this.prisma.$transaction(
-      dto.answers.map((a) =>
+      resolved.map((a) =>
         this.prisma.memberLifestyleAnswer.upsert({
-          where: {
-            memberId_questionKey: {
-              memberId: a.memberId,
-              questionKey: a.questionKey,
-            },
-          },
+          where: { memberId_questionKey: { memberId: a.memberId, questionKey: a.questionKey } },
           create: {
             memberId: a.memberId,
             questionKey: a.questionKey,
@@ -101,34 +99,24 @@ export class HealthDeclarationService {
   async saveMedicalHistory(applicationId: string, dto: MedicalHistoryDto) {
     await this.ensureApplicationExists(applicationId);
 
-    const uniqueMemberIds = [...new Set(dto.answers.map((a) => a.memberId))];
-    for (const memberId of uniqueMemberIds) {
-      const member = await this.prisma.applicationMember.findFirst({
-        where: { id: memberId, applicationId },
-      });
-      if (!member) throw new NotFoundException('Member not found in this application');
-    }
+    // Resolve string keys ('self', 'spouse', 'kid-1') to actual member UUIDs
+    const resolved = (
+      await Promise.all(
+        dto.answers.map(async (a) => {
+          const memberId = await this.resolveMemberId(applicationId, a.memberId);
+          return memberId ? { ...a, memberId } : null;
+        }),
+      )
+    ).filter((a): a is NonNullable<typeof a> => a !== null);
 
-    // P5: Batch medical history answer upserts in a single transaction
+    if (resolved.length === 0) return [];
+
     const results = await this.prisma.$transaction(
-      dto.answers.map((a) =>
+      resolved.map((a) =>
         this.prisma.memberHealthAnswer.upsert({
-          where: {
-            memberId_questionId: {
-              memberId: a.memberId,
-              questionId: a.questionId,
-            },
-          },
-          create: {
-            memberId: a.memberId,
-            questionId: a.questionId,
-            answer: a.answer,
-            details: a.details,
-          },
-          update: {
-            answer: a.answer,
-            details: a.details,
-          },
+          where: { memberId_questionId: { memberId: a.memberId, questionId: a.questionId } },
+          create: { memberId: a.memberId, questionId: a.questionId, answer: a.answer, details: a.details },
+          update: { answer: a.answer, details: a.details },
         }),
       ),
     );
@@ -170,6 +158,38 @@ export class HealthDeclarationService {
         disabilityDetails: dto.disabilityDetails,
       },
     });
+  }
+
+  /**
+   * Resolves a frontend member key ('self', 'spouse', 'kid-1') or a raw UUID
+   * to the actual ApplicationMember.id (UUID) in the DB.
+   * Returns null if the member doesn't exist yet (graceful skip).
+   */
+  private async resolveMemberId(applicationId: string, memberKey: string): Promise<string | null> {
+    // Already a UUID — try direct lookup first
+    if (/^[0-9a-f-]{36}$/.test(memberKey)) {
+      const m = await this.prisma.applicationMember.findFirst({ where: { id: memberKey, applicationId } });
+      return m?.id ?? null;
+    }
+
+    if (memberKey === 'self') {
+      const m = await this.prisma.applicationMember.findFirst({ where: { applicationId, memberType: MemberType.SELF } });
+      return m?.id ?? null;
+    }
+    if (memberKey === 'spouse') {
+      const m = await this.prisma.applicationMember.findFirst({ where: { applicationId, memberType: MemberType.SPOUSE } });
+      return m?.id ?? null;
+    }
+    if (memberKey.startsWith('kid-')) {
+      const idx = parseInt(memberKey.split('-')[1], 10) - 1;
+      const kids = await this.prisma.applicationMember.findMany({
+        where: { applicationId, memberType: MemberType.KID },
+        orderBy: { id: 'asc' },
+      });
+      return kids[idx]?.id ?? null;
+    }
+
+    return null;
   }
 
   private async ensureApplicationExists(applicationId: string) {
