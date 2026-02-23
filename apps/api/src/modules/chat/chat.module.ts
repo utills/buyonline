@@ -12,9 +12,10 @@ import { AgenticContextService } from './agentic-context.service.js';
 import { AgenticPlanToolsService } from './agentic-plan-tools.service.js';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 import { PlanModule } from '../plan/plan.module.js';
+import { OtpModule } from '../otp/otp.module.js';
 
 @Module({
-  imports: [PrismaModule, PlanModule],
+  imports: [PrismaModule, PlanModule, OtpModule],
   controllers: [ChatController],
   providers: [
     ChatService,

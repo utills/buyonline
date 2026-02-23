@@ -1,14 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { OtpService } from '../otp/otp.service.js';
+import { OtpPurpose } from '../otp/dto/send-otp.dto.js';
 
 @Injectable()
 export class AgenticAuthToolsService {
   private readonly logger = new Logger(AgenticAuthToolsService.name);
 
-  // In-memory OTP store (use Redis in production via an OTP service)
-  private readonly otpStore = new Map<string, string>();
-
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly otpService: OtpService,
+  ) {}
 
   canHandle(name: string): boolean {
     return [
@@ -52,12 +54,45 @@ export class AgenticAuthToolsService {
           error: 'Invalid mobile number. Please enter a 10-digit Indian mobile number.',
         };
       }
-      // Generate 6-digit OTP
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      this.otpStore.set(mobile, otp);
-      this.logger.log(`[DEV] OTP for ${mobile}: ${otp}`);
-      return { success: true, message: `OTP sent to ${mobile}`, devOtp: otp };
-    } catch {
+
+      try {
+        // Use the real OtpService which persists to DB and applies rate limiting
+        const result = await this.otpService.send({ mobile, purpose: OtpPurpose.LOGIN });
+        this.logger.log(`OTP sent via OtpService for ${mobile}`);
+        return {
+          success: true,
+          message: `OTP sent to ${mobile}`,
+          expiresInSeconds: result.expiresInSeconds,
+          devOtp: result.otp, // only present in development
+        };
+      } catch (err: unknown) {
+        if (err instanceof NotFoundException) {
+          // Lead does not exist yet; generate a lightweight OTP via DB directly
+          // so the agentic flow can proceed before lead creation
+          const { randomInt, createHash } = await import('crypto');
+          const otp = randomInt(100000, 999999).toString();
+          const hashedOtp = createHash('sha256').update(otp).digest('hex');
+          const expiresAt = new Date(Date.now() + 180 * 1000);
+
+          // Store in a temporary lead-less record — create a minimal lead first
+          const lead = await this.prisma.lead.upsert({
+            where: { mobile },
+            create: { mobile, countryCode: '+91' },
+            update: {},
+          });
+
+          await this.prisma.otpAttempt.create({
+            data: { leadId: lead.id, otp: hashedOtp, purpose: OtpPurpose.LOGIN, expiresAt },
+          });
+
+          this.logger.log(`[DEV] Pre-lead OTP for ${mobile}: ${otp}`);
+          return { success: true, message: `OTP sent to ${mobile}`, devOtp: otp };
+        }
+        throw err;
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      this.logger.error(`sendOtp failed: ${msg}`);
       return { success: false, error: 'Failed to send OTP. Please try again.' };
     }
   }
@@ -66,12 +101,13 @@ export class AgenticAuthToolsService {
     try {
       const mobile = input['mobile'] as string;
       const otp = input['otp'] as string;
-      const stored = this.otpStore.get(mobile);
-      if (!stored || stored !== otp) {
+
+      try {
+        const result = await this.otpService.verify({ mobile, otp });
+        return { success: true, verified: result.isVerified, mobile, leadId: result.leadId };
+      } catch {
         return { success: false, error: 'Invalid or expired OTP. Please try again.' };
       }
-      this.otpStore.delete(mobile);
-      return { success: true, verified: true, mobile };
     } catch {
       return { success: false, error: 'Verification failed. Please try again.' };
     }
@@ -154,13 +190,68 @@ export class AgenticAuthToolsService {
   private async declarePreExisting(
     input: Record<string, unknown>,
   ): Promise<Record<string, unknown>> {
-    // Conditions stored in-memory for the session; real implementation would persist to DB
-    const applicationId = input['applicationId'] as string;
-    const conditions = (input['conditions'] as string[]) ?? [];
-    this.logger.log(
-      `Pre-existing conditions for application ${applicationId}: ${conditions.join(', ') || 'none'}`,
-    );
-    return { success: true, conditions, applicationId };
+    try {
+      const applicationId = input['applicationId'] as string;
+      const conditions = (input['conditions'] as string[]) ?? [];
+
+      if (conditions.length === 0) {
+        await this.prisma.application.update({
+          where: { id: applicationId },
+          data: { currentStep: 'eligibility' },
+        });
+        return { success: true, conditions: [], applicationId };
+      }
+
+      // Fetch the SELF member for this application to attach diseases to
+      const selfMember = await this.prisma.applicationMember.findFirst({
+        where: { applicationId, memberType: 'SELF' },
+      });
+
+      if (!selfMember) {
+        this.logger.warn(
+          `No SELF member found for application ${applicationId}; skipping disease persistence`,
+        );
+        return { success: true, conditions, applicationId };
+      }
+
+      // Resolve disease records by name (case-insensitive partial match)
+      const persistedCount = await Promise.allSettled(
+        conditions.map(async (conditionName) => {
+          const disease = await this.prisma.disease.findFirst({
+            where: { name: { contains: conditionName, mode: 'insensitive' }, isActive: true },
+          });
+
+          if (!disease) {
+            this.logger.warn(`Disease not found in DB for condition: "${conditionName}"`);
+            return;
+          }
+
+          await this.prisma.memberDisease.upsert({
+            where: {
+              memberId_diseaseId: { memberId: selfMember.id, diseaseId: disease.id },
+            },
+            create: { memberId: selfMember.id, diseaseId: disease.id, declared: true },
+            update: { declared: true },
+          });
+        }),
+      );
+
+      const successCount = persistedCount.filter((r) => r.status === 'fulfilled').length;
+      this.logger.log(
+        `Persisted ${successCount}/${conditions.length} pre-existing conditions for application ${applicationId}`,
+      );
+
+      await this.prisma.application.update({
+        where: { id: applicationId },
+        data: { currentStep: 'eligibility' },
+      });
+
+      return { success: true, conditions, applicationId };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      this.logger.error(`declarePreExisting failed: ${msg}`);
+      return { success: false, error: 'Failed to save pre-existing conditions.' };
+    }
   }
 
   private async checkEligibility(

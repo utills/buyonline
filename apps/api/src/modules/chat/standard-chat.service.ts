@@ -40,7 +40,7 @@ export class StandardChatService {
       ]);
 
       const model = this.config.get<string>('CHAT_MODEL', 'claude-sonnet-4-6');
-      const maxTokens = parseInt(this.config.get<string>('CHAT_MAX_TOKENS', '1024'), 10);
+      const maxTokens = parseInt(this.config.get<string>('CHAT_MAX_TOKENS') ?? '1024', 10);
       const messages: ApiMessage[] = [...history, { role: 'user', content: message }];
       let fullResponse = '';
 

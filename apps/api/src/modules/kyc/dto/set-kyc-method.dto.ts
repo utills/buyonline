@@ -1,12 +1,9 @@
 import { IsEnum } from 'class-validator';
+import { KycMethod } from '@buyonline/shared-types';
 
-export enum KycMethodEnum {
-  CKYC = 'CKYC',
-  EKYC = 'EKYC',
-  MANUAL = 'MANUAL',
-}
+export { KycMethod };
 
 export class SetKycMethodDto {
-  @IsEnum(KycMethodEnum)
-  method!: KycMethodEnum;
+  @IsEnum(KycMethod)
+  method!: KycMethod;
 }

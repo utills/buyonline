@@ -1,9 +1,7 @@
 import { IsString, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
+import { PaymentStatus } from '@buyonline/shared-types';
 
-export enum PaymentCallbackStatus {
-  SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
-}
+export { PaymentStatus };
 
 export class PaymentCallbackDto {
   @IsString()
@@ -18,8 +16,8 @@ export class PaymentCallbackDto {
   @IsOptional()
   gatewaySignature?: string;
 
-  @IsEnum(PaymentCallbackStatus)
-  status!: PaymentCallbackStatus;
+  @IsEnum(PaymentStatus)
+  status!: PaymentStatus;
 
   @IsString()
   @IsOptional()

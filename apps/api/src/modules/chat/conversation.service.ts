@@ -16,6 +16,7 @@ const MAX_HISTORY = 20;   // 10 exchanges
 export class ConversationService implements OnModuleDestroy {
   private readonly redis: Redis;
   private readonly logger = new Logger(ConversationService.name);
+  private redisAvailable = true;
 
   constructor(private readonly config: ConfigService) {
     this.redis = new Redis(
@@ -24,6 +25,11 @@ export class ConversationService implements OnModuleDestroy {
     );
     this.redis.on('error', (err) => {
       this.logger.warn(`Redis connection error (chat history will be in-memory): ${err.message}`);
+      this.redisAvailable = false;
+    });
+    this.redis.on('connect', () => {
+      this.logger.log('Redis reconnected — chat history persistence restored.');
+      this.redisAvailable = true;
     });
   }
 
@@ -32,6 +38,7 @@ export class ConversationService implements OnModuleDestroy {
   }
 
   async getHistory(sessionId: string): Promise<ConversationMessage[]> {
+    if (!this.redisAvailable) return [];
     try {
       const data = await this.redis.get(this.key(sessionId));
       return data ? (JSON.parse(data) as ConversationMessage[]) : [];
@@ -45,6 +52,7 @@ export class ConversationService implements OnModuleDestroy {
     userMsg: string,
     assistantMsg: string,
   ): Promise<void> {
+    if (!this.redisAvailable) return;
     try {
       const history = await this.getHistory(sessionId);
       history.push({ role: 'user', content: userMsg });

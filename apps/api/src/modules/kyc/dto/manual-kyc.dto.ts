@@ -1,18 +1,12 @@
 import { IsString, IsNotEmpty, IsEnum, IsOptional, IsNumber, IsArray, ValidateNested, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+import { DocumentType } from '@buyonline/shared-types';
 
-export enum ManualDocumentType {
-  PAN_CARD = 'PAN_CARD',
-  AADHAR_CARD = 'AADHAR_CARD',
-  PASSPORT = 'PASSPORT',
-  VOTER_ID = 'VOTER_ID',
-  DRIVING_LICENSE = 'DRIVING_LICENSE',
-  ADDRESS_PROOF = 'ADDRESS_PROOF',
-}
+export { DocumentType };
 
 export class ManualKycDocumentDto {
-  @IsEnum(ManualDocumentType)
-  documentType!: ManualDocumentType;
+  @IsEnum(DocumentType)
+  documentType!: DocumentType;
 
   @IsString()
   @IsNotEmpty()

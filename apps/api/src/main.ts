@@ -43,6 +43,14 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
+  // TODO: run `pnpm add @nestjs/swagger` then uncomment below to enable Swagger UI at /api/docs
+  // const { SwaggerModule, DocumentBuilder } = await import('@nestjs/swagger');
+  // const swaggerConfig = new DocumentBuilder()
+  //   .setTitle('BuyOnline API').setDescription('Health insurance purchase platform API')
+  //   .setVersion('1.0').addTag('chat').addTag('lead').addTag('otp').addTag('onboarding')
+  //   .addTag('plan').addTag('payment').addTag('kyc').addTag('health-declaration').build();
+  // SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, swaggerConfig));
+
   const port = Number(process.env['PORT'] ?? 3001);
   await app.listen(port);
   logger.log(`API running at http://localhost:${port}`);

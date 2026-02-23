@@ -70,6 +70,14 @@ export class OnboardingService {
   async declareDiseases(applicationId: string, dto: DiseaseDeclarationDto) {
     await this.getApplication(applicationId);
 
+    const uniqueMemberIds = [...new Set(dto.diseases.map((d) => d.memberId))];
+    for (const memberId of uniqueMemberIds) {
+      const member = await this.prisma.applicationMember.findFirst({
+        where: { id: memberId, applicationId },
+      });
+      if (!member) throw new NotFoundException('Member not found in this application');
+    }
+
     const results = await Promise.all(
       dto.diseases.map((d) =>
         this.prisma.memberDisease.upsert({
@@ -104,6 +112,14 @@ export class OnboardingService {
     dto: CriticalConditionDto,
   ) {
     await this.getApplication(applicationId);
+
+    const uniqueMemberIds = [...new Set(dto.conditions.map((c) => c.memberId))];
+    for (const memberId of uniqueMemberIds) {
+      const member = await this.prisma.applicationMember.findFirst({
+        where: { id: memberId, applicationId },
+      });
+      if (!member) throw new NotFoundException('Member not found in this application');
+    }
 
     const results = await Promise.all(
       dto.conditions.map((c) =>

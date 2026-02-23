@@ -1,9 +1,7 @@
 import { IsString, IsNotEmpty, Matches, IsEnum, IsOptional } from 'class-validator';
+import { OtpPurpose } from '@buyonline/shared-types';
 
-export enum OtpPurpose {
-  LOGIN = 'LOGIN',
-  KYC = 'KYC',
-}
+export { OtpPurpose };
 
 export class SendOtpDto {
   @IsString()

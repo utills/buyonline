@@ -333,7 +333,7 @@ model ProposerDetails {
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   firstName     String
   lastName      String
-  dob           DateTime
+  dob           DateTime?
   email         String
   createdAt     DateTime    @default(now())
 }

@@ -7,6 +7,7 @@ import {
 import { randomUUID } from 'crypto';
 import { ApplicationStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { ProposalStatus, PaymentStatus } from '@buyonline/shared-types';
 
 @Injectable()
 export class ProposalService {
@@ -34,7 +35,7 @@ export class ProposalService {
       throw new BadRequestException('No plan selected');
     }
 
-    if (!app.payment || app.payment.status !== 'SUCCESS') {
+    if (!app.payment || app.payment.status !== PaymentStatus.SUCCESS) {
       throw new BadRequestException('Payment not completed');
     }
 
@@ -46,16 +47,16 @@ export class ProposalService {
       create: {
         applicationId,
         proposalNumber,
-        status: 'UNDER_REVIEW',
+        status: ProposalStatus.UNDER_REVIEW,
       },
       update: {
-        status: 'UNDER_REVIEW',
+        status: ProposalStatus.UNDER_REVIEW,
       },
     });
 
     await this.prisma.application.update({
       where: { id: applicationId },
-      data: { status: 'SUBMITTED', currentStep: 'submitted' },
+      data: { status: ApplicationStatus.SUBMITTED, currentStep: 'submitted' },
     });
 
     this.logger.log(
@@ -144,7 +145,7 @@ export class ProposalService {
 
     // Update application status
     const appStatus =
-      rating.status === 'APPROVED'
+      rating.status === ProposalStatus.APPROVED
         ? ApplicationStatus.APPROVED
         : ApplicationStatus.UNDER_REVIEW;
     await this.prisma.application.update({

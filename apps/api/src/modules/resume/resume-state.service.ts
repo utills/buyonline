@@ -16,6 +16,32 @@ import type {
 } from '@buyonline/shared-types';
 import { ApplicationStatus, JourneyStep, PlanTier, CoverageLevel, PaymentStatus, KycMethod, KycStatus, DocumentType } from '@buyonline/shared-types';
 
+// Safe enum mappers: validate that a Prisma string value belongs to the shared-types
+// enum at runtime, falling back to a sensible default when it does not.
+function asPlanTier(v: string): PlanTier {
+  return Object.values(PlanTier).includes(v as PlanTier) ? (v as PlanTier) : PlanTier.SIGNATURE;
+}
+
+function asCoverageLevel(v: string): CoverageLevel {
+  return Object.values(CoverageLevel).includes(v as CoverageLevel) ? (v as CoverageLevel) : CoverageLevel.FLOATER;
+}
+
+function asPaymentStatus(v: string): PaymentStatus {
+  return Object.values(PaymentStatus).includes(v as PaymentStatus) ? (v as PaymentStatus) : PaymentStatus.INITIATED;
+}
+
+function asKycMethod(v: string): KycMethod {
+  return Object.values(KycMethod).includes(v as KycMethod) ? (v as KycMethod) : KycMethod.MANUAL;
+}
+
+function asKycStatus(v: string): KycStatus {
+  return Object.values(KycStatus).includes(v as KycStatus) ? (v as KycStatus) : KycStatus.PENDING;
+}
+
+function asDocumentType(v: string): DocumentType {
+  return Object.values(DocumentType).includes(v as DocumentType) ? (v as DocumentType) : DocumentType.PAN_CARD;
+}
+
 @Injectable()
 export class ResumeStateService {
   private readonly logger = new Logger(ResumeStateService.name);
@@ -114,12 +140,12 @@ export class ResumeStateService {
     // Build quote state
     const sp = application.selectedPlan;
     const quote: ResumeQuoteState = {
-      plans: sp ? [{ id: sp.plan.id, name: sp.plan.name, tier: sp.plan.tier as unknown as PlanTier, features: sp.plan.features as string[], isActive: true }] : [],
+      plans: sp ? [{ id: sp.plan.id, name: sp.plan.name, tier: asPlanTier(sp.plan.tier), features: sp.plan.features as string[], isActive: true }] : [],
       selectedPlanId: sp?.planId ?? null,
       sumInsured: sp ? Number(sp.sumInsured) : 5000000,
       tenureMonths: sp?.tenureMonths ?? 12,
-      coverageLevel: (sp?.coverageLevel as unknown as CoverageLevel) ?? CoverageLevel.FLOATER,
-      selectedTier: sp ? (sp.plan.tier as unknown as PlanTier) : PlanTier.SIGNATURE,
+      coverageLevel: sp?.coverageLevel ? asCoverageLevel(sp.coverageLevel) : CoverageLevel.FLOATER,
+      selectedTier: sp ? asPlanTier(sp.plan.tier) : PlanTier.SIGNATURE,
       addons: application.selectedAddons.map((sa) => ({
         id: sa.addon.id,
         name: sa.addon.name,
@@ -148,9 +174,9 @@ export class ResumeStateService {
     const pay = application.payment;
     const payment: ResumePaymentState = {
       proposer: pd
-        ? { firstName: pd.firstName, lastName: pd.lastName, dob: pd.dob.toISOString().split('T')[0], email: pd.email }
+        ? { firstName: pd.firstName, lastName: pd.lastName, dob: pd.dob?.toISOString().split('T')[0] ?? '', email: pd.email }
         : null,
-      paymentStatus: pay ? (pay.status as unknown as PaymentStatus) : null,
+      paymentStatus: pay ? asPaymentStatus(pay.status) : null,
       transactionId: pay?.transactionId ?? null,
       paymentMethod: pay?.paymentMethod ?? null,
       gatewayOrderId: pay?.gatewayOrderId ?? null,
@@ -160,8 +186,8 @@ export class ResumeStateService {
     // Build KYC state
     const kycData = application.kyc;
     const kyc: ResumeKycState = {
-      method: kycData ? (kycData.method as unknown as KycMethod) : null,
-      status: kycData ? (kycData.status as unknown as KycStatus) : KycStatus.PENDING,
+      method: kycData ? asKycMethod(kycData.method) : null,
+      status: kycData ? asKycStatus(kycData.status) : KycStatus.PENDING,
       panNumber: kycData?.panNumber ?? '',
       aadharNumber: kycData?.aadharNumber ?? '',
       dob: kycData?.panDob ? kycData.panDob.toISOString().split('T')[0] : '',
@@ -175,11 +201,11 @@ export class ResumeStateService {
     if (kycData?.documents) {
       for (const doc of kycData.documents) {
         if (['PAN_CARD', 'PASSPORT', 'VOTER_ID', 'DRIVING_LICENSE'].includes(doc.documentType)) {
-          kyc.identityProofType = doc.documentType as unknown as DocumentType;
+          kyc.identityProofType = asDocumentType(doc.documentType);
           kyc.identityProofUrl = doc.fileUrl;
         }
         if (['AADHAR_CARD', 'ADDRESS_PROOF'].includes(doc.documentType)) {
-          kyc.addressProofType = doc.documentType as unknown as DocumentType;
+          kyc.addressProofType = asDocumentType(doc.documentType);
           kyc.addressProofUrl = doc.fileUrl;
         }
       }

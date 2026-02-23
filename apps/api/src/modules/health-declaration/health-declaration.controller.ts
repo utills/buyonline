@@ -6,8 +6,10 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { HealthDeclarationService } from './health-declaration.service.js';
+import { SessionGuard } from '../../common/guards/session.guard.js';
 import { PersonalDetailsDto } from './dto/personal-details.dto.js';
 import { LifestyleDto } from './dto/lifestyle.dto.js';
 import { MedicalHistoryDto } from './dto/medical-history.dto.js';
@@ -25,6 +27,7 @@ export class HealthDeclarationController {
   }
 
   @Post('applications/:id/health/personal')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async savePersonalDetails(
     @Param('id') id: string,
@@ -34,6 +37,7 @@ export class HealthDeclarationController {
   }
 
   @Post('applications/:id/health/bank')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async saveBankDetails(
     @Param('id') id: string,
@@ -43,6 +47,7 @@ export class HealthDeclarationController {
   }
 
   @Post('applications/:id/health/lifestyle')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async saveLifestyle(
     @Param('id') id: string,
@@ -52,6 +57,7 @@ export class HealthDeclarationController {
   }
 
   @Post('applications/:id/health/medical')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async saveMedicalHistory(
     @Param('id') id: string,
@@ -61,6 +67,7 @@ export class HealthDeclarationController {
   }
 
   @Post('applications/:id/health/hospitalization')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async saveHospitalization(
     @Param('id') id: string,
@@ -70,6 +77,7 @@ export class HealthDeclarationController {
   }
 
   @Post('applications/:id/health/disability')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async saveDisability(
     @Param('id') id: string,

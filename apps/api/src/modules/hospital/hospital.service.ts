@@ -5,7 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 export class HospitalService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findByPincode(pincode: string) {
+  async findByPincode(pincode: string, take = 10, skip = 0) {
     return this.prisma.hospital.findMany({
       where: {
         pincode,
@@ -13,6 +13,8 @@ export class HospitalService {
         isNetworkHospital: true,
       },
       orderBy: { name: 'asc' },
+      take,
+      skip,
     });
   }
 

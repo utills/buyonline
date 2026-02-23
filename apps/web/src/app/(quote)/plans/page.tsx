@@ -22,6 +22,7 @@ export default function PlansPage() {
   const [showSumInsured, setShowSumInsured] = useState(false);
   const [showTenure, setShowTenure] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -55,7 +56,7 @@ export default function PlansPage() {
         );
         setPlanPricings(allPricings);
       } catch {
-        // Use empty state
+        setFetchError('Unable to load plans. Please refresh the page.');
       }
     };
     fetchPlans();
@@ -128,6 +129,33 @@ export default function PlansPage() {
           </span>
         </button>
       </div>
+
+      {/* Error Banner */}
+      {fetchError && filteredPlans.length === 0 && (
+        <div
+          role="alert"
+          className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-[#E31837]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="flex-shrink-0 mt-0.5"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+          <span>{fetchError}</span>
+        </div>
+      )}
 
       {/* Plan Cards */}
       <PlanCarousel

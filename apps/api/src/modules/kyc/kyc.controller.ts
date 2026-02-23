@@ -6,8 +6,10 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { KycService } from './kyc.service.js';
+import { SessionGuard } from '../../common/guards/session.guard.js';
 import { CkycDto } from './dto/ckyc.dto.js';
 import { EkycDto } from './dto/ekyc.dto.js';
 import { ManualKycDto } from './dto/manual-kyc.dto.js';
@@ -18,6 +20,7 @@ export class KycController {
   constructor(private readonly kycService: KycService) {}
 
   @Post()
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async setKycMethod(
     @Param('id') id: string,
@@ -27,18 +30,21 @@ export class KycController {
   }
 
   @Post('ckyc')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async verifyCkyc(@Param('id') id: string, @Body() dto: CkycDto) {
     return this.kycService.verifyCkyc(id, dto);
   }
 
   @Post('ekyc')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async verifyEkyc(@Param('id') id: string, @Body() dto: EkycDto) {
     return this.kycService.verifyEkyc(id, dto);
   }
 
   @Post('manual')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async verifyManual(@Param('id') id: string, @Body() dto: ManualKycDto) {
     return this.kycService.verifyManual(id, dto);

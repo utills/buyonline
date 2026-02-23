@@ -6,8 +6,14 @@ export class HospitalController {
   constructor(private readonly hospitalService: HospitalService) {}
 
   @Get()
-  async findByPincode(@Query('pincode') pincode: string) {
-    return this.hospitalService.findByPincode(pincode);
+  async findByPincode(
+    @Query('pincode') pincode: string,
+    @Query('limit') limit = '10',
+    @Query('offset') offset = '0',
+  ) {
+    const take = Math.min(parseInt(limit) || 10, 50);
+    const skip = parseInt(offset) || 0;
+    return this.hospitalService.findByPincode(pincode, take, skip);
   }
 
   @Get('count')
@@ -25,14 +31,19 @@ export class HospitalController {
   async locate(
     @Query('lat') lat: string,
     @Query('lng') lng: string,
+    @Query('pincode') pincode?: string,
   ) {
-    // In production, reverse-geocode lat/lng to pincode
-    // For dev, return a default pincode with hospital count
-    const defaultPincode = '400001';
-    const result = await this.hospitalService.countByPincode(defaultPincode);
+    if (pincode) {
+      const result = await this.hospitalService.countByPincode(pincode);
+      return {
+        pincode,
+        hospitalCount: result.count,
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+      };
+    }
     return {
-      pincode: defaultPincode,
-      hospitalCount: result.count,
+      error: 'Please provide a pincode query parameter',
       lat: parseFloat(lat),
       lng: parseFloat(lng),
     };

@@ -20,6 +20,11 @@ export class HealthDeclarationService {
   async savePersonalDetails(applicationId: string, dto: PersonalDetailsDto) {
     await this.ensureApplicationExists(applicationId);
 
+    const member = await this.prisma.applicationMember.findFirst({
+      where: { id: dto.memberId, applicationId },
+    });
+    if (!member) throw new NotFoundException('Member not found in this application');
+
     return this.prisma.applicationMember.update({
       where: { id: dto.memberId },
       data: {
@@ -58,6 +63,14 @@ export class HealthDeclarationService {
   async saveLifestyleAnswers(applicationId: string, dto: LifestyleDto) {
     await this.ensureApplicationExists(applicationId);
 
+    const uniqueMemberIds = [...new Set(dto.answers.map((a) => a.memberId))];
+    for (const memberId of uniqueMemberIds) {
+      const member = await this.prisma.applicationMember.findFirst({
+        where: { id: memberId, applicationId },
+      });
+      if (!member) throw new NotFoundException('Member not found in this application');
+    }
+
     const results = await Promise.all(
       dto.answers.map((a) =>
         this.prisma.memberLifestyleAnswer.upsert({
@@ -86,6 +99,14 @@ export class HealthDeclarationService {
 
   async saveMedicalHistory(applicationId: string, dto: MedicalHistoryDto) {
     await this.ensureApplicationExists(applicationId);
+
+    const uniqueMemberIds = [...new Set(dto.answers.map((a) => a.memberId))];
+    for (const memberId of uniqueMemberIds) {
+      const member = await this.prisma.applicationMember.findFirst({
+        where: { id: memberId, applicationId },
+      });
+      if (!member) throw new NotFoundException('Member not found in this application');
+    }
 
     const results = await Promise.all(
       dto.answers.map((a) =>

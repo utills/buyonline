@@ -4,6 +4,8 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { OtpService } from './otp.service.js';
 import { SendOtpDto } from './dto/send-otp.dto.js';
@@ -14,6 +16,7 @@ export class OtpController {
   constructor(private readonly otpService: OtpService) {}
 
   @Post('send')
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async sendOtp(@Body() dto: SendOtpDto) {
     return this.otpService.send(dto);

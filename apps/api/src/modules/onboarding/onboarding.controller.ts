@@ -7,6 +7,8 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { OnboardingService } from './onboarding.service.js';
 import { EligibilityService } from './eligibility.service.js';
@@ -22,6 +24,7 @@ export class OnboardingController {
   ) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async createApplication(@Body('leadId') leadId: string) {
     return this.onboardingService.createApplication(leadId);

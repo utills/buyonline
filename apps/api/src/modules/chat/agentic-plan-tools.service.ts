@@ -117,11 +117,32 @@ export class AgenticPlanToolsService {
       await this.prisma.selectedAddon.deleteMany({ where: { applicationId } });
 
       if (addonIds.length > 0) {
+        // Resolve the application's selected plan so we can look up PlanAddon prices
+        const selectedPlan = await this.prisma.selectedPlan.findUnique({
+          where: { applicationId },
+          select: { planId: true },
+        });
+
+        if (!selectedPlan) {
+          return { success: false, error: 'No plan selected for this application. Please select a plan first.' };
+        }
+
+        // Fetch PlanAddon records to get actual prices for the chosen addons
+        const planAddons = await this.prisma.planAddon.findMany({
+          where: { planId: selectedPlan.planId, addonId: { in: addonIds } },
+          select: { addonId: true, price: true },
+        });
+
+        const priceMap = new Map<string, bigint>(
+          planAddons.map((pa) => [pa.addonId, pa.price]),
+        );
+
         await this.prisma.selectedAddon.createMany({
           data: addonIds.map((addonId) => ({
             applicationId,
             addonId,
-            price: BigInt(0), // price resolved from plan addons; BigInt(0) is a safe default
+            // Use the real price from PlanAddon; fall back to 0 if not found in this plan
+            price: priceMap.get(addonId) ?? BigInt(0),
           })),
           skipDuplicates: true,
         });
@@ -159,7 +180,8 @@ export class AgenticPlanToolsService {
           firstName,
           lastName,
           email,
-          dob: new Date('1990-01-01'), // placeholder; updated during KYC step
+          // dob is intentionally omitted here (nullable after schema update);
+          // it will be populated with the verified value during the KYC step
         },
         update: { firstName, lastName, email },
       });

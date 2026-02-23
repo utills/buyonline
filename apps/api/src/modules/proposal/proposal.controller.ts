@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Param, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, UsePipes, ValidationPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { ProposalService } from './proposal.service.js';
 import { RateProposalDto } from './dto/rate-proposal.dto.js';
 
@@ -17,6 +17,7 @@ export class ProposalController {
   }
 
   @Post('proposals/:id/rating')
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async rateProposal(
     @Param('id') id: string,

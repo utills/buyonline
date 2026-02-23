@@ -11,9 +11,12 @@ export class PrismaService
 
   constructor() {
     const adapter = new PrismaPg({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: process.env['DATABASE_URL'],
     });
-    super({ adapter });
+    super({
+      adapter,
+      log: process.env['NODE_ENV'] === 'development' ? ['warn', 'error'] : ['error'],
+    });
   }
 
   async onModuleInit() {

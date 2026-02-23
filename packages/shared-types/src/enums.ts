@@ -77,6 +77,13 @@ export enum OtpPurpose {
   KYC = 'KYC',
 }
 
+export enum ProposalStatus {
+  PENDING = 'PENDING',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
 export enum TobaccoType {
   SMOKE = 'SMOKE',
   CHEW = 'CHEW',
