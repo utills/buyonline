@@ -1,4 +1,17 @@
+# ============================================================
+# BuyOnline — Full Stack Docker Compose
+# Services: postgres · redis · migrator (init) · api · web
+#
+# Quick start (internal testing):
+#   1. cp apps/api/.env.example apps/api/.env   # fill in ANTHROPIC_API_KEY + JWT_SECRET
+#   2. docker compose up --build
+#   3. Open http://localhost:3000
+# ============================================================
+
 services:
+
+  # ── Infrastructure ────────────────────────────────────────
+
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -27,6 +40,84 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # ── Migrator (runs once, then exits) ─────────────────────
+  # Uses the builder stage (has ts-node + full source) to run
+  # prisma migrate deploy and seed the reference data.
+  # The api service will not start until this completes.
+
+  migrator:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: builder
+    working_dir: /app
+    command: >
+      sh -c "
+        cd apps/api &&
+        echo '--- Running migrations ---' &&
+        pnpm exec prisma migrate deploy &&
+        echo '--- Seeding reference data ---' &&
+        pnpm exec ts-node prisma/seed.ts &&
+        echo '--- DB ready ---'
+      "
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/buyonline
+      NODE_ENV: production
+    restart: "no"
+
+  # ── Application services ──────────────────────────────────
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/buyonline
+      REDIS_URL: redis://redis:6379
+      PORT: 3001
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-change-me-before-going-live}
+      OTP_EXPIRY_SECONDS: ${OTP_EXPIRY_SECONDS:-180}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      CHAT_MODEL: ${CHAT_MODEL:-claude-sonnet-4-6}
+      CHAT_MAX_TOKENS: ${CHAT_MAX_TOKENS:-2048}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # Baked into the JS bundle at build time — must be reachable from the browser
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
 
 volumes:
   postgres_data:

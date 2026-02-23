@@ -349,11 +349,13 @@ async function main() {
     { name: 'Breach Candy Hospital', address: '60-A Bhulabhai Desai Road', city: 'Mumbai', state: 'Maharashtra', pincode: '400026', latitude: 18.9707, longitude: 72.8058 },
   ];
 
-  for (const h of hospitals) {
-    await prisma.hospital.create({ data: h });
+  const existingHospitalCount = await prisma.hospital.count();
+  if (existingHospitalCount === 0) {
+    await prisma.hospital.createMany({ data: hospitals });
+    console.log('Created 25 hospitals');
+  } else {
+    console.log(`Skipped hospitals — ${existingHospitalCount} already exist`);
   }
-
-  console.log('Created 25 hospitals');
   console.log('Seeding completed successfully!');
 }
 
