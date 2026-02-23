@@ -534,8 +534,22 @@ export class JourneyFlowService implements OnModuleDestroy {
   private recommendedSI(age: number): number {
     if (age < 30) return 500000;      // ₹5L
     if (age < 40) return 1000000;     // ₹10L
-    if (age < 50) return 2500000;     // ₹25L
+    if (age < 50) return 2000000;     // ₹20L
+    if (age < 60) return 3000000;     // ₹30L
     return 5000000;                   // ₹50L
+  }
+
+  /** Age-band premium multiplier (Zone 4 baseline from XL) */
+  private ageBandMultiplier(age: number): number {
+    if (age <= 35) return 1.00;
+    if (age <= 40) return 1.19;
+    if (age <= 45) return 1.42;
+    if (age <= 50) return 1.79;
+    if (age <= 55) return 2.22;
+    if (age <= 60) return 2.94;
+    if (age <= 65) return 3.96;
+    if (age <= 70) return 5.15;
+    return 7.04;
   }
 
   private async getRecommendedPlans(state: FlowState) {
@@ -556,6 +570,8 @@ export class JourneyFlowService implements OnModuleDestroy {
         orderBy: { basePremium: 'asc' },
       });
 
+      const multiplier = this.ageBandMultiplier(age);
+
       if (pricings.length === 0) {
         // Fallback: nearest SI tier
         const fallback = await this.prisma.planPricing.findMany({
@@ -570,30 +586,37 @@ export class JourneyFlowService implements OnModuleDestroy {
           seen.add(p.planId);
           return true;
         });
-        return unique.slice(0, 3).map((p) => this.toPlanOption(p));
+        return unique.slice(0, 3).map((p) => this.toPlanOption(p, multiplier));
       }
 
-      return pricings.slice(0, 3).map((p) => this.toPlanOption(p));
+      return pricings.slice(0, 3).map((p) => this.toPlanOption(p, multiplier));
     } catch (err) {
       this.logger.warn(`Plan fetch failed: ${err instanceof Error ? err.message : err}`);
+      const mult = this.ageBandMultiplier(state.eldestAge ?? 35);
       return [
-        { id: 'plan-premier', name: 'PRUHealth Premier', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: 12500, highlight: 'Essential coverage, great value' },
-        { id: 'plan-signature', name: 'PRUHealth Signature', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: 18500, highlight: 'Enhanced benefits, no room limit' },
-        { id: 'plan-global', name: 'PRUHealth Global', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: 28000, highlight: 'Worldwide coverage, no limits' },
+        { id: 'plan-premier',   name: 'PHI Basic',        sumInsured: 1000000, siLabel: '₹10 Lakh', premium: Math.round(4417  * mult), highlight: 'Essential coverage, great value' },
+        { id: 'plan-signature', name: 'PHI Flagship 1',   sumInsured: 1000000, siLabel: '₹10 Lakh', premium: Math.round(6282  * mult), highlight: 'Enhanced benefits, wider sum insured' },
+        { id: 'plan-global',    name: 'PHI Flagship 2/3', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: Math.round(7710  * mult), highlight: 'Premium plan, up to ₹1 Crore cover' },
       ];
     }
   }
 
-  private toPlanOption(p: { planId: string; plan: { name: string; tier: string }; sumInsured: bigint; sumInsuredLabel: string; basePremium: bigint }) {
+  private toPlanOption(
+    p: { planId: string; plan: { name: string; tier: string }; sumInsured: bigint; sumInsuredLabel: string; basePremium: bigint },
+    ageMult = 1.0,
+  ) {
     return {
       id: p.planId,
       name: p.plan.name,
       sumInsured: Number(p.sumInsured),
       siLabel: p.sumInsuredLabel,
-      premium: Number(p.basePremium),   // stored in rupees, display as-is
-      highlight: p.plan.tier === 'PREMIER' ? 'Essential coverage, great value'
-        : p.plan.tier === 'SIGNATURE' ? 'Enhanced benefits, no room rent limit'
-        : 'Worldwide coverage, no limits',
+      // basePremium is Zone 4 age 31-35 baseline; scale by age-band multiplier
+      premium: Math.round(Number(p.basePremium) * ageMult),
+      highlight: p.plan.tier === 'PREMIER'
+        ? 'Essential coverage, great value'
+        : p.plan.tier === 'SIGNATURE'
+        ? 'Enhanced benefits, wider sum insured'
+        : 'Premium plan, up to ₹1 Crore cover',
     };
   }
 }
