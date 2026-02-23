@@ -74,7 +74,7 @@ export default function PincodeInput() {
             inputMode="numeric"
             maxLength={6}
             placeholder="e.g. 400001"
-            value={pincode}
+            value={pincode ?? ''}
             onChange={(e) => handlePincodeChange(e.target.value)}
             className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
           />
