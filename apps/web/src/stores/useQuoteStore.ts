@@ -90,7 +90,11 @@ export const useQuoteStore = create<QuoteState>()(
     }),
     {
       name: 'buyonline-quote',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

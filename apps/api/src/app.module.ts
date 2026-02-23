@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AppConfigModule } from './config/config.module.js';
 import { LeadModule } from './modules/lead/lead.module.js';
@@ -34,6 +33,5 @@ import { ChatModule } from './modules/chat/chat.module.js';
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

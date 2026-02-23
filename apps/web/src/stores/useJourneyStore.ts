@@ -66,7 +66,11 @@ export const useJourneyStore = create<JourneyState>()(
     }),
     {
       name: 'buyonline-journey',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

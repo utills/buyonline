@@ -62,7 +62,11 @@ export const useOnboardingStore = create<OnboardingState>()(
     }),
     {
       name: 'buyonline-onboarding',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

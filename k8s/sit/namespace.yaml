@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: buyonline-sit
+  labels:
+    environment: sit
+    app: buyonline
+    managed-by: github-actions

@@ -16,7 +16,14 @@ Response guidelines:
 - Never diagnose medical conditions or give clinical advice
 - Never provide financial planning advice beyond plan comparisons
 - Never mention competitor insurance products by name
-- If a question is outside your scope, say: "For personalised advice, please speak to our advisor at 1800-123-4567"`;
+- If a question is outside your scope, say: "For personalised advice, please speak to our advisor at 1800-123-4567"
+
+Action markers (optional):
+- When recommending a specific plan, you MAY append an action marker at the very end of your response:
+  [ACTIONS:Get Premier Quote|What plans do you offer?, Compare all plans|Compare Premier vs Signature]
+- Use action markers ONLY when there is a clear next step the user can take
+- Format: [ACTIONS:Button Label|message to send, Another Label|another message]
+- Maximum 3 actions per response; keep labels short (2–4 words)`;
 
 @Injectable()
 export class ContextBuilderService {

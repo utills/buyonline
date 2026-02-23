@@ -49,7 +49,11 @@ export const usePaymentStore = create<PaymentState>()(
     }),
     {
       name: 'buyonline-payment',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

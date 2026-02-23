@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import AppProviders from '@/providers/AppProviders';
@@ -10,22 +10,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'BuyOnline - Health Insurance',
-  description:
-    "India's health insurance that puts your family first. Get comprehensive health coverage with Prudential Health Insurance.",
-  keywords: [
-    'health insurance',
-    'family insurance',
-    'medical coverage',
-    'Prudential',
-    'BuyOnline',
-  ],
+  title: { default: 'BuyOnline', template: '%s | BuyOnline' },
+  description: "India's most trusted health insurance platform. IRDAI Approved.",
+  keywords: ['health insurance', 'India', 'IRDAI', 'family health plan'],
   openGraph: {
     title: 'BuyOnline - Health Insurance',
-    description:
-      "India's health insurance that puts your family first.",
+    description: "India's most trusted health insurance platform. IRDAI Approved.",
     type: 'website',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#E31837',
 };
 
 export default function RootLayout({

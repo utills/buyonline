@@ -65,7 +65,11 @@ export const useKycStore = create<KycState>()(
     }),
     {
       name: 'buyonline-kyc',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

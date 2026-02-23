@@ -64,7 +64,11 @@ export const useLeadStore = create<LeadState>()(
     }),
     {
       name: 'buyonline-lead',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

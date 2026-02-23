@@ -68,7 +68,11 @@ export const useHealthStore = create<HealthState>()(
     }),
     {
       name: 'buyonline-health',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined' ? sessionStorage : {
+          getItem: () => null, setItem: () => {}, removeItem: () => {},
+        }
+      ),
     }
   )
 );

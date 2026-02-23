@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOtp } from '@/hooks/useOtp';
 import { useKycStore } from '@/stores/useKycStore';
@@ -18,10 +18,19 @@ export default function KycOtpPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  const sendOtp = useCallback(async () => {
+    try {
+      await apiClient.post('/api/v1/otp/send', { mobile, purpose: 'KYC' });
+      startTimer();
+    } catch {
+      setError('Failed to send OTP. Please try again.');
+    }
+  }, [mobile, startTimer]);
+
   useEffect(() => {
-    startTimer();
+    sendOtp();
     inputRefs.current[0]?.focus();
-  }, [startTimer]);
+  }, [sendOtp]);
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -101,9 +110,10 @@ export default function KycOtpPage() {
         {canResend ? (
           <button
             onClick={() => {
-              startTimer();
               setOtp(['', '', '', '', '', '']);
+              setError('');
               inputRefs.current[0]?.focus();
+              sendOtp();
             }}
             className="text-[#E31837] font-medium text-sm hover:underline"
           >

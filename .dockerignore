@@ -1,0 +1,66 @@
+# ─────────────────────────────────────────────────────────────
+# Root .dockerignore — applies when build context = monorepo root
+# ─────────────────────────────────────────────────────────────
+
+# Version control
+.git
+.gitignore
+
+# Node modules — reinstalled inside Docker
+node_modules
+**/node_modules
+
+# Next.js build artifacts
+apps/web/.next
+apps/web/out
+
+# NestJS build artifacts
+apps/api/dist
+apps/api/generated
+
+# Prisma generated (regenerated in Docker)
+apps/api/src/generated
+
+# Test & coverage
+**/coverage
+**/__tests__
+**/*.test.ts
+**/*.spec.ts
+**/test
+
+# Development config
+**/.env
+**/.env.*
+!**/.env.example
+
+# Editor & OS
+.DS_Store
+**/.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Docker files (don't need to copy themselves)
+**/Dockerfile*
+**/.dockerignore
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Documentation
+*.md
+!DEPLOYMENT.md
+
+# Turbo cache
+.turbo
+**/.turbo
+
+# pnpm store
+.pnpm-store

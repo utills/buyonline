@@ -25,6 +25,8 @@ export class ChatController {
       dto.message,
       dto.applicationId,
       res,
+      dto.useAI ?? true,
+      dto.journeyMode ?? 'standard',
     );
   }
 }

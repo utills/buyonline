@@ -1,0 +1,36 @@
+# ─────────────────────────────────────────────────────────────
+# Non-sensitive application configuration
+# Sensitive values live in Kubernetes Secrets (created by CI)
+# ─────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: buyonline-config
+  namespace: buyonline-sit
+  labels:
+    app: buyonline
+    environment: sit
+data:
+  # ── API ───────────────────────────────────────────────────────
+  NODE_ENV: "production"
+  PORT: "3001"
+
+  # CORS: comma-separated allowed origins
+  # Replace with your actual SIT frontend URL
+  CORS_ORIGIN: "https://sit.REPLACE_YOUR_DOMAIN.com"
+
+  # Chat configuration
+  CHAT_MODEL: "claude-haiku-4-5-20251001"
+  CHAT_MAX_TOKENS: "1024"
+
+  # OTP expiry in seconds
+  OTP_EXPIRY_SECONDS: "180"
+
+  # Cloud SQL instance connection name (used by Cloud SQL Auth Proxy)
+  # Format: PROJECT_ID:REGION:INSTANCE_NAME
+  CLOUD_SQL_INSTANCE: "REPLACE_GCP_PROJECT_ID:REPLACE_GCP_REGION:REPLACE_CLOUD_SQL_INSTANCE_NAME"
+
+  # ── Web ───────────────────────────────────────────────────────
+  # Baked into Docker image at build time via --build-arg.
+  # Listed here for documentation purposes only.
+  # NEXT_PUBLIC_API_URL: "https://api-sit.REPLACE_YOUR_DOMAIN.com"

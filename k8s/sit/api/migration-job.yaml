@@ -1,0 +1,93 @@
+# ─────────────────────────────────────────────────────────────
+# Database Migration Job
+#
+# Runs `prisma migrate deploy` against Cloud SQL before the
+# API deployment is applied.
+#
+# The CI pipeline substitutes __API_IMAGE__ then:
+#   kubectl apply -f migration-job.yaml
+#   kubectl wait --for=condition=complete job/buyonline-db-migrate \
+#     -n buyonline-sit --timeout=120s
+#   kubectl delete job buyonline-db-migrate -n buyonline-sit
+#
+# Connection: Cloud SQL Auth Proxy sidecar (same pattern as API).
+# shareProcessNamespace: true allows the migration container to
+# send SIGTERM to the proxy container after migration completes.
+# ─────────────────────────────────────────────────────────────
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: buyonline-db-migrate
+  namespace: buyonline-sit
+  labels:
+    app: buyonline-migration
+    environment: sit
+spec:
+  # Only 1 completion needed; do not retry more than once
+  completions: 1
+  parallelism: 1
+  backoffLimit: 1
+  # Clean up completed/failed jobs after 1 hour
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: buyonline-migration
+        environment: sit
+    spec:
+      serviceAccountName: buyonline-ksa
+      restartPolicy: Never
+      shareProcessNamespace: true   # Lets migration script kill proxy sidecar
+
+      containers:
+        # ── Migration runner ──────────────────────────────────
+        - name: migrate
+          image: __API_IMAGE__
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for Cloud SQL Proxy..."
+              until nc -z 127.0.0.1 5432; do sleep 2; done
+              echo "Running Prisma migrate deploy..."
+              node node_modules/.bin/prisma migrate deploy --schema=prisma/schema.prisma
+              EXIT_CODE=$?
+              echo "Migration exited with code ${EXIT_CODE}"
+              # Signal the Cloud SQL proxy to shut down
+              kill -SIGTERM $(cat /proc/*/status 2>/dev/null \
+                | grep -E "^Name:\s+cloud_sql_proxy|^PPid:" \
+                | awk '/cloud_sql_proxy/{found=1} found{print $2; exit}') 2>/dev/null || true
+              exit $EXIT_CODE
+
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: buyonline-secrets
+                  key: DATABASE_URL
+
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+
+        # ── Cloud SQL Auth Proxy sidecar ──────────────────────
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.15.2
+          args:
+            - "--structured-logs"
+            - "--port=5432"
+            - "REPLACE_GCP_PROJECT_ID:REPLACE_GCP_REGION:REPLACE_CLOUD_SQL_INSTANCE_NAME"
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"

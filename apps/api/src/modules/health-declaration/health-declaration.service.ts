@@ -71,11 +71,11 @@ export class HealthDeclarationService {
             memberId: a.memberId,
             questionKey: a.questionKey,
             answer: a.answer,
-            subAnswer: a.subAnswer,
+            subAnswer: a.subAnswer as any,
           },
           update: {
             answer: a.answer,
-            subAnswer: a.subAnswer,
+            subAnswer: a.subAnswer as any,
           },
         }),
       ),

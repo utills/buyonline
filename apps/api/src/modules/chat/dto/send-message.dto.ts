@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsBoolean, IsIn, MaxLength } from 'class-validator';
 
 export class SendMessageDto {
   @IsString()
@@ -13,4 +13,17 @@ export class SendMessageDto {
   @IsString()
   @IsOptional()
   applicationId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  useAI?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['standard', 'agentic'])
+  journeyMode?: 'standard' | 'agentic';
+
+  @IsString()
+  @IsOptional()
+  leadId?: string;
 }

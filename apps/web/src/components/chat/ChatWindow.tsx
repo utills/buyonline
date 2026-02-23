@@ -91,6 +91,8 @@ interface ChatWindowProps {
   onClose: () => void;
   onClear: () => void;
   currentStep?: JourneyStep;
+  useAI: boolean;
+  onToggleAI: () => void;
 }
 
 export default function ChatWindow({
@@ -100,6 +102,8 @@ export default function ChatWindow({
   onClose,
   onClear,
   currentStep,
+  useAI,
+  onToggleAI,
 }: ChatWindowProps) {
   const ctx = STEP_CONTEXT[currentStep ?? JourneyStep.LANDING];
   const [input, setInput] = useState('');
@@ -141,7 +145,27 @@ export default function ChatWindow({
             <p className="text-red-200 text-xs">Ask me anything about your plan</p>
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
+          {/* AI / Basic toggle */}
+          <button
+            type="button"
+            onClick={onToggleAI}
+            title={useAI ? 'Switch to Basic mode' : 'Switch to AI mode'}
+            className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors border border-white/30 hover:border-white/60 bg-white/10 hover:bg-white/20"
+          >
+            {useAI ? (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
+                <span className="text-white leading-none">AI</span>
+              </>
+            ) : (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-white/50 flex-shrink-0" />
+                <span className="text-red-200 leading-none">Basic</span>
+              </>
+            )}
+          </button>
+
           {messages.length > 0 && (
             <button
               type="button"
