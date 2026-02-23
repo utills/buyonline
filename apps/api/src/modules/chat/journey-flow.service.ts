@@ -191,6 +191,8 @@ export class JourneyFlowService implements OnModuleDestroy {
   private async handlePhase(state: FlowState, message: string, res: Response): Promise<FlowState> {
     switch (state.phase) {
       case 'greeting':
+        return this.handleGreeting(state, message, res);
+
       case 'members':
         return this.handleMembers(state, message, res);
 
@@ -220,6 +222,19 @@ export class JourneyFlowService implements OnModuleDestroy {
         await streamText(res, "Your application is complete. Redirecting...");
         return state;
     }
+  }
+
+  // ── Phase: Greeting ─────────────────────────────────────────────────────────
+
+  private async handleGreeting(state: FlowState, message: string, res: Response): Promise<FlowState> {
+    await streamText(res,
+      `Hi there! 👋 Welcome to BuyOnline Health Insurance.\n\n` +
+      `I'm your AI guide and I'll help you find the perfect health plan in just a few steps.\n\n` +
+      `**Who would you like to cover?**\n` +
+      `Choose one of the options below or type your answer:`
+    );
+    sse(res, { quickReplies: ['Self only', 'Self + Spouse', 'Self + 2 Kids', 'Self + Spouse + 2 Kids'] });
+    return { ...state, phase: 'members' };
   }
 
   // ── Phase: Members ──────────────────────────────────────────────────────────
@@ -415,7 +430,7 @@ export class JourneyFlowService implements OnModuleDestroy {
     plans.forEach((p, i) => {
       planText += `**${i + 1}. ${p.name}**\n`;
       planText += `   • Sum Insured: ${p.siLabel}\n`;
-      planText += `   • Annual Premium: ₹${p.premium.toLocaleString('en-IN')}\n`;
+      planText += `   • Annual Premium: ₹${Math.round(p.premium * 1.18).toLocaleString('en-IN')} (incl. 18% GST)\n`;
       planText += `   • ${p.highlight}\n\n`;
     });
     planText += `Which plan would you like? Reply with **1**, **2**, or the plan name.`;
