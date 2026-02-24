@@ -10,6 +10,32 @@ import { JourneyStep } from '@buyonline/shared-types';
 import { useAgenticStore } from '../stores/useAgenticStore';
 import type { AgenticMessage, AgenticSSEEvent, AgenticStateUpdate, PlanCardData } from '../types';
 
+// ─── Strip [STATE:{...}] markers from display text ────────────────────────────
+function stripStateMarkers(text: string): string {
+  const prefix = '[STATE:';
+  let result = text;
+  while (result.includes(prefix)) {
+    const start = result.indexOf(prefix);
+    const jsonStart = start + prefix.length;
+    let depth = 0;
+    let end = -1;
+    for (let i = jsonStart; i < result.length; i++) {
+      if (result[i] === '{') depth++;
+      else if (result[i] === '}') {
+        depth--;
+        if (depth === 0) {
+          // Include trailing ']' if present
+          end = result[i + 1] === ']' ? i + 2 : i + 1;
+          break;
+        }
+      }
+    }
+    if (end === -1) break;
+    result = result.slice(0, start) + result.slice(end);
+  }
+  return result.trim();
+}
+
 // ─── Plan Card Parser ─────────────────────────────────────────────────────────
 function parsePlanCard(content: string): { text: string; card?: PlanCardData } {
   const match = content.match(/:::plan-card\s*([\s\S]*?):::/);
@@ -81,6 +107,11 @@ export function useAgenticStream() {
       if (isStreaming || !content.trim()) return;
 
       const trimmed = content.trim();
+
+      // Clear any lingering OTP widget from the previous assistant message
+      agenticStore.updateLastMessage((msg) =>
+        msg.role === 'assistant' && msg.widget === 'otp' ? { ...msg, widget: undefined } : msg
+      );
 
       // Add user message
       const userMsg: AgenticMessage = {
@@ -158,7 +189,7 @@ export function useAgenticStream() {
               accumulatedContent += data.token;
               agenticStore.updateLastMessage((msg) => ({
                 ...msg,
-                content: accumulatedContent,
+                content: stripStateMarkers(accumulatedContent),
               }));
             }
 
@@ -202,13 +233,15 @@ export function useAgenticStream() {
 
             // ── Done ───────────────────────────────────────────────────────────
             if (data.done) {
-              const currentPhase = agenticStore.phase;
-              const { text, card } = parsePlanCard(accumulatedContent);
+              // Read phase from the store singleton (not stale closure value)
+              const currentPhase = useAgenticStore.getState().phase;
+              const cleaned = stripStateMarkers(accumulatedContent);
+              const { text, card } = parsePlanCard(cleaned);
 
               agenticStore.updateLastMessage((msg) => {
                 const updated: AgenticMessage = {
                   ...msg,
-                  content: card ? text : accumulatedContent,
+                  content: card ? text : cleaned,
                   isStreaming: false,
                 };
 
