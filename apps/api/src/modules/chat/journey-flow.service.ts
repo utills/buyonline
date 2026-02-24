@@ -125,12 +125,20 @@ async function streamText(res: Response, text: string, delay = 18) {
 
 // ─── Service ──────────────────────────────────────────────────────────────────
 
+interface JourneyStepConfig { id: string; route: string; enabled: boolean; sortOrder: number; }
+interface JourneyPhaseConfig { id: string; enabled: boolean; steps: JourneyStepConfig[]; }
+
 @Injectable()
 export class JourneyFlowService implements OnModuleDestroy {
   private readonly logger = new Logger(JourneyFlowService.name);
   private readonly REDIS_TTL = 3600; // 1 hour
   private readonly redis: Redis;
   private redisAvailable = true;
+
+  // Cached journey config (refreshed every 5 minutes)
+  private cachedEnabledRoutes: Set<string> | null = null;
+  private cacheExpiresAt = 0;
+  private readonly CONFIG_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
   constructor(
     private readonly config: ConfigService,
@@ -161,6 +169,41 @@ export class JourneyFlowService implements OnModuleDestroy {
       if (raw) return JSON.parse(raw) as FlowState;
     } catch { /* fall through */ }
     return { phase: 'greeting' };
+  }
+
+  /** Returns the set of enabled step routes from the active configurator config. */
+  private async getEnabledRoutes(): Promise<Set<string>> {
+    const now = Date.now();
+    if (this.cachedEnabledRoutes && now < this.cacheExpiresAt) {
+      return this.cachedEnabledRoutes;
+    }
+    try {
+      const record = await this.prisma.journeyConfiguration.findFirst({
+        where: { isActive: true },
+        orderBy: { updatedAt: 'desc' },
+      });
+      if (record?.config) {
+        const cfg = record.config as { phases?: JourneyPhaseConfig[] };
+        const routes = new Set<string>();
+        (cfg.phases ?? [])
+          .filter((p) => p.enabled)
+          .flatMap((p) => p.steps.filter((s) => s.enabled).map((s) => s.route))
+          .forEach((r) => routes.add(r));
+        this.cachedEnabledRoutes = routes;
+        this.cacheExpiresAt = now + this.CONFIG_CACHE_TTL_MS;
+        return routes;
+      }
+    } catch { /* ignore — use empty set = all enabled */ }
+    this.cachedEnabledRoutes = new Set();
+    this.cacheExpiresAt = now + this.CONFIG_CACHE_TTL_MS;
+    return this.cachedEnabledRoutes;
+  }
+
+  /** Check if a route-based step is enabled in the configurator config. */
+  private async isRouteEnabled(route: string): Promise<boolean> {
+    const enabled = await this.getEnabledRoutes();
+    if (enabled.size === 0) return true; // no config → everything enabled
+    return enabled.has(route);
   }
 
   private async saveState(sessionId: string, state: FlowState): Promise<void> {
@@ -383,6 +426,19 @@ export class JourneyFlowService implements OnModuleDestroy {
     // Simulate hospital count lookup
     const hospitalCount = 40 + Math.floor(Math.random() * 200);
 
+    // Check if pre-existing step is enabled in configurator
+    const preExistingEnabled = await this.isRouteEnabled('/pre-existing');
+
+    if (!preExistingEnabled) {
+      // Skip directly to plan selection
+      await streamText(res,
+        `Great! We found **${hospitalCount}+ network hospitals** near pincode ${pincode}. 🏥\n\n` +
+        `Now let me show you the best plans for your profile.`
+      );
+      sse(res, { stateUpdate: { pincode, hospitalCount } });
+      return { ...state, phase: 'plan_selection', pincode };
+    }
+
     await streamText(res,
       `Great! We found **${hospitalCount}+ network hospitals** near pincode ${pincode}. 🏥\n\n` +
       `Do you or any family member have any **pre-existing medical conditions**?\n\n` +
@@ -471,6 +527,34 @@ export class JourneyFlowService implements OnModuleDestroy {
     }
 
     const premium = result['totalPremium'] as number;
+
+    // Check if addons step is enabled in configurator
+    const addonsEnabled = await this.isRouteEnabled('/addons');
+
+    if (!addonsEnabled) {
+      // Skip add-ons, go straight to payment
+      await streamText(res,
+        `✅ **${result['planName']}** selected!\n\n` +
+        `Annual premium: **₹${(premium as number).toLocaleString('en-IN')}**\n\n` +
+        `Your application is ready — proceeding to payment.`
+      );
+      // Trigger payment directly
+      const payResult = await this.planTools.execute('initiate_payment', {
+        applicationId: state.applicationId,
+      }) as Record<string, unknown>;
+
+      if (payResult['success']) {
+        sse(res, {
+          handoff: {
+            applicationId: payResult['applicationId'],
+            leadId: payResult['leadId'],
+            mobile: payResult['mobile'],
+            redirectPath: '/gateway',
+          },
+        });
+      }
+      return { ...state, phase: 'complete', planId: selectedPlan.id, planName: selectedPlan.name };
+    }
 
     await streamText(res,
       `✅ **${result['planName']}** selected!\n\n` +

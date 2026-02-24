@@ -3,21 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useJourneyNav } from '@/features/configurator/hooks/useJourneyNav';
 
-const ONBOARDING_STEPS: Record<string, number> = {
-  '/pincode': 1,
-  '/pre-existing': 2,
-  '/critical-conditions': 3,
-  '/eligibility': 4,
-};
-const TOTAL = 4;
-
-const BACK_PATHS: Record<string, string> = {
+const FALLBACK_BACK_PATHS: Record<string, string> = {
   '/pincode': '/',
   '/pre-existing': '/pincode',
   '/critical-conditions': '/pre-existing',
   '/eligibility': '/critical-conditions',
 };
+
+const ONBOARDING_ROUTE_SET = ['/pincode', '/pre-existing', '/critical-conditions', '/eligibility'];
 
 export default function OnboardingLayout({
   children,
@@ -25,9 +20,15 @@ export default function OnboardingLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const step = ONBOARDING_STEPS[pathname] ?? 1;
-  const progress = Math.round((step / TOTAL) * 100);
-  const backPath = BACK_PATHS[pathname] ?? '/';
+  const { prevRoute, enabledRoutes } = useJourneyNav();
+
+  const onboardingRoutes = ONBOARDING_ROUTE_SET.filter((r) =>
+    enabledRoutes.length === 0 ? true : enabledRoutes.includes(r),
+  );
+  const step = (onboardingRoutes.indexOf(pathname) ?? -1) + 1 || 1;
+  const total = Math.max(onboardingRoutes.length, 1);
+  const progress = Math.round((step / total) * 100);
+  const backPath = prevRoute(pathname, FALLBACK_BACK_PATHS[pathname] ?? '/');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,7 +55,7 @@ export default function OnboardingLayout({
           </div>
 
           {/* Step label */}
-          <span className="text-xs font-medium text-gray-500">{step} / {TOTAL}</span>
+          <span className="text-xs font-medium text-gray-500">{step} / {total}</span>
         </div>
 
         {/* Progress bar */}

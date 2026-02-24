@@ -73,12 +73,63 @@ export class AgenticContextService implements OnModuleDestroy {
   }
 
   async build(applicationId?: string): Promise<string> {
-    const [planContext, userContext] = await Promise.all([
+    const [planContext, userContext, configContext] = await Promise.all([
       this.buildPlanContext(),
       applicationId ? this.buildUserContext(applicationId) : Promise.resolve(''),
+      this.buildConfigContext(),
     ]);
 
-    return [AGENTIC_SYSTEM_PROMPT, planContext, userContext].filter(Boolean).join('\n\n');
+    return [AGENTIC_SYSTEM_PROMPT, configContext, planContext, userContext].filter(Boolean).join('\n\n');
+  }
+
+  private async buildConfigContext(): Promise<string> {
+    try {
+      const record = await this.prisma.journeyConfiguration.findFirst({
+        where: { isActive: true },
+        orderBy: { updatedAt: 'desc' },
+      });
+      if (!record?.config) return '';
+
+      const cfg = record.config as {
+        phases?: Array<{ id: string; label: string; enabled: boolean; steps: Array<{ id: string; label: string; route: string; enabled: boolean }> }>;
+        plans?: Array<{ planId: string; enabled: boolean }>;
+        addons?: Array<{ addonId: string; enabled: boolean }>;
+        featureFlags?: Record<string, boolean>;
+      };
+
+      const lines: string[] = ['---\nJourney Configuration (from admin):'];
+
+      // Disabled steps
+      const disabledSteps: string[] = [];
+      (cfg.phases ?? []).forEach((phase) => {
+        if (!phase.enabled) {
+          disabledSteps.push(`${phase.label} (entire phase)`);
+        } else {
+          phase.steps.filter((s) => !s.enabled).forEach((s) => disabledSteps.push(s.label));
+        }
+      });
+      if (disabledSteps.length > 0) {
+        lines.push(`SKIP these steps (disabled by admin): ${disabledSteps.join(', ')}`);
+      } else {
+        lines.push('All journey steps are enabled.');
+      }
+
+      // Disabled plans
+      const disabledPlans = (cfg.plans ?? []).filter((p) => !p.enabled).map((p) => p.planId);
+      if (disabledPlans.length > 0) {
+        lines.push(`Do NOT recommend these plan IDs: ${disabledPlans.join(', ')}`);
+      }
+
+      // Disabled addons
+      const disabledAddons = (cfg.addons ?? []).filter((a) => !a.enabled).map((a) => a.addonId);
+      if (disabledAddons.length > 0) {
+        lines.push(`Do NOT offer these addon IDs: ${disabledAddons.join(', ')}`);
+      }
+
+      return lines.join('\n');
+    } catch {
+      return '';
+    }
   }
 
   private async buildPlanContext(): Promise<string> {

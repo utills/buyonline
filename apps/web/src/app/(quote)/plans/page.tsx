@@ -12,6 +12,7 @@ import TenureModal from '@/components/quote/TenureModal';
 import { apiClient } from '@/lib/api-client';
 import type { Plan, PlanPricing } from '@buyonline/shared-types';
 import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
+import { useJourneyNav } from '@/features/configurator/hooks/useJourneyNav';
 
 export default function PlansPage() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function PlansPage() {
   } = useQuoteStore();
   const { applicationId } = useJourneyStore();
   const { isPlanEnabled } = useJourneyConfig();
+  const { nextRoute } = useJourneyNav();
   const [showSumInsured, setShowSumInsured] = useState(false);
   const [showTenure, setShowTenure] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -97,7 +99,7 @@ export default function PlansPage() {
     } finally {
       setIsSaving(false);
     }
-    router.push('/addons');
+    router.push(nextRoute('/plans', '/addons'));
   };
 
   if (isLoading) {
