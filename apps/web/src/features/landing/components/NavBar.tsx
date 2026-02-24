@@ -1,6 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 export default function NavBar() {
+  const { branding, chatConfig } = useJourneyConfig();
+  const ctaHref = chatConfig.agenticEnabled ? '/ai-journey' : '/otp-verify';
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -9,12 +15,12 @@ export default function NavBar() {
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-              style={{ backgroundColor: '#E31837' }}
+              style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
             >
-              P
+              {branding.logoText?.[0] ?? 'P'}
             </div>
             <span className="font-semibold text-gray-900 text-lg tracking-tight">
-              BuyOnline
+              {branding.logoText ?? 'BuyOnline'}
             </span>
           </Link>
 
@@ -40,8 +46,9 @@ export default function NavBar() {
 
           {/* CTA */}
           <Link
-            href="/ai-journey"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#E31837] hover:bg-[#B8132D] transition-colors"
+            href={ctaHref}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors"
+            style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
           >
             Get a Quote
             <svg

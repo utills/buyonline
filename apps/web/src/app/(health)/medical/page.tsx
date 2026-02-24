@@ -7,6 +7,7 @@ import { useJourneyStore } from '@/stores/useJourneyStore';
 import { useHealthStore } from '@/stores/useHealthStore';
 import MedicalQuestionRow from '@/components/health/MedicalQuestionRow';
 import { apiClient } from '@/lib/api-client';
+import { useJourneyConfig } from '@/features/configurator/hooks/useJourneyConfig';
 
 const MEDICAL_QUESTIONS = [
   {
@@ -37,6 +38,7 @@ const MEDICAL_QUESTIONS = [
 
 export default function MedicalPage() {
   const router = useRouter();
+  const { isQuestionEnabled } = useJourneyConfig();
   const { members } = useLeadStore();
   const { applicationId } = useJourneyStore();
   const { setMedicalAnswers } = useHealthStore();
@@ -104,7 +106,7 @@ export default function MedicalPage() {
       </div>
 
       <div className="space-y-4">
-        {MEDICAL_QUESTIONS.map((q) => (
+        {MEDICAL_QUESTIONS.filter((q) => isQuestionEnabled(q.key)).map((q) => (
           <MedicalQuestionRow
             key={q.key}
             questionKey={q.key}
@@ -118,7 +120,8 @@ export default function MedicalPage() {
       <button
         onClick={handleContinue}
         disabled={isSaving}
-        className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D] disabled:opacity-40"
+        className="w-full rounded-lg py-3 px-6 text-white font-semibold disabled:opacity-40"
+        style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
       >
         {isSaving ? 'Saving...' : 'Continue'}
       </button>
