@@ -4,10 +4,10 @@ import Anthropic from '@anthropic-ai/sdk';
 import { Response } from 'express';
 import { ConversationService, MessageParam } from './conversation.service.js';
 import { ChatToolsService } from './chat-tools.service.js';
-import { FallbackChatService } from './fallback-chat.service.js';
 import { AgenticAuthToolsService } from './agentic-auth-tools.service.js';
 import { AgenticContextService } from './agentic-context.service.js';
 import { AgenticPlanToolsService } from './agentic-plan-tools.service.js';
+import { JourneyFlowService } from './journey-flow.service.js';
 import { AGENTIC_TOOLS } from './chat-tools.constants.js';
 
 /** Balanced-bracket parser for [STATE:{...}] markers — safe when JSON contains ']'. */
@@ -51,7 +51,7 @@ export class AgenticChatService {
   constructor(
     private readonly conversation: ConversationService,
     private readonly tools: ChatToolsService,
-    private readonly fallback: FallbackChatService,
+    private readonly journeyFlow: JourneyFlowService,
     private readonly agenticAuth: AgenticAuthToolsService,
     private readonly agenticContext: AgenticContextService,
     private readonly agenticPlan: AgenticPlanToolsService,
@@ -164,15 +164,27 @@ export class AgenticChatService {
         .catch((err: Error) => this.logger.warn(`Failed to save agentic history: ${err.message}`));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
-      this.logger.warn(`Agentic AI failed, falling back: ${msg}`);
-      try {
-        const text = await this.fallback.respond(message);
-        for (const word of text.split(' ')) {
+      this.logger.warn(`Agentic AI failed: ${msg}`);
+      // If we have conversation history, this is mid-journey — don't restart from greeting.
+      // Show a retry message so the user can resend their last message.
+      if (history.length > 0) {
+        const retryText = "I'm having a moment — please send your message again and I'll continue right where we left off.";
+        for (const word of retryText.split(' ')) {
           res.write(`data: ${JSON.stringify({ token: word + ' ' })}\n\n`);
         }
-      } catch { /* ignore secondary failure */ }
-      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-      res.end();
+        res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+        res.end();
+      } else {
+        // No history yet — safe to route to JourneyFlowService for deterministic mode
+        try {
+          await this.journeyFlow.stream(sessionId, message, res);
+        } catch (fallbackErr: unknown) {
+          const fm = fallbackErr instanceof Error ? fallbackErr.message : 'Unknown';
+          this.logger.warn(`JourneyFlow fallback also failed: ${fm}`);
+          res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+          res.end();
+        }
+      }
     }
   }
 }

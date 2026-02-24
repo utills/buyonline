@@ -25,6 +25,8 @@ Usage:
   python3 test_full_journey.py --slow 300   # slow motion (ms)
   python3 test_full_journey.py --suite A    # only classic journey
   python3 test_full_journey.py --suite B    # only configurator integration
+  python3 test_full_journey.py --suite C    # only AI journey
+  python3 test_full_journey.py --suite ABC  # all suites
 """
 
 import sys, re, time, argparse, json
@@ -42,7 +44,7 @@ STREAM = 8_000  # wait for async ops
 parser = argparse.ArgumentParser()
 parser.add_argument("--headed", action="store_true")
 parser.add_argument("--slow",   type=int, default=0)
-parser.add_argument("--suite",  choices=["A", "B", "AB"], default="AB")
+parser.add_argument("--suite",  choices=["A", "B", "C", "AB", "ABC"], default="AB")
 args = parser.parse_args()
 
 SCREENSHOT_DIR = Path("test_screenshots_full")
@@ -89,6 +91,20 @@ def wait_url(page: Page, pattern: str, ms: int = T) -> bool:
 def wait_text(page: Page, text: str, ms: int = T) -> bool:
     try:   page.get_by_text(text, exact=False).first.wait_for(timeout=ms); return True
     except PWTimeout: return False
+
+
+def wait_any_keyword(page: Page, keywords: list, timeout_s: int = 12) -> bool:
+    """Poll page body until any keyword appears, up to timeout_s seconds."""
+    end = time.time() + timeout_s
+    while time.time() < end:
+        try:
+            body = page.inner_text("body").lower()
+            if any(k in body for k in keywords):
+                return True
+        except Exception:
+            pass
+        time.sleep(0.5)
+    return False
 
 
 def click_btn(page: Page, *labels: str) -> bool:
@@ -664,6 +680,205 @@ def suite_b_reset(ctx: BrowserContext) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+#  SUITE C — AI Journey (deterministic flow, no API key required)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def suite_c_ai_journey(ctx: BrowserContext):
+    """Tests the AI journey at /ai-journey end-to-end using the JourneyFlowService."""
+
+    page = ctx.new_page()
+    mobile = new_mobile()
+
+    section("C1 · AI Journey Page Loads")
+    # Reset configurator to defaults so Suite B plan-disables don't affect Claude's system prompt
+    try:
+        import subprocess
+        subprocess.run(
+            ["curl", "-s", "-X", "POST", "http://localhost:3001/api/v1/configurator/reset"],
+            capture_output=True, timeout=5
+        )
+    except Exception:
+        pass
+
+    # Clear stale agentic session state so a fresh sessionId is generated
+    page.goto(f"{WEB}/ai-journey", wait_until="networkidle")
+    page.evaluate("sessionStorage.removeItem('buyonline-agentic')")
+    page.reload(wait_until="networkidle")
+    img = shot(page, "C_ai_landing")
+    body = page.inner_text("body")
+    check("AI Journey page loaded", "PRUHealth" in body or "AI" in body, img=img)
+
+    # Wait for the greeting message to appear
+    try:
+        page.wait_for_selector("text=PRUHealth AI Assistant", timeout=8_000)
+        body = page.inner_text("body")
+        greeting_count = body.count("PRUHealth AI Assistant")
+        check("Greeting appears (no duplicate)", greeting_count == 1, f"count={greeting_count}")
+    except PWTimeout:
+        check("Greeting appears", False, "timeout waiting for greeting")
+
+    img = shot(page, "C_ai_greeting")
+
+    # ── C2 · Members step via quick-reply chip ─────────────────────────────
+    section("C2 · Members Selection")
+    try:
+        chip = page.locator("button", has_text="Family of 3").first
+        chip.wait_for(timeout=6_000)
+        chip.click()
+        check("'Family of 3' chip clicked", True)
+    except Exception as e:
+        check("'Family of 3' chip visible", False, str(e)[:60])
+        page.close(); return
+
+    # Wait for AI response (JourneyFlowService streams text)
+    time.sleep(3)
+    img = shot(page, "C_after_family_of_3")
+    body = page.inner_text("body")
+
+    # Should see age-related question, NOT the generic fallback
+    is_journey_response = any(k in body.lower() for k in ["age", "eldest", "year", "cover"])
+    is_fallback = "i can help with any of the following" in body.lower()
+    check("Journey response (not fallback)", is_journey_response and not is_fallback,
+          f"fallback={is_fallback}", img=img)
+
+    # ── C3 · Age step ─────────────────────────────────────────────────────
+    section("C3 · Age Input")
+    try:
+        textarea = page.locator("textarea").first
+        textarea.fill("35")
+        textarea.press("Enter")
+        check("Age '35' sent", True)
+    except Exception as e:
+        check("Age input sent", False, str(e)[:60])
+        page.close(); return
+
+    time.sleep(5)
+    img = shot(page, "C_after_age")
+    body = page.inner_text("body")
+    is_mobile_q = any(k in body.lower() for k in ["mobile", "phone", "10-digit"])
+    check("Mobile number prompt shown", is_mobile_q, img=img)
+
+    # ── C4 · Mobile step ──────────────────────────────────────────────────
+    section("C4 · Mobile Input")
+    try:
+        textarea = page.locator("textarea").first
+        textarea.fill(mobile)
+        textarea.press("Enter")
+        check(f"Mobile {mobile} sent", True)
+    except Exception as e:
+        check("Mobile input sent", False, str(e)[:60])
+        page.close(); return
+
+    # Wait for OTP to be sent + streamed response (involves DB lead create + OTP send)
+    time.sleep(6)
+    img = shot(page, "C_after_mobile")
+    body = page.inner_text("body")
+    otp_prompt = any(k in body.lower() for k in ["otp", "6-digit", "sent", "code"])
+    check("OTP prompt shown", otp_prompt, img=img)
+
+    # ── C5 · OTP step ─────────────────────────────────────────────────────
+    section("C5 · OTP Verification")
+    try:
+        # Try the OTP widget first (inline 6-digit inputs)
+        otp_inputs = page.locator("input[maxlength='1']").all()
+        if otp_inputs:
+            for i, d in enumerate(OTP):
+                otp_inputs[i].fill(d)
+                time.sleep(0.05)
+            check("OTP entered via widget", True)
+        else:
+            # Fall back to textarea
+            textarea = page.locator("textarea").first
+            textarea.fill(OTP)
+            textarea.press("Enter")
+            check("OTP sent via textarea", True)
+    except Exception as e:
+        check("OTP entered", False, str(e)[:60])
+        page.close(); return
+
+    # Wait for OTP verify + application create (DB ops)
+    time.sleep(7)
+    img = shot(page, "C_after_otp")
+    body = page.inner_text("body")
+    verified = any(k in body.lower() for k in ["verified", "pincode", "zip", "6-digit pin"])
+    check("OTP verified, pincode prompt shown", verified, img=img)
+
+    # ── C6 · Pincode step ─────────────────────────────────────────────────
+    section("C6 · Pincode Input")
+    try:
+        textarea = page.locator("textarea").first
+        textarea.fill("400001")
+        textarea.press("Enter")
+        check("Pincode '400001' sent", True)
+    except Exception as e:
+        check("Pincode sent", False, str(e)[:60])
+        page.close(); return
+
+    time.sleep(5)
+    img = shot(page, "C_after_pincode")
+    body = page.inner_text("body")
+    hospital_or_preex = any(k in body.lower() for k in ["hospital", "pre-existing", "condition", "medical"])
+    check("Hospital/pre-existing prompt shown", hospital_or_preex, img=img)
+
+    # ── C7 · Pre-existing step ────────────────────────────────────────────
+    section("C7 · Pre-existing Conditions")
+    try:
+        chip = page.locator("button", has_text="No conditions").first
+        try:
+            chip.wait_for(timeout=3_000)
+            chip.click()
+            check("'No conditions' chip clicked", True)
+        except PWTimeout:
+            textarea = page.locator("textarea").first
+            textarea.fill("None")
+            textarea.press("Enter")
+            check("'None' sent via textarea", True)
+    except Exception as e:
+        check("Pre-existing answered", False, str(e)[:60])
+        page.close(); return
+
+    time.sleep(4)
+    img = shot(page, "C_after_preexisting")
+    body = page.inner_text("body")
+    plan_shown = any(k in body.lower() for k in ["plan", "premium", "phi", "₹", "lakh", "cover"])
+    check("Plan recommendations shown", plan_shown, img=img)
+
+    # ── C8 · Plan selection ───────────────────────────────────────────────
+    section("C8 · Plan Selection")
+    try:
+        textarea = page.locator("textarea").first
+        textarea.fill("1")
+        textarea.press("Enter")
+        check("Plan '1' selected", True)
+    except Exception as e:
+        check("Plan selected", False, str(e)[:60])
+        page.close(); return
+
+    # Use polling: plan selection + addon fetch can take up to 25s in ABC context
+    addon_kws = ["add-on", "addon", "rider", "skip", "payment", "redirecting", "ready",
+                 "proposer", "full name", "your name", "email address", "proceed"]
+    found = wait_any_keyword(page, addon_kws, timeout_s=25)
+    img = shot(page, "C_after_plan")
+    body = page.inner_text("body")
+    addon_or_payment = found or any(k in body.lower() for k in addon_kws)
+    check("Add-ons or payment step reached", addon_or_payment, img=img)
+
+    # ── C9 · Progress panel visible (desktop) ─────────────────────────────
+    section("C9 · Progress Panel")
+    try:
+        page.set_viewport_size({"width": 1280, "height": 900})
+        time.sleep(0.3)
+        img = shot(page, "C_desktop_progress")
+        # On desktop the progress panel should be visible
+        panel_visible = page.locator("aside").count() > 0
+        check("Progress panel visible on desktop", panel_visible, img=img)
+    except Exception as e:
+        check("Progress panel check", False, str(e)[:60])
+
+    page.close()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 #  MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -700,6 +915,10 @@ def main():
                 suite_b_addon_toggle(ctx)
                 suite_b_hospital_flag(ctx)
                 suite_b_reset(ctx)
+
+            if "C" in args.suite:
+                # ── Suite C: AI Journey ────────────────────────────────────
+                suite_c_ai_journey(ctx)
 
         except Exception as ex:
             img = shot(page, "crash")

@@ -270,6 +270,19 @@ export class JourneyFlowService implements OnModuleDestroy {
   // ── Phase: Greeting ─────────────────────────────────────────────────────────
 
   private async handleGreeting(state: FlowState, message: string, res: Response): Promise<FlowState> {
+    // If the first message already contains a member selection (e.g. quick-reply chip),
+    // skip the greeting prompt and jump straight to age collection.
+    const members = parseMembers(message);
+    if (members) {
+      const label = membersLabel(members);
+      await streamText(res,
+        `Got it — coverage for **${label}**. 👍\n\n` +
+        `What's the age of the eldest member to be insured?`
+      );
+      sse(res, { stateUpdate: { members } });
+      return { ...state, phase: 'age', members };
+    }
+
     await streamText(res,
       `Hi there! 👋 Welcome to BuyOnline Health Insurance.\n\n` +
       `I'm your AI guide and I'll help you find the perfect health plan in just a few steps.\n\n` +

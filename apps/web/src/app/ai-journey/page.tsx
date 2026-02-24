@@ -10,7 +10,7 @@ import ChatInputBar from '@/features/ai-journey/components/ChatInputBar';
 
 // ─── Initial Greeting ─────────────────────────────────────────────────────────
 const GREETING =
-  "Hi! I'm PRUHealth AI Assistant — your personal insurance guide.\n\n" +
+  "Hi! I'm your personal health insurance guide. 👋\n\n" +
   "I'll help you find the perfect health insurance plan for your family in just a few minutes.\n\n" +
   "**Who would you like to cover?** You can say something like:\n" +
   '- "Just myself"\n' +
