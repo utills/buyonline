@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useJourneyNav } from '@/features/configurator/hooks/useJourneyNav';
 
 const KYC_STEPS: Record<string, number> = {
   '/method': 1,
@@ -11,7 +12,7 @@ const KYC_STEPS: Record<string, number> = {
 };
 const TOTAL = 3;
 
-const BACK_PATHS: Record<string, string> = {
+const FALLBACK_BACK_PATHS: Record<string, string> = {
   '/method': '/payment-success',
   '/details': '/method',
   '/otp': '/details',
@@ -23,9 +24,10 @@ export default function KycLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { prevRoute } = useJourneyNav();
   const step = KYC_STEPS[pathname] ?? 1;
   const progress = Math.round((step / TOTAL) * 100);
-  const backPath = BACK_PATHS[pathname] ?? '/';
+  const backPath = prevRoute(pathname, FALLBACK_BACK_PATHS[pathname] ?? '/');
 
   return (
     <div className="min-h-screen bg-gray-50">

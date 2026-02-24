@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useJourneyNav } from '@/features/configurator/hooks/useJourneyNav';
 
 const PAYMENT_STEPS: Record<string, number> = {
   '/proposer': 1,
@@ -11,7 +12,7 @@ const PAYMENT_STEPS: Record<string, number> = {
 };
 const TOTAL = 3;
 
-const BACK_PATHS: Record<string, string> = {
+const FALLBACK_BACK_PATHS: Record<string, string> = {
   '/proposer': '/summary',
   '/gateway': '/proposer',
 };
@@ -22,9 +23,10 @@ export default function PaymentLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { prevRoute } = useJourneyNav();
   const step = PAYMENT_STEPS[pathname] ?? 1;
   const progress = Math.round((step / TOTAL) * 100);
-  const backPath = BACK_PATHS[pathname] ?? '/';
+  const backPath = prevRoute(pathname, FALLBACK_BACK_PATHS[pathname] ?? '/');
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -9,9 +9,11 @@ import { JourneyStep } from '@buyonline/shared-types';
 import PlanSummaryComponent from '@/components/quote/PlanSummary';
 import { apiClient } from '@/lib/api-client';
 import type { PlanSummary } from '@buyonline/shared-types';
+import { useJourneyNav } from '@/features/configurator/hooks/useJourneyNav';
 
 export default function SummaryPage() {
   const router = useRouter();
+  const { nextRoute } = useJourneyNav();
   const { applicationId, markStepComplete, advanceTo } = useJourneyStore();
   const { selectedPlanId } = useQuoteStore();
   const { setAmount } = usePaymentStore();
@@ -92,7 +94,7 @@ export default function SummaryPage() {
   const handleContinue = () => {
     markStepComplete(JourneyStep.QUOTE);
     advanceTo(JourneyStep.PAYMENT);
-    router.push('/proposer');
+    router.push(nextRoute('/summary', '/proposer'));
   };
 
   if (isLoading) {
@@ -119,7 +121,7 @@ export default function SummaryPage() {
         onClick={handleContinue}
         className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
       >
-        Proceed to Payment
+        Continue →
       </button>
     </div>
   );
