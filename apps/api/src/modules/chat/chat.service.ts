@@ -37,7 +37,12 @@ export class ChatService {
 
     const apiKey = this.config.get<string>('ANTHROPIC_API_KEY', '');
     if (!useAI || !apiKey) {
-      await this.standard.streamFallback(message, res);
+      // Agentic journey without API key → use deterministic JourneyFlowService
+      if (journeyMode === 'agentic') {
+        await this.journeyFlow.stream(sessionId, message, res);
+      } else {
+        await this.standard.streamFallback(message, res);
+      }
       return;
     }
 

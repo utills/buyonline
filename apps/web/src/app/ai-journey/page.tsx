@@ -26,16 +26,17 @@ export default function AIJourneyPage() {
   const appendMessage = useAgenticStore((s) => s.appendMessage);
   const reset = useAgenticStore((s) => s.reset);
 
-  // On mount: inject greeting if no messages exist
+  // On mount: inject greeting if no messages exist.
+  // Read getState() directly to avoid stale closure in React StrictMode
+  // (both effect runs would otherwise see messages=[] before the first append propagates).
   useEffect(() => {
-    if (messages.length === 0) {
+    if (useAgenticStore.getState().messages.length === 0) {
       appendMessage({
         id: nanoid(),
         role: 'assistant',
         content: GREETING,
       });
     }
-    // Only run on mount — intentionally omitting deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

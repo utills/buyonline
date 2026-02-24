@@ -1,5 +1,6 @@
 import { Controller, Get, Put, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ConfiguratorService } from './configurator.service.js';
+import type { CleanStartResult } from './configurator.service.js';
 import { SaveConfigDto } from './dto/save-config.dto.js';
 import type { GetConfigResponse } from './interfaces/configurator.interfaces.js';
 
@@ -23,5 +24,11 @@ export class ConfiguratorController {
   @HttpCode(HttpStatus.OK)
   async resetConfig(): Promise<{ message: string }> {
     return this.configuratorService.resetConfig();
+  }
+
+  @Post('clean-start')
+  @HttpCode(HttpStatus.OK)
+  async cleanStart(): Promise<CleanStartResult> {
+    return this.configuratorService.cleanStart();
   }
 }
