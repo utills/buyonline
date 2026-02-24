@@ -51,7 +51,7 @@ export default function BankDetailsPage() {
             value={accountNumber}
             onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
             placeholder="Enter account number"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
           {errors.account && <p className="mt-1 text-xs text-red-600">{errors.account}</p>}
         </div>
@@ -67,7 +67,7 @@ export default function BankDetailsPage() {
             value={confirmAccount}
             onChange={(e) => setConfirmAccount(e.target.value.replace(/\D/g, ''))}
             placeholder="Re-enter account number"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
           {errors.confirm && <p className="mt-1 text-xs text-red-600">{errors.confirm}</p>}
         </div>
@@ -81,7 +81,7 @@ export default function BankDetailsPage() {
             value={bankName}
             onChange={(e) => setBankName(e.target.value)}
             placeholder="e.g. State Bank of India"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
           {errors.bank && <p className="mt-1 text-xs text-red-600">{errors.bank}</p>}
         </div>
@@ -96,14 +96,14 @@ export default function BankDetailsPage() {
             value={ifscCode}
             onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
             placeholder="e.g. SBIN0001234"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 uppercase tracking-wider focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 uppercase tracking-wider focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
           {errors.ifsc && <p className="mt-1 text-xs text-red-600">{errors.ifsc}</p>}
         </div>
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D]"
+          className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
         >
           Continue
         </button>

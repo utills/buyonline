@@ -115,11 +115,11 @@ export default function ProgressPanel({ collectedData, phase, onReset }: Progres
       <div className="mb-4">
         <div className="flex justify-between items-center mb-1">
           <span className="text-xs text-gray-500">Progress</span>
-          <span className="text-xs font-semibold text-[#E31837]">{progress}%</span>
+          <span className="text-xs font-semibold text-[#ED1B2D]">{progress}%</span>
         </div>
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#E31837] rounded-full transition-all duration-500"
+            className="h-full bg-[#ED1B2D] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

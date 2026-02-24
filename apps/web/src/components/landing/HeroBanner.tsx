@@ -2,7 +2,7 @@
 
 export default function HeroBanner() {
   return (
-    <section className="relative w-full bg-gradient-to-br from-[#E31837] to-[#B8132D] overflow-hidden">
+    <section className="relative w-full bg-gradient-to-br from-[#ED1B2D] to-[#C8162A] overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white -translate-y-1/2 translate-x-1/3" />
@@ -14,7 +14,7 @@ export default function HeroBanner() {
         <div className="mb-8">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-              <span className="text-[#E31837] font-bold text-sm">P</span>
+              <span className="text-[#ED1B2D] font-bold text-sm">P</span>
             </div>
             <span className="text-lg font-bold tracking-tight">Prudential</span>
           </div>

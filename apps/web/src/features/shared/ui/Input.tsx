@@ -17,7 +17,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 /**
  * Reusable text input with optional label, left/right addons, validation error, and hint text.
- * Uses Prudential brand red (#E31837) for focus and error rings.
+ * Uses Prudential brand red (#ED1B2D) for focus and error rings.
  */
 export default function Input({
   label,
@@ -38,7 +38,7 @@ export default function Input({
     'flex items-center w-full rounded-lg border bg-white overflow-hidden transition-colors duration-150',
     hasError
       ? 'border-red-300 focus-within:ring-1 focus-within:ring-red-500 focus-within:border-red-500'
-      : 'border-gray-300 focus-within:ring-1 focus-within:ring-[#E31837] focus-within:border-[#E31837]',
+      : 'border-gray-300 focus-within:ring-1 focus-within:ring-[#ED1B2D] focus-within:border-[#ED1B2D]',
     disabled ? 'bg-gray-50 opacity-60 cursor-not-allowed' : '',
   ].filter(Boolean).join(' ');
 

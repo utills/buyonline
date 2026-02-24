@@ -19,7 +19,7 @@ export function PlanRecommendationCard({ data, onSelect }: PlanRecommendationCar
   return (
     <div className="mt-3 border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm max-w-xs">
       {data.isRecommended && (
-        <div className="bg-[#E31837] text-white text-xs font-semibold text-center py-1 px-3">
+        <div className="bg-[#ED1B2D] text-white text-xs font-semibold text-center py-1 px-3">
           Recommended for you
         </div>
       )}
@@ -62,7 +62,7 @@ export function PlanRecommendationCard({ data, onSelect }: PlanRecommendationCar
           {onSelect && (
             <button
               onClick={() => onSelect(data)}
-              className="bg-[#E31837] text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-[#B8132D] transition-colors"
+              className="bg-[#ED1B2D] text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-[#C8162A] transition-colors"
             >
               Select Plan
             </button>

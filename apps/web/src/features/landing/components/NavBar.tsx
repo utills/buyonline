@@ -15,7 +15,7 @@ export default function NavBar() {
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-              style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
+              style={{ backgroundColor: 'var(--brand-color, #ED1B2D)' }}
             >
               {branding.logoText?.[0] ?? 'P'}
             </div>
@@ -48,7 +48,7 @@ export default function NavBar() {
           <Link
             href={ctaHref}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors"
-            style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
+            style={{ backgroundColor: 'var(--brand-color, #ED1B2D)' }}
           >
             Get a Quote
             <svg

@@ -26,7 +26,7 @@ export default function PlanCard({
     <div
       className={`w-72 flex-shrink-0 bg-white rounded-xl border-2 p-5 space-y-4 transition-all ${
         isSelected
-          ? 'border-[#E31837] shadow-md'
+          ? 'border-[#ED1B2D] shadow-md'
           : 'border-gray-200 hover:border-gray-300'
       }`}
     >
@@ -35,7 +35,7 @@ export default function PlanCard({
         <span
           className={`px-3 py-1 rounded-full text-xs font-semibold ${
             isSelected
-              ? 'bg-[#E31837] text-white'
+              ? 'bg-[#ED1B2D] text-white'
               : 'bg-gray-100 text-gray-600'
           }`}
         >
@@ -93,8 +93,8 @@ export default function PlanCard({
           onClick={() => onSelect(plan.id)}
           className={`w-full rounded-lg py-2.5 px-4 text-sm font-semibold transition-all ${
             isSelected
-              ? 'bg-[#E31837] text-white'
-              : 'bg-white text-[#E31837] border border-[#E31837] hover:bg-red-50'
+              ? 'bg-[#ED1B2D] text-white'
+              : 'bg-white text-[#ED1B2D] border border-[#ED1B2D] hover:bg-red-50'
           }`}
         >
           {isSelected ? 'Selected' : 'Select Plan'}
@@ -102,7 +102,7 @@ export default function PlanCard({
         <button
           type="button"
           onClick={() => onLearnMore(plan.id)}
-          className="w-full text-sm text-[#E31837] font-medium hover:underline"
+          className="w-full text-sm text-[#ED1B2D] font-medium hover:underline"
         >
           Learn More
         </button>

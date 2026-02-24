@@ -22,12 +22,12 @@ export default function MemberSelector() {
           <div
             className={`w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all ${
               safeMembers.self
-                ? 'border-[#E31837] bg-red-50'
+                ? 'border-[#ED1B2D] bg-red-50'
                 : 'border-gray-300 bg-gray-50'
             }`}
           >
             <svg
-              className={`w-7 h-7 ${safeMembers.self ? 'text-[#E31837]' : 'text-gray-400'}`}
+              className={`w-7 h-7 ${safeMembers.self ? 'text-[#ED1B2D]' : 'text-gray-400'}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -42,7 +42,7 @@ export default function MemberSelector() {
           </div>
           <span
             className={`text-xs font-medium ${
-              safeMembers.self ? 'text-[#E31837]' : 'text-gray-500'
+              safeMembers.self ? 'text-[#ED1B2D]' : 'text-gray-500'
             }`}
           >
             Self
@@ -58,12 +58,12 @@ export default function MemberSelector() {
           <div
             className={`w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all ${
               safeMembers.spouse
-                ? 'border-[#E31837] bg-red-50'
+                ? 'border-[#ED1B2D] bg-red-50'
                 : 'border-gray-300 bg-gray-50'
             }`}
           >
             <svg
-              className={`w-7 h-7 ${safeMembers.spouse ? 'text-[#E31837]' : 'text-gray-400'}`}
+              className={`w-7 h-7 ${safeMembers.spouse ? 'text-[#ED1B2D]' : 'text-gray-400'}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -78,7 +78,7 @@ export default function MemberSelector() {
           </div>
           <span
             className={`text-xs font-medium ${
-              safeMembers.spouse ? 'text-[#E31837]' : 'text-gray-500'
+              safeMembers.spouse ? 'text-[#ED1B2D]' : 'text-gray-500'
             }`}
           >
             Spouse
@@ -90,13 +90,13 @@ export default function MemberSelector() {
           <div
             className={`w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all ${
               safeMembers.kidsCount > 0
-                ? 'border-[#E31837] bg-red-50'
+                ? 'border-[#ED1B2D] bg-red-50'
                 : 'border-gray-300 bg-gray-50'
             }`}
           >
             <svg
               className={`w-7 h-7 ${
-                safeMembers.kidsCount > 0 ? 'text-[#E31837]' : 'text-gray-400'
+                safeMembers.kidsCount > 0 ? 'text-[#ED1B2D]' : 'text-gray-400'
               }`}
               fill="none"
               stroke="currentColor"
@@ -112,7 +112,7 @@ export default function MemberSelector() {
           </div>
           <span
             className={`text-xs font-medium ${
-              safeMembers.kidsCount > 0 ? 'text-[#E31837]' : 'text-gray-500'
+              safeMembers.kidsCount > 0 ? 'text-[#ED1B2D]' : 'text-gray-500'
             }`}
           >
             Kids
@@ -123,7 +123,7 @@ export default function MemberSelector() {
               type="button"
               onClick={() => setKidsCount(safeMembers.kidsCount - 1)}
               disabled={safeMembers.kidsCount === 0}
-              className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 disabled:opacity-30 hover:border-[#E31837] hover:text-[#E31837]"
+              className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 disabled:opacity-30 hover:border-[#ED1B2D] hover:text-[#ED1B2D]"
             >
               <span className="text-xs font-bold">-</span>
             </button>
@@ -134,7 +134,7 @@ export default function MemberSelector() {
               type="button"
               onClick={() => setKidsCount(safeMembers.kidsCount + 1)}
               disabled={safeMembers.kidsCount >= 4}
-              className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 disabled:opacity-30 hover:border-[#E31837] hover:text-[#E31837]"
+              className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 disabled:opacity-30 hover:border-[#ED1B2D] hover:text-[#ED1B2D]"
             >
               <span className="text-xs font-bold">+</span>
             </button>

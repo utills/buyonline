@@ -18,7 +18,7 @@ export interface SelectProps {
 }
 
 /**
- * Styled select matching Input.tsx — same border, focus ring with #E31837, same text size.
+ * Styled select matching Input.tsx — same border, focus ring with #ED1B2D, same text size.
  * Shows a red error message below when the error prop is provided.
  */
 export default function Select({
@@ -39,7 +39,7 @@ export default function Select({
     'w-full rounded-lg border bg-white overflow-hidden transition-colors duration-150',
     hasError
       ? 'border-red-300 focus-within:ring-1 focus-within:ring-red-500 focus-within:border-red-500'
-      : 'border-gray-300 focus-within:ring-1 focus-within:ring-[#E31837] focus-within:border-[#E31837]',
+      : 'border-gray-300 focus-within:ring-1 focus-within:ring-[#ED1B2D] focus-within:border-[#ED1B2D]',
     disabled ? 'bg-gray-50 opacity-60 cursor-not-allowed' : '',
   ].filter(Boolean).join(' ');
 

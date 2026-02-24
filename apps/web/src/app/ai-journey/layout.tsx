@@ -28,7 +28,7 @@ export default function AIJourneyLayout({ children }: { children: React.ReactNod
         </a>
 
         <div className="flex items-center gap-2 ml-2">
-          <div className="w-7 h-7 bg-[#E31837] rounded-full flex items-center justify-center">
+          <div className="w-7 h-7 bg-[#ED1B2D] rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-bold">P</span>
           </div>
           <span className="font-semibold text-gray-900 text-sm">PRUHealth AI Assistant</span>

@@ -12,7 +12,7 @@ export default function AddonCard({ addon, isSelected, onToggle }: AddonCardProp
   return (
     <div
       className={`bg-white rounded-xl border p-4 transition-all ${
-        isSelected ? 'border-[#E31837] bg-red-50/30' : 'border-gray-200'
+        isSelected ? 'border-[#ED1B2D] bg-red-50/30' : 'border-gray-200'
       }`}
     >
       <label className="flex items-start gap-3 cursor-pointer">
@@ -20,7 +20,7 @@ export default function AddonCard({ addon, isSelected, onToggle }: AddonCardProp
           type="checkbox"
           checked={isSelected}
           onChange={() => onToggle(addon.id)}
-          className="mt-1 w-4 h-4 rounded border-gray-300 text-[#E31837] focus:ring-[#E31837]"
+          className="mt-1 w-4 h-4 rounded border-gray-300 text-[#ED1B2D] focus:ring-[#ED1B2D]"
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">

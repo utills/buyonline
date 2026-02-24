@@ -40,7 +40,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         className={[
           'flex-shrink-0 w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center transition-colors duration-200',
           checked
-            ? 'bg-[#E31837] border-[#E31837]'
+            ? 'bg-[#ED1B2D] border-[#ED1B2D]'
             : 'border-gray-300 bg-white hover:border-gray-400',
         ].join(' ')}
       >

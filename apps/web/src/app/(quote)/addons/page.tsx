@@ -78,7 +78,7 @@ export default function AddonsPage() {
       <button
         onClick={handleContinue}
         disabled={isSaving}
-        className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D] disabled:opacity-40"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A] disabled:opacity-40"
       >
         {isSaving ? 'Saving...' : 'Continue'}
       </button>

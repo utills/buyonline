@@ -73,7 +73,7 @@ export default function CriticalConditionsModal({
                   onClick={() => toggleCondition(condition)}
                   className={`text-left px-3 py-2.5 rounded-lg border text-sm transition-all ${
                     isSelected
-                      ? 'bg-red-50 border-[#E31837] text-[#E31837] font-medium'
+                      ? 'bg-red-50 border-[#ED1B2D] text-[#ED1B2D] font-medium'
                       : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
                   }`}
                 >
@@ -88,7 +88,7 @@ export default function CriticalConditionsModal({
         <div className="p-5 border-t border-gray-200 space-y-3">
           <button
             onClick={handleConfirm}
-            className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D]"
+            className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
           >
             Confirm ({selected.length} selected)
           </button>

@@ -24,7 +24,7 @@ function highlightCurrency(text: string): ReactNode[] {
     if (!seg) continue;
     if (seg.match(/^₹/i)) {
       result.push(
-        <span key={`amt-${matchIdx++}`} className="inline-flex items-center font-semibold text-[#E31837] bg-red-50 rounded px-1 py-0.5 text-[0.8em] mx-0.5">
+        <span key={`amt-${matchIdx++}`} className="inline-flex items-center font-semibold text-[#ED1B2D] bg-red-50 rounded px-1 py-0.5 text-[0.8em] mx-0.5">
           {seg}
         </span>
       );
@@ -83,7 +83,7 @@ export function renderMarkdown(text: string): ReactNode[] {
       const content = raw.replace(/^-\s+/, '');
       nodes.push(
         <div key={key++} className="flex items-start gap-1.5 mt-1">
-          <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-[#E31837]/60 flex-shrink-0" />
+          <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-[#ED1B2D]/60 flex-shrink-0" />
           <span className="flex-1 flex flex-wrap items-baseline gap-0.5">{renderInline(content)}</span>
         </div>
       );
@@ -94,7 +94,7 @@ export function renderMarkdown(text: string): ReactNode[] {
     if (numMatch) {
       nodes.push(
         <div key={key++} className="flex items-start gap-2 mt-1">
-          <span className="text-[#E31837] font-bold text-xs flex-shrink-0 mt-0.5">{numMatch[1]}.</span>
+          <span className="text-[#ED1B2D] font-bold text-xs flex-shrink-0 mt-0.5">{numMatch[1]}.</span>
           <span className="flex-1 flex flex-wrap items-baseline gap-0.5">{renderInline(numMatch[2])}</span>
         </div>
       );

@@ -48,7 +48,7 @@ export default function QuoteLayout({
 
           {/* Logo */}
           <div className="flex items-center gap-1.5">
-            <div className="w-6 h-6 bg-[#E31837] rounded flex items-center justify-center">
+            <div className="w-6 h-6 bg-[#ED1B2D] rounded flex items-center justify-center">
               <span className="text-white text-xs font-bold select-none">B</span>
             </div>
             <span className="text-sm font-semibold text-gray-900">BuyOnline</span>
@@ -61,7 +61,7 @@ export default function QuoteLayout({
         {/* Progress bar */}
         <div className="h-1 bg-gray-100">
           <div
-            className="h-1 bg-[#E31837] transition-all duration-300"
+            className="h-1 bg-[#ED1B2D] transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>

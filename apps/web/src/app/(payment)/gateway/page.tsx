@@ -73,7 +73,7 @@ export default function GatewayPage() {
   if (isInitializing) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
-        <div className="w-10 h-10 rounded-full border-4 border-gray-200 border-t-[#E31837] animate-spin" />
+        <div className="w-10 h-10 rounded-full border-4 border-gray-200 border-t-[#ED1B2D] animate-spin" />
         <p className="text-sm text-gray-500">Setting up payment...</p>
       </div>
     );
@@ -83,7 +83,7 @@ export default function GatewayPage() {
     return (
       <div className="text-center py-20">
         <p className="text-red-600">Payment amount not set. Please go back and select a plan.</p>
-        <button onClick={() => router.push('/proposer')} className="mt-4 text-[#E31837] underline">Go Back</button>
+        <button onClick={() => router.push('/proposer')} className="mt-4 text-[#ED1B2D] underline">Go Back</button>
       </div>
     );
   }

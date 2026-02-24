@@ -66,7 +66,7 @@ export default function MemberPersonalForm({
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
       <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-        <div className="w-6 h-6 bg-[#E31837] rounded-full flex items-center justify-center">
+        <div className="w-6 h-6 bg-[#ED1B2D] rounded-full flex items-center justify-center">
           <span className="text-xs text-white font-bold">
             {memberLabel.charAt(0)}
           </span>
@@ -81,7 +81,7 @@ export default function MemberPersonalForm({
           <select
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           >
             <option value="">Title</option>
             {TITLE_OPTIONS.map((t) => (
@@ -97,7 +97,7 @@ export default function MemberPersonalForm({
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="First"
-            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
           {errors.firstName && <p className="mt-1 text-xs text-red-600">{errors.firstName}</p>}
         </div>
@@ -108,7 +108,7 @@ export default function MemberPersonalForm({
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             placeholder="Last"
-            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
           {errors.lastName && <p className="mt-1 text-xs text-red-600">{errors.lastName}</p>}
         </div>
@@ -123,7 +123,7 @@ export default function MemberPersonalForm({
           value={mobile}
           onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
           placeholder="Mobile number"
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
         />
         {errors.mobile && <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>}
       </div>
@@ -135,7 +135,7 @@ export default function MemberPersonalForm({
           type="date"
           value={dob}
           onChange={(e) => setDob(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
         />
         {errors.dob && <p className="mt-1 text-xs text-red-600">{errors.dob}</p>}
       </div>
@@ -151,7 +151,7 @@ export default function MemberPersonalForm({
             value={heightFt || ''}
             onChange={(e) => setHeightFt(parseInt(e.target.value) || 0)}
             placeholder="ft"
-            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
         </div>
         <div>
@@ -163,7 +163,7 @@ export default function MemberPersonalForm({
             value={heightIn || ''}
             onChange={(e) => setHeightIn(parseInt(e.target.value) || 0)}
             placeholder="in"
-            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
         </div>
         <div>
@@ -175,7 +175,7 @@ export default function MemberPersonalForm({
             value={weightKg || ''}
             onChange={(e) => setWeightKg(parseInt(e.target.value) || 0)}
             placeholder="kg"
-            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-3 py-3 text-sm text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
         </div>
       </div>

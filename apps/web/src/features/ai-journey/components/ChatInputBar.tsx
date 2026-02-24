@@ -78,7 +78,7 @@ export default function ChatInputBar({ onSend, disabled, phase }: ChatInputBarPr
             <button
               key={chip}
               onClick={() => handleChipClick(chip)}
-              className="text-xs px-3 py-1.5 rounded-full border border-[#E31837] text-[#E31837] hover:bg-red-50 whitespace-nowrap transition-colors cursor-pointer flex-shrink-0"
+              className="text-xs px-3 py-1.5 rounded-full border border-[#ED1B2D] text-[#ED1B2D] hover:bg-red-50 whitespace-nowrap transition-colors cursor-pointer flex-shrink-0"
             >
               {chip}
             </button>
@@ -101,7 +101,7 @@ export default function ChatInputBar({ onSend, disabled, phase }: ChatInputBarPr
             placeholder={placeholder}
             disabled={isDisabled}
             rows={1}
-            className="w-full resize-none rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E31837] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors leading-6"
+            className="w-full resize-none rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ED1B2D] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors leading-6"
             aria-label="Chat input"
           />
           {/* Character count */}
@@ -121,7 +121,7 @@ export default function ChatInputBar({ onSend, disabled, phase }: ChatInputBarPr
           onClick={handleSend}
           disabled={isDisabled || !value.trim()}
           aria-label="Send message"
-          className="flex-shrink-0 w-10 h-10 bg-[#E31837] rounded-xl flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#B8132D] active:bg-[#8E0F22] transition-colors"
+          className="flex-shrink-0 w-10 h-10 bg-[#ED1B2D] rounded-xl flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C8162A] active:bg-[#8E0F22] transition-colors"
         >
           <svg
             className="w-4 h-4 rotate-90"

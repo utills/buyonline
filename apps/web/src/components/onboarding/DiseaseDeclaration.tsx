@@ -56,7 +56,7 @@ export default function DiseaseDeclaration({
           onClick={() => handleAnswer(true)}
           className={`flex-1 py-2.5 rounded-lg border text-sm font-medium transition-all ${
             hasDisease
-              ? 'bg-[#E31837] text-white border-[#E31837]'
+              ? 'bg-[#ED1B2D] text-white border-[#ED1B2D]'
               : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
           }`}
         >

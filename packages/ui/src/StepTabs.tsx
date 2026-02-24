@@ -39,7 +39,7 @@ export const StepTabs: React.FC<StepTabsProps> = ({
               className={[
                 'flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 whitespace-nowrap',
                 isActive
-                  ? 'border-[#E31837] text-[#E31837]'
+                  ? 'border-[#ED1B2D] text-[#ED1B2D]'
                   : isCompleted
                     ? 'border-transparent text-green-600 hover:text-green-700'
                     : 'border-transparent text-gray-400 cursor-not-allowed',

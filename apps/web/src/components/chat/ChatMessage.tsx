@@ -8,7 +8,7 @@ export default function ChatMessage({ message }: { message: ChatMessageType }) {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       {!isUser && (
-        <div className="w-7 h-7 rounded-full bg-[#E31837] flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
+        <div className="w-7 h-7 rounded-full bg-[#ED1B2D] flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
           <span className="text-white font-bold text-xs">P</span>
         </div>
       )}
@@ -16,7 +16,7 @@ export default function ChatMessage({ message }: { message: ChatMessageType }) {
       <div
         className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
           isUser
-            ? 'bg-[#E31837] text-white rounded-tr-sm'
+            ? 'bg-[#ED1B2D] text-white rounded-tr-sm'
             : message.error
             ? 'bg-red-50 text-red-700 border border-red-200 rounded-tl-sm'
             : 'bg-gray-100 text-gray-800 rounded-tl-sm'

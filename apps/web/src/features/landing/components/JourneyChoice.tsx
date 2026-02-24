@@ -45,12 +45,12 @@ export default function JourneyChoice() {
           {/* AI Journey Card — highlighted */}
           {showAI && <div
             className="relative bg-white rounded-2xl border-2 shadow-lg flex flex-col overflow-hidden"
-            style={{ borderColor: 'var(--brand-color, #E31837)' }}
+            style={{ borderColor: 'var(--brand-color, #ED1B2D)' }}
           >
             {/* Recommended badge */}
             <div
               className="absolute top-0 left-0 right-0 text-white text-xs font-bold text-center py-1.5 tracking-widest uppercase"
-              style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
+              style={{ backgroundColor: 'var(--brand-color, #ED1B2D)' }}
             >
               Recommended
             </div>
@@ -59,11 +59,11 @@ export default function JourneyChoice() {
               <div className="flex items-start gap-3 mb-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: 'color-mix(in srgb, var(--brand-color, #E31837) 15%, white)' }}
+                  style={{ backgroundColor: 'color-mix(in srgb, var(--brand-color, #ED1B2D) 15%, white)' }}
                 >
                   <svg
                     className="w-5 h-5"
-                    style={{ color: 'var(--brand-color, #E31837)' }}
+                    style={{ color: 'var(--brand-color, #ED1B2D)' }}
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={2}
@@ -87,7 +87,7 @@ export default function JourneyChoice() {
                   <li key={step} className="flex items-center gap-3 text-sm text-gray-700">
                     <span
                       className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                      style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
+                      style={{ backgroundColor: 'var(--brand-color, #ED1B2D)' }}
                     >
                       {i + 1}
                     </span>
@@ -117,7 +117,7 @@ export default function JourneyChoice() {
                 <Link
                   href="/ai-journey"
                   className="block w-full text-center py-3 px-4 rounded-xl text-white font-semibold text-sm transition-colors"
-                  style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
+                  style={{ backgroundColor: 'var(--brand-color, #ED1B2D)' }}
                 >
                   Start AI Journey &rarr;
                 </Link>
@@ -209,7 +209,7 @@ export default function JourneyChoice() {
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="grid grid-cols-3 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50 border-b border-gray-200">
               <div className="px-5 py-3">Feature</div>
-              <div className="px-5 py-3 text-center" style={{ color: 'var(--brand-color, #E31837)' }}>AI Journey</div>
+              <div className="px-5 py-3 text-center" style={{ color: 'var(--brand-color, #ED1B2D)' }}>AI Journey</div>
               <div className="px-5 py-3 text-center text-gray-500">Classic</div>
             </div>
             {COMPARISON.map((row, idx) => (
@@ -218,7 +218,7 @@ export default function JourneyChoice() {
                 className={`grid grid-cols-3 text-sm ${idx < COMPARISON.length - 1 ? 'border-b border-gray-100' : ''}`}
               >
                 <div className="px-5 py-3 text-gray-600 font-medium">{row.label}</div>
-                <div className="px-5 py-3 text-center font-semibold" style={{ color: 'var(--brand-color, #E31837)' }}>
+                <div className="px-5 py-3 text-center font-semibold" style={{ color: 'var(--brand-color, #ED1B2D)' }}>
                   {row.ai}
                 </div>
                 <div className="px-5 py-3 text-center text-gray-500">{row.classic}</div>

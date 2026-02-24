@@ -16,10 +16,10 @@ export interface ButtonProps {
 }
 
 const variantStyles: Record<NonNullable<ButtonProps['variant']>, string> = {
-  primary: 'bg-[#E31837] hover:bg-red-700 text-white shadow-sm',
+  primary: 'bg-[#ED1B2D] hover:bg-red-700 text-white shadow-sm',
   secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900',
-  outline: 'border-2 border-[#E31837] text-[#E31837] hover:bg-red-50 bg-transparent',
-  ghost: 'text-[#E31837] hover:bg-red-50 bg-transparent',
+  outline: 'border-2 border-[#ED1B2D] text-[#ED1B2D] hover:bg-red-50 bg-transparent',
+  ghost: 'text-[#ED1B2D] hover:bg-red-50 bg-transparent',
 };
 
 const sizeStyles: Record<NonNullable<ButtonProps['size']>, string> = {
@@ -73,7 +73,7 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={isDisabled}
       className={[
-        'inline-flex items-center justify-center font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#E31837] focus:ring-offset-2',
+        'inline-flex items-center justify-center font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#ED1B2D] focus:ring-offset-2',
         variantStyles[variant],
         sizeStyles[size],
         fullWidth ? 'w-full' : '',

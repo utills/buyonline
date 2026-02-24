@@ -11,7 +11,7 @@ export interface AlertProps {
 
 const variantStyles: Record<AlertVariant, { wrapper: string; icon: string; title: string; body: string }> = {
   success: { wrapper: 'bg-green-50 border-green-200',  icon: 'text-green-700', title: 'text-green-800', body: 'text-green-700' },
-  error:   { wrapper: 'bg-red-50 border-red-200',      icon: 'text-[#E31837]', title: 'text-red-900',   body: 'text-[#E31837]' },
+  error:   { wrapper: 'bg-red-50 border-red-200',      icon: 'text-[#ED1B2D]', title: 'text-red-900',   body: 'text-[#ED1B2D]' },
   warning: { wrapper: 'bg-amber-50 border-amber-200',  icon: 'text-amber-700', title: 'text-amber-800', body: 'text-amber-700' },
   info:    { wrapper: 'bg-blue-50 border-blue-200',    icon: 'text-blue-700',  title: 'text-blue-800',  body: 'text-blue-700'  },
 };

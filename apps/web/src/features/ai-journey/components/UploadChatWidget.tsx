@@ -38,7 +38,7 @@ export function UploadChatWidget({
       />
       <button
         onClick={() => inputRef.current?.click()}
-        className="flex items-center gap-2 border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-600 hover:border-[#E31837] hover:text-[#E31837] transition-colors"
+        className="flex items-center gap-2 border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-600 hover:border-[#ED1B2D] hover:text-[#ED1B2D] transition-colors"
       >
         <svg
           className="w-4 h-4"

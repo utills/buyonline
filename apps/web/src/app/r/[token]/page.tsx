@@ -121,7 +121,7 @@ export default function ResumePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <svg className="animate-spin w-10 h-10 text-[#E31837] mx-auto" viewBox="0 0 24 24" fill="none">
+          <svg className="animate-spin w-10 h-10 text-[#ED1B2D] mx-auto" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
@@ -145,7 +145,7 @@ export default function ResumePage() {
           <p className="text-sm text-gray-500">{error}</p>
           <a
             href="/"
-            className="inline-block bg-[#E31837] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#B8132D] transition-colors"
+            className="inline-block bg-[#ED1B2D] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#C8162A] transition-colors"
           >
             Start Fresh
           </a>
@@ -159,7 +159,7 @@ export default function ResumePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <svg className="animate-spin w-10 h-10 text-[#E31837] mx-auto" viewBox="0 0 24 24" fill="none">
+          <svg className="animate-spin w-10 h-10 text-[#ED1B2D] mx-auto" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
@@ -183,7 +183,7 @@ export default function ResumePage() {
         <div className="max-w-md w-full mx-auto px-6 space-y-8">
           <div className="text-center space-y-2">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-[#E31837]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-[#ED1B2D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </div>
@@ -208,7 +208,7 @@ export default function ResumePage() {
                 className={`w-12 h-14 text-center text-xl font-bold rounded-lg border-2 transition-all focus:outline-none ${
                   otpError
                     ? 'border-red-300 focus:border-red-500'
-                    : 'border-gray-300 focus:border-[#E31837]'
+                    : 'border-gray-300 focus:border-[#ED1B2D]'
                 }`}
               />
             ))}
@@ -233,7 +233,7 @@ export default function ResumePage() {
             {canResend ? (
               <button
                 onClick={handleResend}
-                className="text-[#E31837] font-medium text-sm hover:underline"
+                className="text-[#ED1B2D] font-medium text-sm hover:underline"
               >
                 Resend OTP
               </button>

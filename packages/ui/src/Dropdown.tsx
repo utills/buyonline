@@ -35,7 +35,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       {label && (
         <label className="text-sm font-medium text-gray-700">
           {label}
-          {required && <span className="text-[#E31837] ml-0.5">*</span>}
+          {required && <span className="text-[#ED1B2D] ml-0.5">*</span>}
         </label>
       )}
       <div className="relative">
@@ -45,7 +45,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
           disabled={disabled}
           className={[
             'w-full appearance-none rounded-lg border px-3 py-2.5 pr-10 text-sm transition-colors duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-[#E31837] focus:border-transparent',
+            'focus:outline-none focus:ring-2 focus:ring-[#ED1B2D] focus:border-transparent',
             !value ? 'text-gray-400' : 'text-gray-900',
             error
               ? 'border-red-500 focus:ring-red-500'

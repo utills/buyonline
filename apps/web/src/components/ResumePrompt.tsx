@@ -50,7 +50,7 @@ export default function ResumePrompt() {
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 px-4 py-3 flex items-start gap-3 animate-in slide-in-from-top-2 fade-in duration-300">
         {/* Icon */}
         <div className="w-9 h-9 bg-red-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-          <svg className="w-4 h-4 text-[#E31837]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-[#ED1B2D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         </div>
@@ -64,7 +64,7 @@ export default function ResumePrompt() {
           <div className="flex items-center gap-2 mt-2.5 flex-wrap">
             <button
               onClick={handleResume}
-              className="text-xs bg-[#E31837] text-white px-3 py-1.5 rounded-full font-medium hover:bg-[#B8132D] transition-colors"
+              className="text-xs bg-[#ED1B2D] text-white px-3 py-1.5 rounded-full font-medium hover:bg-[#C8162A] transition-colors"
             >
               Resume
             </button>

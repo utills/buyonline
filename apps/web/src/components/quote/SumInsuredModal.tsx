@@ -48,18 +48,18 @@ export default function SumInsuredModal({
                 }}
                 className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
                   isSelected
-                    ? 'border-[#E31837] bg-red-50'
+                    ? 'border-[#ED1B2D] bg-red-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      isSelected ? 'border-[#E31837]' : 'border-gray-300'
+                      isSelected ? 'border-[#ED1B2D]' : 'border-gray-300'
                     }`}
                   >
                     {isSelected && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#E31837]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#ED1B2D]" />
                     )}
                   </div>
                   <div className="text-left">

@@ -93,11 +93,11 @@ export const OtpInput: React.FC<OtpInputProps> = ({
             disabled={disabled}
             className={[
               'w-12 h-12 text-center text-lg font-semibold rounded-lg border transition-colors duration-200',
-              'focus:outline-none focus:ring-2 focus:ring-[#E31837] focus:border-transparent',
+              'focus:outline-none focus:ring-2 focus:ring-[#ED1B2D] focus:border-transparent',
               error
                 ? 'border-red-500'
                 : digits[index]
-                  ? 'border-[#E31837]'
+                  ? 'border-[#ED1B2D]'
                   : 'border-gray-300',
               disabled ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white',
             ]

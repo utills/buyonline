@@ -26,7 +26,7 @@ export default function TrustSection() {
             >
               <div
                 className="text-3xl font-black mb-1"
-                style={{ color: '#E31837' }}
+                style={{ color: '#ED1B2D' }}
               >
                 {stat.value}
               </div>

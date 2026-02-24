@@ -41,7 +41,7 @@ export default function PanForm({ onSubmit }: PanFormProps) {
           placeholder="ABCDE1234F"
           value={panNumber}
           onChange={(e) => setPanNumber(e.target.value.toUpperCase().slice(0, 10))}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 uppercase tracking-widest focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 uppercase tracking-widest focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
         />
         {errors.pan && (
           <p className="mt-1 text-xs text-red-600">{errors.pan}</p>
@@ -56,7 +56,7 @@ export default function PanForm({ onSubmit }: PanFormProps) {
           type="date"
           value={dob}
           onChange={(e) => setDob(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
         />
         {errors.dob && (
           <p className="mt-1 text-xs text-red-600">{errors.dob}</p>
@@ -65,7 +65,7 @@ export default function PanForm({ onSubmit }: PanFormProps) {
 
       <button
         type="submit"
-        className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D]"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
       >
         Verify PAN
       </button>

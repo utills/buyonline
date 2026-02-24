@@ -35,7 +35,7 @@ export default function CompletePage() {
               { step: '3', text: 'Your policy will be active from the date of issuance' },
             ].map((item) => (
               <div key={item.step} className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-[#E31837] rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 bg-[#ED1B2D] rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-xs text-white font-bold">{item.step}</span>
                 </div>
                 <p className="text-sm text-gray-600">{item.text}</p>
@@ -49,7 +49,7 @@ export default function CompletePage() {
           <p className="text-sm text-gray-500">Need help?</p>
           <a
             href="tel:18001234567"
-            className="inline-flex items-center gap-2 text-[#E31837] font-medium text-sm hover:underline"
+            className="inline-flex items-center gap-2 text-[#ED1B2D] font-medium text-sm hover:underline"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -63,7 +63,7 @@ export default function CompletePage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 bg-white rounded flex items-center justify-center">
-                <span className="text-[#E31837] font-bold text-xs">P</span>
+                <span className="text-[#ED1B2D] font-bold text-xs">P</span>
               </div>
               <span className="text-sm font-semibold">Prudential Health Insurance</span>
             </div>

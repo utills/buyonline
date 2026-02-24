@@ -1,8 +1,8 @@
 import { JourneyStep, PlanTier } from '@buyonline/shared-types';
 
 export const COLORS = {
-  primary: '#E31837',
-  primaryDark: '#B8132D',
+  primary: '#ED1B2D',
+  primaryDark: '#C8162A',
   primaryLight: '#FF4D6A',
   white: '#FFFFFF',
   black: '#000000',

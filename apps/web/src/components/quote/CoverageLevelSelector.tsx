@@ -33,7 +33,7 @@ export default function CoverageLevelSelector({
           >
             <span
               className={`text-sm font-semibold block ${
-                isSelected ? 'text-[#E31837]' : 'text-gray-600'
+                isSelected ? 'text-[#ED1B2D]' : 'text-gray-600'
               }`}
             >
               {PLAN_TIER_LABELS[tier]}

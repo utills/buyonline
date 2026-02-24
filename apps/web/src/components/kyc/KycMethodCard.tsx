@@ -30,14 +30,14 @@ export default function KycMethodCard({
       onClick={() => onSelect(method)}
       className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all ${
         isSelected
-          ? 'border-[#E31837] bg-red-50'
+          ? 'border-[#ED1B2D] bg-red-50'
           : 'border-gray-200 hover:border-gray-300'
       }`}
     >
       <div
         className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 ${
           isSelected
-            ? 'bg-[#E31837] text-white'
+            ? 'bg-[#ED1B2D] text-white'
             : 'bg-gray-100 text-gray-600'
         }`}
       >
@@ -56,11 +56,11 @@ export default function KycMethodCard({
       </div>
       <div
         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-1 flex-shrink-0 ${
-          isSelected ? 'border-[#E31837]' : 'border-gray-300'
+          isSelected ? 'border-[#ED1B2D]' : 'border-gray-300'
         }`}
       >
         {isSelected && (
-          <div className="w-2.5 h-2.5 rounded-full bg-[#E31837]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ED1B2D]" />
         )}
       </div>
     </button>

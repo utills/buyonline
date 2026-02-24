@@ -96,7 +96,7 @@ export default function LeadForm() {
           placeholder="Enter age"
           value={eldestMemberAge ?? ''}
           onChange={(e) => setEldestMemberAge(parseInt(e.target.value) || 0)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
         />
         {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age}</p>}
       </div>
@@ -117,7 +117,7 @@ export default function LeadForm() {
             placeholder="Enter mobile number"
             value={mobile}
             onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
-            className="flex-1 rounded-r-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="flex-1 rounded-r-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
         </div>
         {errors.mobile && <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>}
@@ -129,11 +129,11 @@ export default function LeadForm() {
           type="checkbox"
           checked={consentGiven}
           onChange={(e) => setConsentGiven(e.target.checked)}
-          className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#E31837] focus:ring-[#E31837]"
+          className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#ED1B2D] focus:ring-[#ED1B2D]"
         />
         <span className="text-xs text-gray-500 leading-relaxed">
           I agree to the{' '}
-          <a href="/terms" className="text-[#E31837] underline">
+          <a href="/terms" className="text-[#ED1B2D] underline">
             Terms & Conditions
           </a>{' '}
           and authorize Prudential to contact me regarding my application.
@@ -149,7 +149,7 @@ export default function LeadForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-[#E31837] py-3.5 px-6 text-white font-semibold text-base hover:bg-[#B8132D] disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] shadow-sm"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3.5 px-6 text-white font-semibold text-base hover:bg-[#C8162A] disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] shadow-sm"
       >
         {isSubmitting ? (
           <span className="flex items-center justify-center gap-2">

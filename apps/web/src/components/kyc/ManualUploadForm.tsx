@@ -57,7 +57,7 @@ export default function ManualUploadForm({ onSubmit }: ManualUploadFormProps) {
         <select
           value={identityType}
           onChange={(e) => setIdentityType(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
         >
           <option value="">Select document type</option>
           {IDENTITY_PROOF_OPTIONS.map((opt) => (
@@ -70,7 +70,7 @@ export default function ManualUploadForm({ onSubmit }: ManualUploadFormProps) {
           <p className="text-xs text-red-600">{errors.identityType}</p>
         )}
 
-        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#E31837] transition-colors">
+        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#ED1B2D] transition-colors">
           {identityUpload.file ? (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -101,7 +101,7 @@ export default function ManualUploadForm({ onSubmit }: ManualUploadFormProps) {
           {identityUpload.isUploading && (
             <div className="mt-2">
               <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div className="bg-[#E31837] h-1.5 rounded-full transition-all" style={{ width: `${identityUpload.progress}%` }} />
+                <div className="bg-[#ED1B2D] h-1.5 rounded-full transition-all" style={{ width: `${identityUpload.progress}%` }} />
               </div>
             </div>
           )}
@@ -116,7 +116,7 @@ export default function ManualUploadForm({ onSubmit }: ManualUploadFormProps) {
         <select
           value={addressType}
           onChange={(e) => setAddressType(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
         >
           <option value="">Select document type</option>
           {ADDRESS_PROOF_OPTIONS.map((opt) => (
@@ -129,7 +129,7 @@ export default function ManualUploadForm({ onSubmit }: ManualUploadFormProps) {
           <p className="text-xs text-red-600">{errors.addressType}</p>
         )}
 
-        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#E31837] transition-colors">
+        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#ED1B2D] transition-colors">
           {addressUpload.file ? (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -160,7 +160,7 @@ export default function ManualUploadForm({ onSubmit }: ManualUploadFormProps) {
           {addressUpload.isUploading && (
             <div className="mt-2">
               <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div className="bg-[#E31837] h-1.5 rounded-full transition-all" style={{ width: `${addressUpload.progress}%` }} />
+                <div className="bg-[#ED1B2D] h-1.5 rounded-full transition-all" style={{ width: `${addressUpload.progress}%` }} />
               </div>
             </div>
           )}
@@ -172,7 +172,7 @@ export default function ManualUploadForm({ onSubmit }: ManualUploadFormProps) {
       <button
         type="submit"
         disabled={identityUpload.isUploading || addressUpload.isUploading}
-        className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Submit Documents
       </button>

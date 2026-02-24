@@ -64,7 +64,7 @@ export default function ChatWidget() {
       {/* Bubble button */}
       <button
         onClick={isOpen ? () => setIsOpen(false) : handleOpen}
-        className="w-14 h-14 bg-[#E31837] rounded-full shadow-lg flex items-center justify-center hover:bg-[#B8132D] transition-all duration-200 hover:scale-105 active:scale-95 relative"
+        className="w-14 h-14 bg-[#ED1B2D] rounded-full shadow-lg flex items-center justify-center hover:bg-[#C8162A] transition-all duration-200 hover:scale-105 active:scale-95 relative"
         aria-label={isOpen ? 'Close chat' : 'Open chat assistant'}
       >
         {isOpen ? (
@@ -84,7 +84,7 @@ export default function ChatWidget() {
 
         {/* Session badge — shows count of messages from previous session */}
         {!isOpen && messages.length > 0 && !hasNewMessage && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-white text-[#E31837] text-[10px] font-bold rounded-full border border-red-100 flex items-center justify-center px-1 shadow-sm">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-white text-[#ED1B2D] text-[10px] font-bold rounded-full border border-red-100 flex items-center justify-center px-1 shadow-sm">
             {messages.length > 99 ? '99+' : messages.length}
           </span>
         )}

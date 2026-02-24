@@ -76,12 +76,12 @@ export default function PincodeInput() {
             placeholder="e.g. 400001"
             value={pincode ?? ''}
             onChange={(e) => handlePincodeChange(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D]"
           />
           <button
             type="button"
             onClick={handleGeolocate}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#E31837]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#ED1B2D]"
             title="Use current location"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

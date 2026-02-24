@@ -11,7 +11,7 @@ export default function PlanSummary({ summary }: PlanSummaryProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#E31837] to-[#B8132D] p-5 text-white">
+      <div className="bg-gradient-to-r from-[#ED1B2D] to-[#C8162A] p-5 text-white">
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-medium text-white/70 uppercase tracking-wide">
@@ -106,7 +106,7 @@ export default function PlanSummary({ summary }: PlanSummaryProps) {
 
           <div className="flex justify-between text-base font-bold">
             <span className="text-gray-900">Total Premium</span>
-            <span className="text-[#E31837]">
+            <span className="text-[#ED1B2D]">
               Rs {summary.totalPremium.toLocaleString('en-IN')}
             </span>
           </div>

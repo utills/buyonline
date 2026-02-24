@@ -58,14 +58,14 @@ export default function PaymentGateway({
             onClick={() => setSelectedMethod(method.id)}
             className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
               selectedMethod === method.id
-                ? 'border-[#E31837] bg-red-50'
+                ? 'border-[#ED1B2D] bg-red-50'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
             <div
               className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
                 selectedMethod === method.id
-                  ? 'bg-[#E31837] text-white'
+                  ? 'bg-[#ED1B2D] text-white'
                   : 'bg-gray-100 text-gray-600'
               }`}
             >
@@ -81,7 +81,7 @@ export default function PaymentGateway({
       <button
         onClick={handlePay}
         disabled={isProcessing}
-        className="w-full rounded-lg bg-[#E31837] py-3.5 px-6 text-white font-semibold hover:bg-[#B8132D] disabled:opacity-60"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3.5 px-6 text-white font-semibold hover:bg-[#C8162A] disabled:opacity-60"
       >
         {isProcessing ? (
           <span className="flex items-center justify-center gap-2">

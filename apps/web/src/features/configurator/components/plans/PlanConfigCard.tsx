@@ -12,7 +12,7 @@ interface PlanConfigCardProps {
 const PLAN_LABELS: Record<string, { name: string; tier: string; color: string }> = {
   'plan-premier':   { name: 'Premier',   tier: 'Base',     color: '#6366F1' },
   'plan-signature': { name: 'Signature', tier: 'Mid-tier', color: '#F59E0B' },
-  'plan-global':    { name: 'Global',    tier: 'Premium',  color: '#E31837' },
+  'plan-global':    { name: 'Global',    tier: 'Premium',  color: '#ED1B2D' },
 };
 
 export const PlanConfigCard: React.FC<PlanConfigCardProps> = ({ plan, index, onChange }) => {

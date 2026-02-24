@@ -48,7 +48,7 @@ export default function HospitalsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8 text-center">
         <p className="text-gray-500 text-sm">Hospital search is not available.</p>
-        <button onClick={() => router.back()} className="mt-4 text-[#E31837] text-sm font-medium">
+        <button onClick={() => router.back()} className="mt-4 text-[#ED1B2D] text-sm font-medium">
           Go back
         </button>
       </div>
@@ -57,7 +57,7 @@ export default function HospitalsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-[#E31837] text-white px-4 pt-12 pb-6">
+      <div className="bg-[#ED1B2D] text-white px-4 pt-12 pb-6">
         <button onClick={() => router.back()} className="mb-4 flex items-center gap-1 text-sm opacity-80">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -74,13 +74,13 @@ export default function HospitalsPage() {
           placeholder="Search by hospital or city..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E31837]/30"
+          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#ED1B2D]/30"
         />
       </div>
 
       {isLoading ? (
         <div className="flex justify-center py-16">
-          <div className="w-8 h-8 border-4 border-[#E31837] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-[#ED1B2D] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400">No hospitals found</div>
@@ -110,7 +110,7 @@ export default function HospitalsPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 max-w-md mx-auto">
         <button
           onClick={() => router.push(applicationId ? '/summary' : '/plans')}
-          className="w-full bg-[#E31837] text-white font-semibold py-3 rounded-xl text-sm"
+          className="w-full bg-[#ED1B2D] text-white font-semibold py-3 rounded-xl text-sm"
         >
           Continue
         </button>

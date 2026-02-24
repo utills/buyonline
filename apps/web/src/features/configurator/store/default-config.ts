@@ -170,7 +170,7 @@ export const DEFAULT_CONFIG: JourneyConfig = {
     ],
   },
   branding: {
-    primaryColor: '#E31837',
+    primaryColor: '#ED1B2D',
     logoText: 'PRUHealth',
     tagline: 'Protecting what matters most',
   },

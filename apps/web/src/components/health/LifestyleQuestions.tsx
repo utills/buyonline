@@ -55,7 +55,7 @@ export default function LifestyleQuestions({
             onClick={() => setTobaccoAnswer(true)}
             className={`flex-1 py-2.5 rounded-lg border text-sm font-medium ${
               tobaccoAnswer
-                ? 'bg-[#E31837] text-white border-[#E31837]'
+                ? 'bg-[#ED1B2D] text-white border-[#ED1B2D]'
                 : 'bg-white text-gray-600 border-gray-300'
             }`}
           >
@@ -99,7 +99,7 @@ export default function LifestyleQuestions({
             onClick={() => setAlcoholAnswer(true)}
             className={`flex-1 py-2.5 rounded-lg border text-sm font-medium ${
               alcoholAnswer
-                ? 'bg-[#E31837] text-white border-[#E31837]'
+                ? 'bg-[#ED1B2D] text-white border-[#ED1B2D]'
                 : 'bg-white text-gray-600 border-gray-300'
             }`}
           >
@@ -135,7 +135,7 @@ export default function LifestyleQuestions({
       <button
         type="button"
         onClick={handleSave}
-        className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D]"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
       >
         Continue
       </button>

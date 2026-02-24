@@ -39,7 +39,7 @@ export const YesNoSelector: React.FC<YesNoSelectorProps> = ({
           className={[
             'flex-1 py-2.5 rounded-lg border-2 text-sm font-semibold transition-all duration-200',
             value === true
-              ? 'border-[#E31837] bg-red-50 text-[#E31837]'
+              ? 'border-[#ED1B2D] bg-red-50 text-[#ED1B2D]'
               : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300',
           ].join(' ')}
         >
@@ -51,7 +51,7 @@ export const YesNoSelector: React.FC<YesNoSelectorProps> = ({
           className={[
             'flex-1 py-2.5 rounded-lg border-2 text-sm font-semibold transition-all duration-200',
             value === false
-              ? 'border-[#E31837] bg-red-50 text-[#E31837]'
+              ? 'border-[#ED1B2D] bg-red-50 text-[#ED1B2D]'
               : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300',
           ].join(' ')}
         >
@@ -69,7 +69,7 @@ export const YesNoSelector: React.FC<YesNoSelectorProps> = ({
               className={[
                 'inline-flex items-center px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-200',
                 chip.selected
-                  ? 'border-[#E31837] bg-red-50 text-[#E31837]'
+                  ? 'border-[#ED1B2D] bg-red-50 text-[#ED1B2D]'
                   : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300',
               ].join(' ')}
             >

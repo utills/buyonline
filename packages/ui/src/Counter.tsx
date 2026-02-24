@@ -35,7 +35,7 @@ export const Counter: React.FC<CounterProps> = ({
           className={[
             'w-9 h-9 rounded-l-lg border border-gray-300 flex items-center justify-center text-lg font-semibold transition-colors duration-200',
             canDecrement
-              ? 'text-[#E31837] hover:bg-red-50 cursor-pointer'
+              ? 'text-[#ED1B2D] hover:bg-red-50 cursor-pointer'
               : 'text-gray-300 cursor-not-allowed',
           ].join(' ')}
           aria-label="Decrease"
@@ -52,7 +52,7 @@ export const Counter: React.FC<CounterProps> = ({
           className={[
             'w-9 h-9 rounded-r-lg border border-gray-300 flex items-center justify-center text-lg font-semibold transition-colors duration-200',
             canIncrement
-              ? 'text-[#E31837] hover:bg-red-50 cursor-pointer'
+              ? 'text-[#ED1B2D] hover:bg-red-50 cursor-pointer'
               : 'text-gray-300 cursor-not-allowed',
           ].join(' ')}
           aria-label="Increase"

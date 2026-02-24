@@ -99,7 +99,7 @@ export default function EligibilityResult({
         <button
           type="button"
           onClick={onContinue}
-          className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D]"
+          className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
         >
           Continue with {eligible.length} member{eligible.length > 1 ? 's' : ''}
         </button>
@@ -113,7 +113,7 @@ export default function EligibilityResult({
           <button
             type="button"
             onClick={() => window.history.back()}
-            className="mt-4 text-[#E31837] font-medium text-sm hover:underline"
+            className="mt-4 text-[#ED1B2D] font-medium text-sm hover:underline"
           >
             Go back and modify selection
           </button>

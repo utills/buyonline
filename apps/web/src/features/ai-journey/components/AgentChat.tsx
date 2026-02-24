@@ -40,7 +40,7 @@ function MessageBubble({
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       {/* Assistant avatar */}
       {!isUser && (
-        <div className="w-7 h-7 rounded-full bg-[#E31837] flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
+        <div className="w-7 h-7 rounded-full bg-[#ED1B2D] flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
           <span className="text-white font-bold text-xs">P</span>
         </div>
       )}
@@ -50,7 +50,7 @@ function MessageBubble({
         <div
           className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
             isUser
-              ? 'bg-[#E31837] text-white rounded-tr-sm'
+              ? 'bg-[#ED1B2D] text-white rounded-tr-sm'
               : message.error
               ? 'bg-red-50 text-red-700 border border-red-200 rounded-tl-sm'
               : 'bg-gray-100 text-gray-800 rounded-tl-sm'
@@ -158,7 +158,7 @@ export default function AgentChat({ messages, isStreaming, phase, onSend, onRese
       {/* Streaming indicator when last message is from user and we're waiting */}
       {isStreaming && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
         <div className="flex justify-start mb-3 transition-opacity duration-300">
-          <div className="w-7 h-7 rounded-full bg-[#E31837] flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
+          <div className="w-7 h-7 rounded-full bg-[#ED1B2D] flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
             <span className="text-white font-bold text-xs">P</span>
           </div>
           <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-3.5 py-2.5">

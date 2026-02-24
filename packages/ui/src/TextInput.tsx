@@ -38,7 +38,7 @@ export const TextInput: React.FC<TextInputProps> = ({
       {label && (
         <label className="text-sm font-medium text-gray-700">
           {label}
-          {required && <span className="text-[#E31837] ml-0.5">*</span>}
+          {required && <span className="text-[#ED1B2D] ml-0.5">*</span>}
         </label>
       )}
       <div className="relative">
@@ -57,7 +57,7 @@ export const TextInput: React.FC<TextInputProps> = ({
           disabled={disabled}
           className={[
             'w-full rounded-lg border px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-[#E31837] focus:border-transparent',
+            'focus:outline-none focus:ring-2 focus:ring-[#ED1B2D] focus:border-transparent',
             leftIcon ? 'pl-10' : '',
             rightIcon ? 'pr-10' : '',
             error

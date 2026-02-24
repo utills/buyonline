@@ -20,12 +20,12 @@ export default function JourneyPicker() {
           {/* AI Journey card */}
           <button
             onClick={() => router.push('/ai-journey')}
-            className="group relative flex flex-col items-center gap-3 p-5 rounded-xl border-2 border-[#E31837] bg-red-50 hover:bg-red-100 transition-all text-center"
+            className="group relative flex flex-col items-center gap-3 p-5 rounded-xl border-2 border-[#ED1B2D] bg-red-50 hover:bg-red-100 transition-all text-center"
           >
-            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#E31837] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#ED1B2D] text-white text-xs font-bold px-2 py-0.5 rounded-full">
               RECOMMENDED
             </span>
-            <div className="w-12 h-12 bg-[#E31837] rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-[#ED1B2D] rounded-full flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -45,7 +45,7 @@ export default function JourneyPicker() {
               <p className="text-xs text-gray-500 mt-1">
                 Just answer a few questions. AI recommends your perfect plan.
               </p>
-              <p className="text-xs font-medium text-[#E31837] mt-2">~3 minutes</p>
+              <p className="text-xs font-medium text-[#ED1B2D] mt-2">~3 minutes</p>
             </div>
           </button>
 

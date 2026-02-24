@@ -27,7 +27,7 @@ export const MemberChip: React.FC<MemberChipProps> = ({
       className={[
         'inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 text-sm font-medium transition-all duration-200',
         selected
-          ? 'border-[#E31837] bg-red-50 text-[#E31837]'
+          ? 'border-[#ED1B2D] bg-red-50 text-[#ED1B2D]'
           : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300',
         disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
         className,

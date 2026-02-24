@@ -18,7 +18,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-md w-full text-center space-y-5">
         <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto">
-          <svg className="w-7 h-7 text-[#E31837]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-7 h-7 text-[#ED1B2D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
@@ -34,7 +34,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
         <div className="flex gap-3">
           <button
             onClick={reset}
-            className="flex-1 py-2.5 px-4 bg-[#E31837] text-white rounded-xl text-sm font-medium hover:bg-[#B8132D] transition-colors"
+            className="flex-1 py-2.5 px-4 bg-[#ED1B2D] text-white rounded-xl text-sm font-medium hover:bg-[#C8162A] transition-colors"
           >
             Try again
           </button>

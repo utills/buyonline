@@ -39,7 +39,7 @@ export default function SkipAddonsModal({
           <div className="space-y-3 pt-2">
             <button
               onClick={onClose}
-              className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D]"
+              className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
             >
               View Add-ons
             </button>

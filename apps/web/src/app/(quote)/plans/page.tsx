@@ -155,7 +155,7 @@ export default function PlansPage() {
       {fetchError && filteredPlans.length === 0 && (
         <div
           role="alert"
-          className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-[#E31837]"
+          className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-[#ED1B2D]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -199,7 +199,7 @@ export default function PlansPage() {
       <button
         onClick={handleContinue}
         disabled={!selectedPlanId || isSaving}
-        className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D] disabled:opacity-40"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A] disabled:opacity-40"
       >
         {isSaving ? 'Saving...' : 'Continue with Selected Plan'}
       </button>

@@ -4,7 +4,7 @@ export default function HeroSection() {
   return (
     <section
       className="relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, var(--brand-color, #E31837) 0%, color-mix(in srgb, var(--brand-color, #E31837) 60%, black) 100%)' }}
+      style={{ background: 'linear-gradient(135deg, var(--brand-color, #ED1B2D) 0%, color-mix(in srgb, var(--brand-color, #ED1B2D) 60%, black) 100%)' }}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">

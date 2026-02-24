@@ -91,7 +91,7 @@ export default function HowItWorks() {
             <div className="flex items-center gap-3 mb-8">
               <div
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold text-white"
-                style={{ backgroundColor: '#E31837' }}
+                style={{ backgroundColor: '#ED1B2D' }}
               >
                 <svg
                   className="w-4 h-4"
@@ -110,7 +110,7 @@ export default function HowItWorks() {
 
             <div className="space-y-8 pl-2 border-l-2 border-red-100 ml-5">
               {AI_JOURNEY_STEPS.map((step) => (
-                <StepCard key={step.number} step={step} accent="#E31837" />
+                <StepCard key={step.number} step={step} accent="#ED1B2D" />
               ))}
             </div>
           </div>

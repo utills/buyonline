@@ -31,7 +31,7 @@ export const RadioCard: React.FC<RadioCardProps> = ({
       className={[
         'w-full text-left rounded-xl border-2 p-4 transition-all duration-200 relative',
         selected
-          ? 'border-[#E31837] bg-red-50'
+          ? 'border-[#ED1B2D] bg-red-50'
           : 'border-gray-200 bg-white hover:border-gray-300',
         disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
         className,
@@ -48,11 +48,11 @@ export const RadioCard: React.FC<RadioCardProps> = ({
         <span
           className={[
             'flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200',
-            selected ? 'border-[#E31837]' : 'border-gray-300',
+            selected ? 'border-[#ED1B2D]' : 'border-gray-300',
           ].join(' ')}
         >
           {selected && (
-            <span className="w-2.5 h-2.5 rounded-full bg-[#E31837]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#ED1B2D]" />
           )}
         </span>
         <div className="flex-1 min-w-0">

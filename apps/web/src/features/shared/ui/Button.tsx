@@ -23,11 +23,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#E31837] text-white hover:bg-[#B8132D] active:bg-[#9A1028] shadow-sm',
+    'bg-[#ED1B2D] text-white hover:bg-[#C8162A] active:bg-[#9A1028] shadow-sm',
   secondary:
     'bg-gray-900 text-white hover:bg-gray-700 active:bg-gray-800 shadow-sm',
   outline:
-    'border-2 border-[#E31837] text-[#E31837] bg-transparent hover:bg-red-50 active:bg-red-100',
+    'border-2 border-[#ED1B2D] text-[#ED1B2D] bg-transparent hover:bg-red-50 active:bg-red-100',
   ghost:
     'text-gray-600 bg-transparent hover:bg-gray-100 active:bg-gray-200',
   danger:
@@ -43,7 +43,7 @@ const sizeStyles: Record<ButtonSize, string> = {
 const spinnerColorByVariant: Record<ButtonVariant, string> = {
   primary:   'text-white',
   secondary: 'text-white',
-  outline:   'text-[#E31837]',
+  outline:   'text-[#ED1B2D]',
   ghost:     'text-gray-600',
   danger:    'text-white',
 };
@@ -51,7 +51,7 @@ const spinnerColorByVariant: Record<ButtonVariant, string> = {
 /**
  * Variant-based button supporting primary, secondary, outline, ghost, and danger styles.
  * Includes loading state with a spinner, icon slots, and full-width mode.
- * Uses Prudential brand red (#E31837) as the primary color.
+ * Uses Prudential brand red (#ED1B2D) as the primary color.
  */
 export default function Button({
   variant = 'primary',
@@ -69,7 +69,7 @@ export default function Button({
 
   const classes = [
     'inline-flex items-center justify-center gap-2 font-medium transition-colors duration-150',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E31837] focus-visible:ring-offset-2 select-none',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ED1B2D] focus-visible:ring-offset-2 select-none',
     variantStyles[variant],
     sizeStyles[size],
     isDisabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : 'cursor-pointer',

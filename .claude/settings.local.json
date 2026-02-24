@@ -99,7 +99,13 @@
       "Bash(jobs:*)",
       "Bash(git:*)",
       "Bash(grep location\\\\.:*)",
-      "Bash(echo Session: $SID:*)"
+      "Bash(echo Session: $SID:*)",
+      "Bash(ps:*)",
+      "Bash(echo === GET by slug \\(ACTIONABLE post\\) ===:*)",
+      "Bash(echo === Admin leads list ===:*)",
+      "Bash(screencapture:*)",
+      "Bash(kill 62151:*)",
+      "WebFetch(domain:www.prudentialplc.com)"
     ]
   }
 }

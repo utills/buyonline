@@ -6,7 +6,7 @@ export type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg';
 export interface SpinnerProps {
   /** Size of the spinner. Defaults to 'md'. */
   size?: SpinnerSize;
-  /** Tailwind text color class applied to the SVG. Defaults to 'text-[#E31837]'. */
+  /** Tailwind text color class applied to the SVG. Defaults to 'text-[#ED1B2D]'. */
   color?: string;
   /** Additional CSS classes. */
   className?: string;
@@ -23,7 +23,7 @@ const sizeMap: Record<SpinnerSize, string> = {
  * Animated SVG spinner for loading states.
  * Server Component safe — no client-side event handlers.
  */
-export default function Spinner({ size = 'md', color = 'text-[#E31837]', className = '' }: SpinnerProps) {
+export default function Spinner({ size = 'md', color = 'text-[#ED1B2D]', className = '' }: SpinnerProps) {
   const sizeClass = sizeMap[size];
   const classes = ['animate-spin', sizeClass, color, className].filter(Boolean).join(' ');
   return (

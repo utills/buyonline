@@ -20,7 +20,7 @@ const variantStyles: Record<BadgeVariant, { badge: string; dot: string }> = {
   error:   { badge: 'bg-red-100 text-red-700',       dot: 'bg-red-500' },
   info:    { badge: 'bg-blue-100 text-blue-700',     dot: 'bg-blue-500' },
   neutral: { badge: 'bg-gray-100 text-gray-600',     dot: 'bg-gray-400' },
-  brand:   { badge: 'bg-red-50 text-[#E31837]',      dot: 'bg-[#E31837]' },
+  brand:   { badge: 'bg-red-50 text-[#ED1B2D]',      dot: 'bg-[#ED1B2D]' },
 };
 
 /**

@@ -176,10 +176,10 @@ export default function ChatWindow({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-[#E31837] px-3 py-2.5 flex items-center justify-between flex-shrink-0">
+      <div className="bg-[#ED1B2D] px-3 py-2.5 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-sm">
-            <span className="text-[#E31837] font-bold text-xs">P</span>
+            <span className="text-[#ED1B2D] font-bold text-xs">P</span>
           </div>
           <div>
             <p className="text-white font-semibold text-sm leading-tight">PRUHealth Assistant</p>
@@ -251,7 +251,7 @@ export default function ChatWindow({
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4 py-6">
             <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center border border-red-100">
-              <svg className="w-7 h-7 text-[#E31837]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-7 h-7 text-[#ED1B2D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
@@ -265,7 +265,7 @@ export default function ChatWindow({
                   key={s}
                   type="button"
                   onClick={() => handleSend(s)}
-                  className="text-left text-xs bg-white hover:bg-red-50 hover:text-[#E31837] border border-gray-200 hover:border-red-200 rounded-xl px-3 py-2 text-gray-600 transition-colors shadow-sm"
+                  className="text-left text-xs bg-white hover:bg-red-50 hover:text-[#ED1B2D] border border-gray-200 hover:border-red-200 rounded-xl px-3 py-2 text-gray-600 transition-colors shadow-sm"
                 >
                   {s}
                 </button>
@@ -294,14 +294,14 @@ export default function ChatWindow({
             rows={1}
             maxLength={500}
             disabled={isStreaming}
-            className="flex-1 resize-none rounded-xl border border-gray-200 focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837] px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 max-h-24 overflow-y-auto"
+            className="flex-1 resize-none rounded-xl border border-gray-200 focus:border-[#ED1B2D] focus:ring-1 focus:ring-[#ED1B2D] px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 max-h-24 overflow-y-auto"
             style={{ lineHeight: '1.4' }}
           />
           <button
             type="button"
             onClick={() => handleSend()}
             disabled={!input.trim() || isStreaming}
-            className="w-8 h-8 bg-[#E31837] rounded-full flex items-center justify-center flex-shrink-0 hover:bg-[#B8132D] disabled:opacity-40 disabled:cursor-not-allowed transition-colors mb-0.5"
+            className="w-8 h-8 bg-[#ED1B2D] rounded-full flex items-center justify-center flex-shrink-0 hover:bg-[#C8162A] disabled:opacity-40 disabled:cursor-not-allowed transition-colors mb-0.5"
           >
             <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />

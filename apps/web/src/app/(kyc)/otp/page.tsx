@@ -110,7 +110,7 @@ export default function KycOtpPage() {
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
             className={`w-12 h-14 text-center text-xl font-bold rounded-lg border-2 focus:outline-none ${
-              error ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#E31837]'
+              error ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#ED1B2D]'
             }`}
           />
         ))}
@@ -138,7 +138,7 @@ export default function KycOtpPage() {
               inputRefs.current[0]?.focus();
               sendOtp();
             }}
-            className="text-[#E31837] font-medium text-sm hover:underline"
+            className="text-[#ED1B2D] font-medium text-sm hover:underline"
           >
             Resend OTP
           </button>

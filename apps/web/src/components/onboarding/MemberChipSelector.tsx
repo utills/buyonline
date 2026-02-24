@@ -27,8 +27,8 @@ export default function MemberChipSelector({
             onClick={() => onToggle(member.id)}
             className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
               isSelected
-                ? 'bg-[#E31837] text-white border-[#E31837]'
-                : 'bg-white text-gray-600 border-gray-300 hover:border-[#E31837] hover:text-[#E31837]'
+                ? 'bg-[#ED1B2D] text-white border-[#ED1B2D]'
+                : 'bg-white text-gray-600 border-gray-300 hover:border-[#ED1B2D] hover:text-[#ED1B2D]'
             }`}
           >
             {member.label}

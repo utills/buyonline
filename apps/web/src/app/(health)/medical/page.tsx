@@ -121,7 +121,7 @@ export default function MedicalPage() {
         onClick={handleContinue}
         disabled={isSaving}
         className="w-full rounded-lg py-3 px-6 text-white font-semibold disabled:opacity-40"
-        style={{ backgroundColor: 'var(--brand-color, #E31837)' }}
+        style={{ backgroundColor: 'var(--brand-color, #ED1B2D)' }}
       >
         {isSaving ? 'Saving...' : 'Continue'}
       </button>

@@ -70,7 +70,7 @@ export default function FeaturesGrid() {
               >
                 <svg
                   className="w-5 h-5"
-                  style={{ color: '#E31837' }}
+                  style={{ color: '#ED1B2D' }}
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={1.8}

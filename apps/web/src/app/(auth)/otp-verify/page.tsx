@@ -125,7 +125,7 @@ export default function OtpVerifyPage() {
         <div className="max-w-md w-full mx-auto px-6 space-y-8">
           <div className="text-center space-y-2">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-[#E31837]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-[#ED1B2D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </div>
@@ -150,7 +150,7 @@ export default function OtpVerifyPage() {
                 className={`w-12 h-14 text-center text-xl font-bold rounded-lg border-2 transition-all focus:outline-none ${
                   error
                     ? 'border-red-300 focus:border-red-500'
-                    : 'border-gray-300 focus:border-[#E31837]'
+                    : 'border-gray-300 focus:border-[#ED1B2D]'
                 }`}
               />
             ))}
@@ -175,7 +175,7 @@ export default function OtpVerifyPage() {
             {canResend ? (
               <button
                 onClick={handleResend}
-                className="text-[#E31837] font-medium text-sm hover:underline"
+                className="text-[#ED1B2D] font-medium text-sm hover:underline"
               >
                 Resend OTP
               </button>

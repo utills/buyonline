@@ -39,7 +39,7 @@ export default function SiteFooter() {
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div
                 className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-                style={{ backgroundColor: '#E31837' }}
+                style={{ backgroundColor: '#ED1B2D' }}
               >
                 P
               </div>

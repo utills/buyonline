@@ -46,7 +46,7 @@ export default function DisabilityForm({ members, onSave }: DisabilityFormProps)
             onClick={() => setHasDisability(true)}
             className={`flex-1 py-2.5 rounded-lg border text-sm font-medium ${
               hasDisability
-                ? 'bg-[#E31837] text-white border-[#E31837]'
+                ? 'bg-[#ED1B2D] text-white border-[#ED1B2D]'
                 : 'bg-white text-gray-600 border-gray-300'
             }`}
           >
@@ -91,7 +91,7 @@ export default function DisabilityForm({ members, onSave }: DisabilityFormProps)
             onClick={() => setHasPriorDecline(true)}
             className={`flex-1 py-2.5 rounded-lg border text-sm font-medium ${
               hasPriorDecline
-                ? 'bg-[#E31837] text-white border-[#E31837]'
+                ? 'bg-[#ED1B2D] text-white border-[#ED1B2D]'
                 : 'bg-white text-gray-600 border-gray-300'
             }`}
           >
@@ -118,7 +118,7 @@ export default function DisabilityForm({ members, onSave }: DisabilityFormProps)
             onChange={(e) => setPriorDetails(e.target.value)}
             rows={3}
             placeholder="Please provide details..."
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#E31837] resize-none"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#ED1B2D] resize-none"
           />
         )}
       </div>
@@ -126,7 +126,7 @@ export default function DisabilityForm({ members, onSave }: DisabilityFormProps)
       <button
         type="button"
         onClick={handleSave}
-        className="w-full rounded-lg bg-[#E31837] py-3 px-6 text-white font-semibold hover:bg-[#B8132D]"
+        className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
       >
         Continue
       </button>

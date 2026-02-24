@@ -33,7 +33,7 @@ export default function StepTabs({ activeStep }: StepTabsProps) {
                 key={step}
                 className={`flex-1 py-3 text-center relative ${
                   isActive
-                    ? 'border-b-2 border-[#E31837]'
+                    ? 'border-b-2 border-[#ED1B2D]'
                     : ''
                 }`}
               >
@@ -43,7 +43,7 @@ export default function StepTabs({ activeStep }: StepTabsProps) {
                       isCompleted
                         ? 'bg-green-500 text-white'
                         : isActive
-                        ? 'bg-[#E31837] text-white'
+                        ? 'bg-[#ED1B2D] text-white'
                         : 'bg-gray-200 text-gray-500'
                     }`}
                   >
@@ -62,7 +62,7 @@ export default function StepTabs({ activeStep }: StepTabsProps) {
                   <span
                     className={`text-xs font-medium ${
                       isActive
-                        ? 'text-[#E31837]'
+                        ? 'text-[#ED1B2D]'
                         : isCompleted
                         ? 'text-green-600'
                         : 'text-gray-400'
