@@ -43,12 +43,12 @@ export default function PaymentLayout({
           </Link>
 
           {/* Logo */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-6 h-6 bg-[#ED1B2D] rounded flex items-center justify-center">
-              <span className="text-white text-xs font-bold select-none">B</span>
-            </div>
-            <span className="text-sm font-semibold text-gray-900">BuyOnline</span>
-          </div>
+          <img
+            src="/prudential-logo.svg"
+            alt="Prudential"
+            height={20}
+            className="h-5 w-auto"
+          />
 
           {/* Step label */}
           <span className="text-xs font-medium text-gray-500">{step} / {TOTAL}</span>

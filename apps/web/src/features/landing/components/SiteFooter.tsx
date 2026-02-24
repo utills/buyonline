@@ -36,14 +36,13 @@ export default function SiteFooter() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-                style={{ backgroundColor: '#ED1B2D' }}
-              >
-                P
-              </div>
-              <span className="font-semibold text-white text-lg">BuyOnline</span>
+            <Link href="/" className="flex items-center mb-4">
+              <img
+                src="/prudential-logo.svg"
+                alt="Prudential"
+                height={28}
+                className="h-7 w-auto brightness-0 invert"
+              />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-4">
               India&apos;s trusted health insurance platform. IRDAI Approved.

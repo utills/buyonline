@@ -12,16 +12,13 @@ export default function NavBar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-              style={{ backgroundColor: 'var(--brand-color, #ED1B2D)' }}
-            >
-              {branding.logoText?.[0] ?? 'P'}
-            </div>
-            <span className="font-semibold text-gray-900 text-lg tracking-tight">
-              {branding.logoText ?? 'BuyOnline'}
-            </span>
+          <Link href="/" className="flex items-center shrink-0">
+            <img
+              src="/prudential-logo.svg"
+              alt={branding.logoText ?? 'Prudential'}
+              height={28}
+              className="h-7 w-auto"
+            />
           </Link>
 
           {/* Phone — hidden on mobile */}
