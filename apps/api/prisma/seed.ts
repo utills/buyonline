@@ -25,36 +25,38 @@ async function main() {
   console.log(`Upserted ${PLAN_DEFINITIONS.length} plans`);
 
   // ─── PLAN PRICING ────────────────────────────────────────────────────
+  // Delete all existing pricing for known plans first so stale SI tiers don't persist
+  await prisma.planPricing.deleteMany({
+    where: { planId: { in: PLAN_DEFINITIONS.map((p) => p.id) } },
+  });
+
   // Plans × SI tiers × 3 tenures × 2 coverage levels (skips SI tiers not in XL for a plan)
-  let pricingCount = 0;
+  const pricingRows: {
+    planId: string; sumInsured: bigint; sumInsuredLabel: string;
+    coverageLevel: 'INDIVIDUAL' | 'FLOATER'; tenureMonths: number;
+    basePremium: bigint; discountPct: number; gst: number; isPopular: boolean;
+  }[] = [];
   for (const plan of PLAN_DEFINITIONS) {
     for (const si of SUM_INSURED_OPTIONS) {
       const rawBase = BASE_PREMIUM_MAP[plan.id]?.[si.value];
       if (!rawBase) continue; // SI not available for this plan in the XL
       for (const tenure of TENURE_OPTIONS) {
-        const basePremium  = Math.round(rawBase * TENURE_MULTIPLIER[tenure]!);
-        const discountPct  = DISCOUNT_MAP[tenure]!;
-        const isPopular    = si.value === 1000000 && tenure === 12;
-
+        const basePremium = Math.round(rawBase * TENURE_MULTIPLIER[tenure]!);
+        const discountPct = DISCOUNT_MAP[tenure]!;
+        const isPopular   = si.value === 1000000 && tenure === 12;
         for (const coverageLevel of ['INDIVIDUAL', 'FLOATER'] as const) {
           const premium = coverageLevel === 'FLOATER' ? Math.round(basePremium * 1.2) : basePremium;
-          await prisma.planPricing.upsert({
-            where: { planId_sumInsured_coverageLevel_tenureMonths: {
-              planId: plan.id, sumInsured: BigInt(si.value), coverageLevel, tenureMonths: tenure,
-            }},
-            update: { basePremium: BigInt(premium), discountPct, isPopular: coverageLevel === 'INDIVIDUAL' && isPopular },
-            create: {
-              planId: plan.id, sumInsured: BigInt(si.value), sumInsuredLabel: si.label,
-              coverageLevel, tenureMonths: tenure, basePremium: BigInt(premium),
-              discountPct, gst: 18, isPopular: coverageLevel === 'INDIVIDUAL' && isPopular,
-            },
+          pricingRows.push({
+            planId: plan.id, sumInsured: BigInt(si.value), sumInsuredLabel: si.label,
+            coverageLevel, tenureMonths: tenure, basePremium: BigInt(premium),
+            discountPct, gst: 18, isPopular: coverageLevel === 'INDIVIDUAL' && isPopular,
           });
-          pricingCount++;
         }
       }
     }
   }
-  console.log(`Upserted ${pricingCount} pricing rows`);
+  await prisma.planPricing.createMany({ data: pricingRows });
+  console.log(`Upserted ${pricingRows.length} pricing rows`);
 
   // ─── ADDONS ──────────────────────────────────────────────────────────
   for (const addon of ADDON_DEFINITIONS) {

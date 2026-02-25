@@ -91,6 +91,7 @@ export const DEFAULT_CONFIG: JourneyConfig = {
     { planId: 'plan-signature', enabled: true, highlighted: true },
     { planId: 'plan-flagship2', enabled: true, highlighted: false },
     { planId: 'plan-flagship3', enabled: true, highlighted: false },
+    { planId: 'plan-flagship4', enabled: true, highlighted: false },
     { planId: 'plan-global', enabled: true, highlighted: false },
     { planId: 'plan-sub-standard', enabled: true, highlighted: false },
     { planId: 'plan-senior', enabled: true, highlighted: false },

@@ -124,11 +124,12 @@ export const useConfigStore = create<ConfigState>()(
     }),
     {
       name: 'buyonline-configurator',
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => localStorage),
       migrate: (persisted: unknown, fromVersion: number) => {
+        // v3: added plan-flagship4 + missing plans to default config
         // v2: fixed health phase step order + added declaration step
-        if (fromVersion < 2) {
+        if (fromVersion < 3) {
           return { ...(persisted as object), config: DEFAULT_CONFIG };
         }
         return persisted as ConfigState;
