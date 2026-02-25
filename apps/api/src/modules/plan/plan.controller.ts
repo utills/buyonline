@@ -32,6 +32,11 @@ export class PlanController {
     return this.pricingService.getPricing(id);
   }
 
+  @Get('addons')
+  async getAllAddons() {
+    return this.addonService.getAllAddons();
+  }
+
   @Get('plans/:id/addons')
   async getAddons(@Param('id') id: string) {
     return this.addonService.getAddonsForPlan(id);

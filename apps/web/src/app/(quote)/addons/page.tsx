@@ -19,11 +19,21 @@ export default function AddonsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!selectedPlanId) return;
-    apiClient
-      .get<Addon[]>(`/api/v1/plans/${selectedPlanId}/addons`)
-      .then(setAddons)
-      .catch(() => {});
+    const fetchAddons = async () => {
+      try {
+        if (selectedPlanId) {
+          const data = await apiClient.get<Addon[]>(`/api/v1/plans/${selectedPlanId}/addons`);
+          setAddons(data);
+        } else {
+          // No plan selected — fetch all addons so the page isn't empty
+          const data = await apiClient.get<Addon[]>('/api/v1/addons');
+          setAddons(data);
+        }
+      } catch {
+        // Non-fatal
+      }
+    };
+    fetchAddons();
   }, [selectedPlanId]); // re-run if plan changes or store hydrates after mount
 
   const safeSelectedAddonIds = selectedAddonIds ?? [];

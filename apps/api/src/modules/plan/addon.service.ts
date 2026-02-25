@@ -5,6 +5,18 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 export class AddonService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getAllAddons() {
+    const addons = await this.prisma.addon.findMany({ orderBy: { name: 'asc' } });
+    return addons.map((a) => ({
+      id: a.id,
+      name: a.name,
+      description: a.description,
+      price: 0,
+      isPreChecked: false,
+      isIncludedInBundle: false,
+    }));
+  }
+
   async getAddonsForPlan(planId: string) {
     const planAddons = await this.prisma.planAddon.findMany({
       where: { planId },
