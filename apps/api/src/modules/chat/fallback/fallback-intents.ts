@@ -20,6 +20,7 @@ export const INTENT_MAP: Record<string, string[]> = {
   eligibility_info: ['eligib', 'who can apply', 'age limit', 'qualify', 'minimum age', 'maximum age', 'entry age'],
   copay_info: ['copay', 'co-pay', 'co pay', 'deductible', 'excess', 'aggregate deductible', 'per claim'],
   rules_info: ['rule', 'restriction', 'cannot combine', 'can i combine', 'together', 'allowed'],
+  buy_now: ['buy now', 'buy insurance', 'get insured', 'purchase', 'buy a plan', 'get a plan', 'start a policy', 'i want to buy', 'i want to apply', 'how to buy', 'how to apply', 'apply now', 'get started', 'start now', 'enroll', 'take a policy', 'get covered'],
   greeting: ['hello', 'hi ', 'hey ', 'good morning', 'good afternoon', 'good evening', 'namaste', 'hi!', 'hello!'],
   thanks: ['thank', 'thanks'],
 };
@@ -86,6 +87,9 @@ export function detectIntent(query: string): string {
 
   // Business rules / restrictions
   if (matchesKeywords(query, INTENT_MAP.rules_info)) return 'rules_info';
+
+  // Buy now / start journey
+  if (matchesKeywords(query, INTENT_MAP.buy_now)) return 'buy_now';
 
   // Greetings
   if (matchesKeywords(query, INTENT_MAP.greeting)) return 'greeting';

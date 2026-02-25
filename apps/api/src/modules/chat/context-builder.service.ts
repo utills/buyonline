@@ -23,7 +23,10 @@ Action markers (optional):
   [ACTIONS:Get Premier Quote|What plans do you offer?, Compare all plans|Compare Premier vs Signature]
 - Use action markers ONLY when there is a clear next step the user can take
 - Format: [ACTIONS:Button Label|message to send, Another Label|another message]
-- Maximum 3 actions per response; keep labels short (2–4 words)`;
+- Maximum 3 actions per response; keep labels short (2–4 words)
+- When a user expresses intent to buy, purchase, apply, or get started with a policy, ALWAYS include purchase journey buttons:
+  [ACTIONS:Start AI Journey|NAVIGATE:/ai-journey, Classic Journey|NAVIGATE:/otp-verify]
+- Values starting with NAVIGATE: are treated as page navigation — the user will be taken directly to that route`;
 
 @Injectable()
 export class ContextBuilderService {

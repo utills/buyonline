@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { JourneyStep } from '@buyonline/shared-types';
 import type { ChatMessage as ChatMessageType } from '../hooks/useChatStream';
 import ChatMessage from './ChatMessage';
@@ -140,6 +141,7 @@ export default function ChatWindow({
   size,
   onSizeChange,
 }: ChatWindowProps) {
+  const router = useRouter();
   const ctx = STEP_CONTEXT[currentStep ?? JourneyStep.LANDING];
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -155,7 +157,14 @@ export default function ChatWindow({
 
   const handleSend = (text?: string) => {
     const msg = (text ?? input).trim();
-    if (!msg || isStreaming) return;
+    if (!msg) return;
+    // Handle navigation actions emitted as NAVIGATE:/path
+    if (msg.startsWith('NAVIGATE:')) {
+      router.push(msg.slice('NAVIGATE:'.length));
+      onClose();
+      return;
+    }
+    if (isStreaming) return;
     if (!text) setInput('');
     onSend(msg);
   };

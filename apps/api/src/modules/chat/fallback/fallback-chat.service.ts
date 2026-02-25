@@ -72,6 +72,9 @@ export class FallbackChatService {
       case 'rules_info':
         return handlers.rulesInfo();
 
+      case 'buy_now':
+        return handlers.buyNow();
+
       case 'greeting':
         return handlers.greeting();
 

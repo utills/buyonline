@@ -29,7 +29,15 @@ export const ConfigExportImport: React.FC<ConfigExportImportProps> = ({ config, 
     reader.onload = (ev) => {
       try {
         const parsed = JSON.parse(ev.target?.result as string) as JourneyConfig;
-        if (!parsed.phases || !parsed.plans || !parsed.chat || !parsed.branding) {
+        if (
+          !parsed.phases ||
+          !parsed.plans ||
+          !parsed.addons ||
+          !parsed.healthQuestions ||
+          !parsed.chat ||
+          !parsed.branding ||
+          !parsed.featureFlags
+        ) {
           alert('Invalid config file — missing required fields.');
           return;
         }

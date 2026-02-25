@@ -241,6 +241,10 @@ export function rulesInfo(): string {
     return `**Key Business Rules & Restrictions:**\n\n${BUSINESS_RULES.map((r, i) => `${i + 1}. ${r}`).join('\n')}\n\nFor the complete list of product rules, please refer to the policy wordings or call **1800-123-4567**.`;
   }
 
+export function buyNow(): string {
+  return `Great! I can help you get started with your health insurance policy right away.\n\nChoose how you'd like to proceed:\n\n- **AI-Guided Journey** — Our intelligent assistant walks you through every step, answers your questions in real time, and recommends the best plan for you\n- **Classic Step-by-Step** — Straightforward guided form, quick and easy\n\n[ACTIONS:Start AI Journey|NAVIGATE:/ai-journey, Classic Journey|NAVIGATE:/otp-verify]`;
+}
+
 export function defaultResponse(): string {
     return `I can help with any of the following:\n\n• **"What plans do you offer?"** — All 14 plan types\n• **"How much for PHI Basic, age 35, Zone 2, ₹10L?"** — Premium quote\n• **"Compare Flagship 1 vs Flagship 2"** — Plan comparison\n• **"Tell me about PHI Global"** — Plan details\n• **"What add-ons are available?"** — Full add-on list\n• **"What discounts can I get?"** — All discounts\n• **"What is the waiting period?"** — PED and illness waits\n• **"How does co-payment work?"** — Deductible and co-pay options\n• **"What are the business rules?"** — Combination restrictions\n\nFor personalised advice, call **1800-123-4567** (Mon–Sat, 9 AM–7 PM).`;
   }
