@@ -87,8 +87,13 @@ export const DEFAULT_CONFIG: JourneyConfig = {
   ],
   plans: [
     { planId: 'plan-premier', enabled: true, highlighted: false },
+    { planId: 'plan-posp', enabled: true, highlighted: false },
     { planId: 'plan-signature', enabled: true, highlighted: true },
+    { planId: 'plan-flagship2', enabled: true, highlighted: false },
+    { planId: 'plan-flagship3', enabled: true, highlighted: false },
     { planId: 'plan-global', enabled: true, highlighted: false },
+    { planId: 'plan-sub-standard', enabled: true, highlighted: false },
+    { planId: 'plan-senior', enabled: true, highlighted: false },
   ],
   addons: [
     { addonId: 'addon-maternity', enabled: true, preChecked: false },
