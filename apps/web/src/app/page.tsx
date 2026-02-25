@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import NavBar from '@/features/landing/components/NavBar';
 import HeroSection from '@/features/landing/components/HeroSection';
 import JourneyChoice from '@/features/landing/components/JourneyChoice';
 import HowItWorks from '@/features/landing/components/HowItWorks';
@@ -17,7 +16,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
-      <NavBar />
       <HeroSection />
       <JourneyChoice />
       <HowItWorks />

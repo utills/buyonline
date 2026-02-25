@@ -20,19 +20,11 @@ export default function AddonsPage() {
 
   useEffect(() => {
     if (!selectedPlanId) return;
-    const fetchAddons = async () => {
-      try {
-        const response = await apiClient.get<Addon[]>(
-          `/api/v1/plans/${selectedPlanId}/addons`
-        );
-        setAddons(response);
-      } catch {
-        // Use empty state
-      }
-    };
-    fetchAddons();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    apiClient
+      .get<Addon[]>(`/api/v1/plans/${selectedPlanId}/addons`)
+      .then(setAddons)
+      .catch(() => {});
+  }, [selectedPlanId]); // re-run if plan changes or store hydrates after mount
 
   const safeSelectedAddonIds = selectedAddonIds ?? [];
 
@@ -52,8 +44,11 @@ export default function AddonsPage() {
     router.push('/summary');
   };
 
+  const visibleAddons = (addons ?? []).filter((a) => isAddonEnabled(a.id));
+
   const handleContinue = () => {
-    if (safeSelectedAddonIds.length === 0) {
+    // Only warn if addons were actually shown but none selected
+    if (safeSelectedAddonIds.length === 0 && visibleAddons.length > 0) {
       setShowSkipModal(true);
     } else {
       saveAddonsAndNavigate();
@@ -70,7 +65,7 @@ export default function AddonsPage() {
       </div>
 
       <AddonsList
-        addons={(addons ?? []).filter((a) => isAddonEnabled(a.id))}
+        addons={visibleAddons}
         selectedAddonIds={safeSelectedAddonIds}
         onToggle={toggleAddon}
       />
