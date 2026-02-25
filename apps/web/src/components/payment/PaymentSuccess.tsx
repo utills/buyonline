@@ -61,7 +61,7 @@ export default function PaymentSuccess({
         onClick={onContinue}
         className="w-full rounded-lg bg-[#ED1B2D] py-3 px-6 text-white font-semibold hover:bg-[#C8162A]"
       >
-        Continue to KYC
+        Continue
       </button>
     </div>
   );

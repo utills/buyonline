@@ -90,6 +90,8 @@ export default function DiseaseDeclaration({
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
           <svg
             className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0"
+            width="16"
+            height="16"
             fill="currentColor"
             viewBox="0 0 20 20"
           >

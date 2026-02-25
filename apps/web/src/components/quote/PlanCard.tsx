@@ -72,6 +72,8 @@ export default function PlanCard({
           <li key={feature} className="flex items-start gap-2 text-sm text-gray-600">
             <svg
               className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0"
+              width="16"
+              height="16"
               fill="currentColor"
               viewBox="0 0 20 20"
             >

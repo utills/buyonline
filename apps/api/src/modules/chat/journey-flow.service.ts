@@ -5,6 +5,7 @@ import { Response } from 'express';
 import { AgenticAuthToolsService } from './agentic-auth-tools.service.js';
 import { AgenticPlanToolsService } from './agentic-plan-tools.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { lookupExactRate } from '../../../prisma/seed-data/plans.data.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -651,19 +652,6 @@ export class JourneyFlowService implements OnModuleDestroy {
     return 5000000;                   // ₹50L
   }
 
-  /** Age-band premium multiplier (Zone 4 baseline from XL) */
-  private ageBandMultiplier(age: number): number {
-    if (age <= 35) return 1.00;
-    if (age <= 40) return 1.19;
-    if (age <= 45) return 1.42;
-    if (age <= 50) return 1.79;
-    if (age <= 55) return 2.22;
-    if (age <= 60) return 2.94;
-    if (age <= 65) return 3.96;
-    if (age <= 70) return 5.15;
-    return 7.04;
-  }
-
   private async getRecommendedPlans(state: FlowState) {
     try {
       const age = state.eldestAge ?? 30;
@@ -671,7 +659,7 @@ export class JourneyFlowService implements OnModuleDestroy {
       const coverageLevel = isFamily ? 'FLOATER' : 'INDIVIDUAL';
       const targetSI = BigInt(this.recommendedSI(age));
 
-      // Fetch all 3 plans at the recommended SI tier (12-month tenure)
+      // Fetch all plans at the recommended SI tier (12-month tenure)
       const pricings = await this.prisma.planPricing.findMany({
         where: {
           coverageLevel: coverageLevel as 'INDIVIDUAL' | 'FLOATER',
@@ -682,15 +670,13 @@ export class JourneyFlowService implements OnModuleDestroy {
         orderBy: { basePremium: 'asc' },
       });
 
-      const multiplier = this.ageBandMultiplier(age);
-
       if (pricings.length === 0) {
         // Fallback: nearest SI tier
         const fallback = await this.prisma.planPricing.findMany({
           where: { coverageLevel: coverageLevel as 'INDIVIDUAL' | 'FLOATER', tenureMonths: 12 },
           include: { plan: true },
           orderBy: [{ sumInsured: 'asc' }, { basePremium: 'asc' }],
-          take: 9,
+          take: 12,
         });
         const seen = new Set<string>();
         const unique = fallback.filter((p) => {
@@ -698,37 +684,44 @@ export class JourneyFlowService implements OnModuleDestroy {
           seen.add(p.planId);
           return true;
         });
-        return unique.slice(0, 3).map((p) => this.toPlanOption(p, multiplier));
+        return unique.slice(0, 4).map((p) => this.toPlanOption(p, age));
       }
 
-      return pricings.slice(0, 3).map((p) => this.toPlanOption(p, multiplier));
+      return pricings.slice(0, 4).map((p) => this.toPlanOption(p, age));
     } catch (err) {
       this.logger.warn(`Plan fetch failed: ${err instanceof Error ? err.message : err}`);
-      const mult = this.ageBandMultiplier(state.eldestAge ?? 35);
+      const age = state.eldestAge ?? 35;
       return [
-        { id: 'plan-premier',   name: 'PHI Basic',        sumInsured: 1000000, siLabel: '₹10 Lakh', premium: Math.round(4417  * mult), highlight: 'Essential coverage, great value' },
-        { id: 'plan-signature', name: 'PHI Flagship 1',   sumInsured: 1000000, siLabel: '₹10 Lakh', premium: Math.round(6282  * mult), highlight: 'Enhanced benefits, wider sum insured' },
-        { id: 'plan-global',    name: 'PHI Flagship 2/3', sumInsured: 1000000, siLabel: '₹10 Lakh', premium: Math.round(7710  * mult), highlight: 'Premium plan, up to ₹1 Crore cover' },
+        { id: 'plan-premier',   name: 'PHI Basic',          sumInsured: 1000000, siLabel: '₹10 Lakh', premium: lookupExactRate('plan-premier',   age, 1000000) ?? 4417,  highlight: 'Essential coverage, great value' },
+        { id: 'plan-signature', name: 'PHI Flagship 1',     sumInsured: 1000000, siLabel: '₹10 Lakh', premium: lookupExactRate('plan-signature', age, 1000000) ?? 6282,  highlight: 'Enhanced benefits, wider sum insured' },
+        { id: 'plan-global',    name: 'PHI Flagship 2/3',   sumInsured: 1000000, siLabel: '₹10 Lakh', premium: lookupExactRate('plan-global',    age, 1000000) ?? 7710,  highlight: 'Premium plan, up to ₹2 Crore cover' },
+        { id: 'plan-flagship4', name: 'PHI Flagship 4 (PB)',sumInsured: 1000000, siLabel: '₹10 Lakh', premium: lookupExactRate('plan-flagship4', age, 1000000) ?? 7774,  highlight: 'Private Banking — no room-rent cap, global emergency' },
       ];
     }
   }
 
   private toPlanOption(
     p: { planId: string; plan: { name: string; tier: string }; sumInsured: bigint; sumInsuredLabel: string; basePremium: bigint },
-    ageMult = 1.0,
+    age: number,
   ) {
+    const si = Number(p.sumInsured);
+    // Use exact XL rate; fall back to DB baseline (Zone 4 age 31-35) if age-band/SI not in map
+    const exactRate = lookupExactRate(p.planId, age, si);
+    const floaterFactor = 1.0; // basePremium in DB already reflects coverage level
+    const premium = exactRate ?? Number(p.basePremium);
     return {
       id: p.planId,
       name: p.plan.name,
-      sumInsured: Number(p.sumInsured),
+      sumInsured: si,
       siLabel: p.sumInsuredLabel,
-      // basePremium is Zone 4 age 31-35 baseline; scale by age-band multiplier
-      premium: Math.round(Number(p.basePremium) * ageMult),
+      premium: Math.round(premium * floaterFactor),
       highlight: p.plan.tier === 'PREMIER'
         ? 'Essential coverage, great value'
         : p.plan.tier === 'SIGNATURE'
         ? 'Enhanced benefits, wider sum insured'
-        : 'Premium plan, up to ₹1 Crore cover',
+        : p.planId === 'plan-flagship4'
+        ? 'Private Banking — no room-rent cap, global emergency'
+        : 'Premium plan, up to ₹2 Crore cover',
     };
   }
 }

@@ -50,7 +50,7 @@ export default function PlansPage() {
           description: p.description,
           features: Array.isArray(p.features)
             ? p.features
-            : Object.entries(p.features as Record<string, string>).map(([k, v]) => `${k}: ${v}`),
+            : Object.values(p.features as Record<string, string>),
           isActive: true,
         }));
         setPlans(plansData);

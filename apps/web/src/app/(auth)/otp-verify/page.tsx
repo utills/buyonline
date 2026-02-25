@@ -13,21 +13,19 @@ export default function OtpVerifyPage() {
   const { mobile } = useLeadStore();
   const { leadId, advanceTo, markStepComplete, setApplicationId } = useJourneyStore();
   const { formattedTime, canResend, startTimer } = useOtp();
-
-  // Guard: must have mobile from the lead capture step
-  if (!mobile) {
-    router.replace('/');
-    return null;
-  }
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
+    if (!mobile) {
+      router.replace('/');
+      return;
+    }
     startTimer();
     inputRefs.current[0]?.focus();
-  }, [startTimer]);
+  }, [mobile, router, startTimer]);
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -103,9 +101,9 @@ export default function OtpVerifyPage() {
     }
   };
 
-  const maskedMobile = mobile
-    ? `******${mobile.slice(-4)}`
-    : '';
+  if (!mobile) return null;
+
+  const maskedMobile = `******${mobile.slice(-4)}`;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

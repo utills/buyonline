@@ -73,7 +73,10 @@ export default function GatewayPage() {
   if (isInitializing) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
-        <div className="w-10 h-10 rounded-full border-4 border-gray-200 border-t-[#ED1B2D] animate-spin" />
+        <div
+          className="w-10 h-10 rounded-full border-4 border-gray-200 border-t-[#ED1B2D] animate-spin"
+          style={{ width: 40, height: 40, borderRadius: '50%', borderWidth: 4 }}
+        />
         <p className="text-sm text-gray-500">Setting up payment...</p>
       </div>
     );

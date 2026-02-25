@@ -25,12 +25,13 @@ async function main() {
   console.log(`Upserted ${PLAN_DEFINITIONS.length} plans`);
 
   // ─── PLAN PRICING ────────────────────────────────────────────────────
-  // 3 plans × 8 sum-insured × 5 tenures × 2 coverage levels = 240 rows
+  // Plans × SI tiers × 3 tenures × 2 coverage levels (skips SI tiers not in XL for a plan)
   let pricingCount = 0;
   for (const plan of PLAN_DEFINITIONS) {
     for (const si of SUM_INSURED_OPTIONS) {
+      const rawBase = BASE_PREMIUM_MAP[plan.id]?.[si.value];
+      if (!rawBase) continue; // SI not available for this plan in the XL
       for (const tenure of TENURE_OPTIONS) {
-        const rawBase      = BASE_PREMIUM_MAP[plan.id]![si.value]!;
         const basePremium  = Math.round(rawBase * TENURE_MULTIPLIER[tenure]!);
         const discountPct  = DISCOUNT_MAP[tenure]!;
         const isPopular    = si.value === 1000000 && tenure === 12;
@@ -67,11 +68,11 @@ async function main() {
 
   // ─── PLAN ADDONS ─────────────────────────────────────────────────────
   const planMap: Record<string, string> = {
-    'plan-premier': 'premier', 'plan-signature': 'signature', 'plan-global': 'global',
+    'plan-premier': 'premier', 'plan-signature': 'signature', 'plan-global': 'global', 'plan-flagship4': 'flagship4',
   };
   let planAddonCount = 0;
   for (const planId of Object.keys(planMap)) {
-    const key = planMap[planId] as 'premier' | 'signature' | 'global';
+    const key = planMap[planId] as 'premier' | 'signature' | 'global' | 'flagship4';
     for (const cfg of PLAN_ADDON_CONFIG) {
       const entry = cfg[key];
       await prisma.planAddon.upsert({

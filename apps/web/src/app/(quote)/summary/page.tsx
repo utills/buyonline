@@ -23,6 +23,24 @@ export default function SummaryPage() {
   useEffect(() => {
     const fetchSummary = async () => {
       if (!applicationId) {
+        // Show placeholder so the page isn't empty
+        setSummary({
+          planName: 'Health Shield',
+          planTier: 'SIGNATURE' as PlanSummary['planTier'],
+          sumInsured: 5000000,
+          sumInsuredLabel: 'Rs 50 Lakh',
+          tenureMonths: 12,
+          coverageLevel: 'FLOATER' as PlanSummary['coverageLevel'],
+          membersCount: 1,
+          memberLabels: ['Self'],
+          addons: [],
+          basePremium: 12000,
+          addonPremium: 0,
+          discountAmount: 0,
+          gstAmount: 2160,
+          totalPremium: 14160,
+          monthlyPremium: 1180,
+        });
         setIsLoading(false);
         return;
       }
@@ -100,7 +118,7 @@ export default function SummaryPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <svg className="animate-spin w-8 h-8 text-[#ED1B2D]" viewBox="0 0 24 24" fill="none">
+        <svg className="animate-spin w-8 h-8 text-[#ED1B2D]" width="32" height="32" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>

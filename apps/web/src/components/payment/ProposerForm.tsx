@@ -54,8 +54,6 @@ export default function ProposerForm({ onSubmit }: ProposerFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <h2 className="text-lg font-bold text-gray-900">Proposer Details</h2>
-
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">

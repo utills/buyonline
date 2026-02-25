@@ -25,6 +25,8 @@ export default function NavBar() {
           <div className="hidden md:flex items-center gap-2 text-gray-600 text-sm">
             <svg
               className="w-4 h-4"
+              width="16"
+              height="16"
               fill="none"
               stroke="currentColor"
               strokeWidth={2}
@@ -50,6 +52,8 @@ export default function NavBar() {
             Get a Quote
             <svg
               className="w-4 h-4"
+              width="16"
+              height="16"
               fill="none"
               stroke="currentColor"
               strokeWidth={2}

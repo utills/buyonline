@@ -81,4 +81,8 @@ export const FILE_UPLOAD = {
 
 export const OTP_TIMER_SECONDS = 30;
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Browser: always use relative URLs → routes through Next.js proxy (no CORS)
+// Server (SSR): full URL needed for server-to-server calls
+export const API_BASE_URL = typeof window !== 'undefined'
+  ? ''
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001');
