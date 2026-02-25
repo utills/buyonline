@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useHealthStore } from '@/stores/useHealthStore';
 import { useJourneyStore } from '@/stores/useJourneyStore';
 import { JourneyStep } from '@buyonline/shared-types';
+import { useJourneyNav } from '@/features/configurator/hooks/useJourneyNav';
 
 const DECLARATION_SECTIONS = [
   {
@@ -50,6 +51,7 @@ const DECLARATION_SECTIONS = [
 
 export default function DeclarationPage() {
   const router = useRouter();
+  const { nextRoute } = useJourneyNav();
   const { lifestyleAnswers, medicalAnswers, hospitalizationDetails, disabilityDetails } = useHealthStore();
   const { markStepComplete, advanceTo } = useJourneyStore();
 
@@ -71,7 +73,7 @@ export default function DeclarationPage() {
   const handleSubmit = () => {
     markStepComplete(JourneyStep.HEALTH);
     advanceTo(JourneyStep.COMPLETE);
-    router.push('/complete');
+    router.push(nextRoute('/declaration', '/complete'));
   };
 
   return (

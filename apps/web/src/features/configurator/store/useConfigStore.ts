@@ -124,7 +124,15 @@ export const useConfigStore = create<ConfigState>()(
     }),
     {
       name: 'buyonline-configurator',
+      version: 2,
       storage: createJSONStorage(() => localStorage),
+      migrate: (persisted: unknown, fromVersion: number) => {
+        // v2: fixed health phase step order + added declaration step
+        if (fromVersion < 2) {
+          return { ...(persisted as object), config: DEFAULT_CONFIG };
+        }
+        return persisted as ConfigState;
+      },
     }
   )
 );

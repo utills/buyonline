@@ -43,7 +43,7 @@ export class OnboardingService {
     // P4: Atomic delete+recreate using $transaction to prevent partial state
     const membersData = members.map((m) => ({
       applicationId,
-      memberType: m.memberType as MemberType,
+      memberType: m.memberType.toUpperCase() as MemberType,
       label: m.label,
       age: m.age,
       gender: m.gender as Gender | undefined,

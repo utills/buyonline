@@ -67,11 +67,12 @@ export const DEFAULT_CONFIG: JourneyConfig = {
       sortOrder: 6,
       steps: [
         { id: 'health-personal', label: 'Personal Details', route: '/personal', enabled: true, required: true, sortOrder: 1 },
-        { id: 'health-lifestyle', label: 'Lifestyle', route: '/lifestyle', enabled: true, required: true, sortOrder: 2 },
-        { id: 'health-medical', label: 'Medical History', route: '/medical', enabled: true, required: true, sortOrder: 3 },
-        { id: 'health-hospitalization', label: 'Hospitalization', route: '/hospitalization', enabled: true, required: true, sortOrder: 4 },
-        { id: 'health-disability', label: 'Disability', route: '/disability', enabled: true, required: false, sortOrder: 5 },
-        { id: 'health-bank', label: 'Bank Details', route: '/bank', enabled: true, required: true, sortOrder: 6 },
+        { id: 'health-bank', label: 'Bank Details', route: '/bank', enabled: true, required: true, sortOrder: 2 },
+        { id: 'health-lifestyle', label: 'Lifestyle', route: '/lifestyle', enabled: true, required: true, sortOrder: 3 },
+        { id: 'health-medical', label: 'Medical History', route: '/medical', enabled: true, required: true, sortOrder: 4 },
+        { id: 'health-hospitalization', label: 'Hospitalization', route: '/hospitalization', enabled: true, required: true, sortOrder: 5 },
+        { id: 'health-disability', label: 'Disability', route: '/disability', enabled: true, required: false, sortOrder: 6 },
+        { id: 'health-declaration', label: 'Declaration', route: '/declaration', enabled: true, required: true, sortOrder: 7 },
       ],
     },
     {

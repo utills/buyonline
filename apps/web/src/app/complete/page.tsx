@@ -62,10 +62,7 @@ export default function CompletePage() {
         <footer className="bg-[#1A1A1A] text-white py-6 px-5 rounded-xl mt-8">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-white rounded flex items-center justify-center">
-                <span className="text-[#ED1B2D] font-bold text-xs">P</span>
-              </div>
-              <span className="text-sm font-semibold">Prudential Health Insurance</span>
+              <img src="/prudential-logo.svg" alt="Prudential" className="h-5 w-auto brightness-0 invert" />
             </div>
             <p className="text-xs text-gray-400">
               IRDAI Registration No: XYZ123. Insurance is the subject matter of solicitation.
