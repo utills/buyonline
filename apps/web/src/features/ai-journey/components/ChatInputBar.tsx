@@ -13,6 +13,9 @@ interface ChatInputBarProps {
 const MAX_CHARS = 500;
 const DISABLED_PHASES: AgenticPhase[] = ['payment_redirect', 'complete'];
 
+// Phases where the OTP widget in AgentChat handles input — hide chips + main input
+const OTP_PHASES: AgenticPhase[] = ['otp_sent', 'otp_verify'];
+
 const QUICK_REPLIES: Partial<Record<AgenticPhase, string[]>> = {
   greeting: ['Just myself', 'Me and my spouse', 'Family of 3', 'Family of 4+'],
   members: ['Self only', 'Self + Spouse', 'Self + 2 Kids', 'Self + Spouse + 2 Kids'],
@@ -24,12 +27,23 @@ const QUICK_REPLIES: Partial<Record<AgenticPhase, string[]>> = {
 
 export default function ChatInputBar({ onSend, disabled, phase }: ChatInputBarProps) {
   const [value, setValue] = useState('');
+  // Track whether a chip has been used for the current phase so chips are hidden
+  // until the AI responds and the phase changes.
+  const [chipUsedForPhase, setChipUsedForPhase] = useState<AgenticPhase | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isDisabled = disabled || DISABLED_PHASES.includes(phase);
+  const isOtpPhase = OTP_PHASES.includes(phase);
   const placeholder = getPlaceholderForPhase(phase);
   const charsLeft = MAX_CHARS - value.length;
-  const quickReplies = QUICK_REPLIES[phase] ?? [];
+
+  // Reset the "chip used" state when the phase changes (AI has responded)
+  useEffect(() => {
+    setChipUsedForPhase(null);
+  }, [phase]);
+
+  const quickReplies =
+    chipUsedForPhase === phase ? [] : (QUICK_REPLIES[phase] ?? []);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -65,9 +79,23 @@ export default function ChatInputBar({ onSend, disabled, phase }: ChatInputBarPr
     (chip: string) => {
       if (isDisabled) return;
       onSend(chip);
+      // Hide chips until the phase changes (AI responds and advances the phase)
+      setChipUsedForPhase(phase);
     },
-    [isDisabled, onSend]
+    [isDisabled, onSend, phase]
   );
+
+  // When OTP phase is active, only show a minimal hint — the OTP widget in the
+  // chat bubble handles the actual input.
+  if (isOtpPhase) {
+    return (
+      <div className="border-t border-gray-200 bg-white px-4 py-3">
+        <p className="text-xs text-gray-400 text-center">
+          Please enter the OTP in the verification box above.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="border-t border-gray-200 bg-white px-4 py-3">

@@ -133,9 +133,9 @@ export default function ProgressPanel({ collectedData, phase, onReset }: Progres
         <CheckItem emoji="🏥" label="Hospitals" value={hospitalLabel} done={hospitalLabel !== '—'} />
         <CheckItem emoji="🔒" label="Identity" value={identityLabel} done={identityLabel !== '—'} />
         <CheckItem emoji="📋" label="Plan" value={planLabel} done={!!data.planSelected} />
-        <CheckItem emoji="✓" label="Payment" value={paymentLabel} done={!!data.paymentDone} />
-        <CheckItem emoji="✓" label="KYC" value={kycLabel} done={!!data.kycVerified} />
-        <CheckItem emoji="✓" label="Health" value={healthLabel} done={!!data.healthSubmitted} />
+        <CheckItem emoji="💳" label="Payment" value={paymentLabel} done={!!data.paymentDone} />
+        <CheckItem emoji="🪪" label="KYC" value={kycLabel} done={!!data.kycVerified} />
+        <CheckItem emoji="❤️" label="Health" value={healthLabel} done={!!data.healthSubmitted} />
       </div>
 
       {/* Copy resume link */}

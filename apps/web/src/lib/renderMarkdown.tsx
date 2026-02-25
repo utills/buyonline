@@ -59,7 +59,10 @@ function renderInline(text: string): ReactNode[] {
     if (i % 2 === 1) {
       result.push(<strong key={i}>{part}</strong>);
     } else {
-      result.push(...highlightCurrency(part));
+      // Collapse " ." / " ," / " !" / " ?" patterns that arise when bold text
+      // ends immediately before punctuation (the flex gap makes the space visible).
+      const normalized = part.replace(/\s+([.,!?;:])/g, '$1');
+      result.push(...highlightCurrency(normalized));
     }
   });
   return result;

@@ -68,8 +68,12 @@ export class AgenticChatService {
     applicationId: string | undefined,
     res: Response,
   ): Promise<void> {
+    // Declare history before the try block so the catch handler can inspect it
+    // to decide whether to show a retry message or fall through to JourneyFlow.
+    let history: MessageParam[] = [];
     try {
-      const [history, systemPrompt] = await Promise.all([
+      let systemPrompt = '';
+      [history, systemPrompt] = await Promise.all([
         this.conversation.getHistory(sessionId, 'agentic'),
         this.agenticContext.build(applicationId),
       ]);

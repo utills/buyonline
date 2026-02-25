@@ -68,6 +68,13 @@ function MessageBubble({
           )}
         </div>
 
+        {/* Retry hint for error messages */}
+        {message.error && !message.isStreaming && (
+          <p className="text-xs text-red-400 mt-1 ml-0.5">
+            Tap the input bar to try again.
+          </p>
+        )}
+
         {/* Widgets */}
         {!message.isStreaming && message.widget === 'otp' && (
           <OtpChatWidget onSubmit={onOtpSubmit} />
