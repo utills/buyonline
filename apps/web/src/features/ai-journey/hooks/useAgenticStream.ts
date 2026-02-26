@@ -38,15 +38,20 @@ function stripStateMarkers(text: string): string {
 
 // ─── Plan Card Parser ─────────────────────────────────────────────────────────
 function parsePlanCard(content: string): { text: string; card?: PlanCardData } {
-  const match = content.match(/:::plan-card\s*([\s\S]*?):::/);
-  if (!match) return { text: content };
-  try {
-    const card = JSON.parse(match[1].trim()) as PlanCardData;
-    const text = content.replace(/:::plan-card[\s\S]*?:::/, '').trim();
-    return { text, card };
-  } catch {
-    return { text: content };
+  // Strip ALL :::plan-card blocks, return the first recommended (or first) card
+  const regex = /:::plan-card\s*([\s\S]*?):::/g;
+  let firstCard: PlanCardData | undefined;
+  let text = content;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(content)) !== null) {
+    try {
+      const card = JSON.parse(match[1].trim()) as PlanCardData;
+      if (!firstCard || card.isRecommended) firstCard = card;
+    } catch { /* skip malformed */ }
   }
+  // Remove all plan-card blocks from display text
+  text = text.replace(/:::plan-card\s*[\s\S]*?:::/g, '').trim();
+  return firstCard ? { text, card: firstCard } : { text };
 }
 
 // ─── Phase Placeholder Map ────────────────────────────────────────────────────
@@ -245,8 +250,9 @@ export function useAgenticStream() {
                   isStreaming: false,
                 };
 
-                // Widget: OTP sent
-                if (currentPhase === 'otp_sent') {
+                // Widget: OTP — ONLY show when the message confirms OTP was actually sent
+                const lowerCleaned = cleaned.toLowerCase();
+                if (lowerCleaned.includes('otp sent to') || lowerCleaned.includes('otp has been sent')) {
                   updated.widget = 'otp';
                 }
 

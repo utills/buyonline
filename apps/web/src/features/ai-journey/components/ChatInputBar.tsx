@@ -10,10 +10,44 @@ interface ChatInputBarProps {
   phase: AgenticPhase;
 }
 
+/** Inline OTP input — fallback when the bubble widget isn't visible */
+function InlineOtpInput({ onSend, disabled }: { onSend: (msg: string) => void; disabled: boolean }) {
+  const [otp, setOtp] = useState('');
+  const handleSubmit = () => {
+    if (otp.trim().length >= 4 && !disabled) {
+      onSend(`My OTP is: ${otp.trim()}`);
+      setOtp('');
+    }
+  };
+  return (
+    <div className="border-t border-gray-200 bg-white px-4 py-3">
+      <div className="flex gap-2 items-center justify-center">
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          value={otp}
+          onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+          placeholder="Enter 6-digit OTP"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-[#ED1B2D] focus:border-transparent"
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={otp.length < 4 || disabled}
+          className="bg-[#ED1B2D] text-white text-sm px-4 py-2 rounded-lg disabled:opacity-50 hover:bg-[#C8162A] transition-colors"
+        >
+          Verify
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const MAX_CHARS = 500;
 const DISABLED_PHASES: AgenticPhase[] = ['payment_redirect', 'complete'];
 
-// Phases where the OTP widget in AgentChat handles input — hide chips + main input
+// OTP phases — show inline OTP input alongside the normal textarea
 const OTP_PHASES: AgenticPhase[] = ['otp_sent', 'otp_verify'];
 
 const QUICK_REPLIES: Partial<Record<AgenticPhase, string[]>> = {
@@ -33,7 +67,6 @@ export default function ChatInputBar({ onSend, disabled, phase }: ChatInputBarPr
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isDisabled = disabled || DISABLED_PHASES.includes(phase);
-  const isOtpPhase = OTP_PHASES.includes(phase);
   const placeholder = getPlaceholderForPhase(phase);
   const charsLeft = MAX_CHARS - value.length;
 
@@ -85,17 +118,8 @@ export default function ChatInputBar({ onSend, disabled, phase }: ChatInputBarPr
     [isDisabled, onSend, phase]
   );
 
-  // When OTP phase is active, only show a minimal hint — the OTP widget in the
-  // chat bubble handles the actual input.
-  if (isOtpPhase) {
-    return (
-      <div className="border-t border-gray-200 bg-white px-4 py-3">
-        <p className="text-xs text-gray-400 text-center">
-          Please enter the OTP in the verification box above.
-        </p>
-      </div>
-    );
-  }
+  // No longer blocking the input bar for OTP phases — the OTP widget in the
+  // message bubble handles OTP entry, and the user can also type in the textarea.
 
   return (
     <div className="border-t border-gray-200 bg-white px-4 py-3">

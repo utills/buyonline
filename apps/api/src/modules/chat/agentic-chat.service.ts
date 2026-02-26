@@ -80,6 +80,21 @@ export class AgenticChatService {
 
       const model = this.config.get<string>('CHAT_MODEL', 'claude-sonnet-4-6');
       const maxTokens = parseInt(this.config.get<string>('CHAT_MAX_TOKENS') ?? '2048', 10);
+
+      // If no history, inject the greeting so Claude knows it already introduced itself
+      if (history.length === 0) {
+        history.push({
+          role: 'assistant',
+          content:
+            "Hi! I'm your personal health insurance guide. 👋\n\n" +
+            "I'll help you find the perfect health insurance plan for your family in just a few minutes.\n\n" +
+            "**Who would you like to cover?** You can say something like:\n" +
+            '- "Just myself"\n' +
+            '- "Me and my wife"\n' +
+            '- "Family of 4 — me, wife and 2 kids"',
+        });
+      }
+
       const messages: MessageParam[] = [...history, { role: 'user', content: message }];
       let fullResponse = '';
       let handoffEmitted = false;
@@ -115,10 +130,13 @@ export class AgenticChatService {
         }
 
         const finalMsg = await stream.finalMessage();
+
+        // ALWAYS save the assistant response to history
+        messages.push({ role: 'assistant', content: finalMsg.content });
+
         if (finalMsg.stop_reason === 'end_turn') break;
 
         if (finalMsg.stop_reason === 'tool_use') {
-          messages.push({ role: 'assistant', content: finalMsg.content });
 
           const toolResults = await Promise.all(
             finalMsg.content

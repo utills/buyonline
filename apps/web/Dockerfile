@@ -10,24 +10,22 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.30.1 --activate
 
-# ── Stage 2: deps — install node_modules (cached layer) ───────
-FROM base AS deps
+# ── Stage 2: builder — install + Next.js build ────────────────
+FROM base AS builder
 WORKDIR /app
 
+# Copy manifests first so install layer is cached unless deps change
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json                    ./apps/web/
 COPY packages/shared-types/package.json       ./packages/shared-types/
 COPY packages/ui/package.json                 ./packages/ui/
 COPY packages/ts-config/package.json          ./packages/ts-config/
 
-RUN pnpm install --frozen-lockfile
+# Install with BuildKit pnpm store cache — fast on repeated builds
+RUN --mount=type=cache,id=pnpm-web,target=/pnpm/store \
+    pnpm install --frozen-lockfile
 
-# ── Stage 3: builder — Next.js production build ───────────────
-FROM base AS builder
-WORKDIR /app
-
-COPY --from=deps /app/node_modules            ./node_modules
-
+# Copy source after install for better layer caching
 COPY turbo.json                               ./
 COPY apps/web                                 ./apps/web
 COPY packages                                 ./packages
@@ -42,7 +40,7 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN cd apps/web && pnpm run build
 
-# ── Stage 4: runner — minimal Next.js standalone image ────────
+# ── Stage 3: runner — minimal Next.js standalone image ────────
 FROM node:22-alpine AS runner
 WORKDIR /app
 

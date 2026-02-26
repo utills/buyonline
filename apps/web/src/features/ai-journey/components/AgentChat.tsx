@@ -120,7 +120,7 @@ export default function AgentChat({ messages, isStreaming, phase, onSend, onRese
   }, [messages]);
 
   const handleOtpSubmit = (otp: string) => {
-    onSend(otp);
+    onSend(`My OTP is: ${otp}`);
   };
 
   const handlePlanSelect = (plan: PlanCardData) => {

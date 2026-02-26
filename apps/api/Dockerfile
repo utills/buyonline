@@ -10,29 +10,22 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.30.1 --activate
 
-# ── Stage 2: deps — install node_modules (cached layer) ───────
-FROM base AS deps
+# ── Stage 2: builder — install + compile ─────────────────────
+FROM base AS builder
 WORKDIR /app
 
-# Copy only manifests first so this layer is cached unless deps change
+# Copy manifests first so install layer is cached unless deps change
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json                    ./apps/api/
 COPY packages/shared-types/package.json       ./packages/shared-types/
 COPY packages/ts-config/package.json          ./packages/ts-config/
 
-# Install ALL dependencies (dev included — needed for nest build & prisma generate)
-RUN pnpm install --frozen-lockfile
+# Install with BuildKit pnpm store cache — fast on repeated builds
+RUN --mount=type=cache,id=pnpm-api,target=/pnpm/store \
+    pnpm install --frozen-lockfile
 
-# ── Stage 3: builder — compile TypeScript ─────────────────────
-FROM base AS builder
-WORKDIR /app
-
-# Re-use installed modules from deps stage
-COPY --from=deps /app/node_modules            ./node_modules
-COPY --from=deps /app/apps/api/node_modules   ./apps/api/node_modules 2>/dev/null || true
-
-# Copy source (after node_modules copy for better cache hits)
-COPY turbo.json                               ./
+# Copy source after install for better layer caching
+COPY package.json pnpm-workspace.yaml turbo.json ./
 COPY apps/api                                 ./apps/api
 COPY packages/shared-types                    ./packages/shared-types
 COPY packages/ts-config                       ./packages/ts-config
@@ -43,7 +36,7 @@ RUN cd apps/api && pnpm exec prisma generate
 # Compile NestJS
 RUN cd apps/api && pnpm run build
 
-# ── Stage 4: runner — lean production image ────────────────────
+# ── Stage 3: runner — lean production image ────────────────────
 FROM node:22-alpine AS runner
 WORKDIR /app
 
@@ -59,8 +52,9 @@ RUN addgroup --system --gid 1001 nodejs \
 # Built output
 COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist            ./dist
 
-# Runtime node_modules (includes prisma client binaries)
+# Runtime node_modules (full tree needed for Prisma binaries)
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules             ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/node_modules    ./apps/api/node_modules
 
 # Workspace packages referenced at runtime
 COPY --from=builder --chown=nestjs:nodejs /app/packages/shared-types    ./packages/shared-types

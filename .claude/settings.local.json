@@ -105,7 +105,19 @@
       "Bash(echo === Admin leads list ===:*)",
       "Bash(screencapture:*)",
       "Bash(kill 62151:*)",
-      "WebFetch(domain:www.prudentialplc.com)"
+      "WebFetch(domain:www.prudentialplc.com)",
+      "Bash(grep LISTEN:*)",
+      "Bash(kill 9930:*)",
+      "Bash(echo === Select Plan ===:*)",
+      "Bash(echo not found:*)",
+      "Bash(docker ps:*)",
+      "Bash(lsof -ti:3001 2>/dev/null | xargs kill 2>/dev/null)",
+      "Bash(which npx:*)",
+      "Bash(grep redis:*)",
+      "Bash(echo Cleared all agentic sessions:*)",
+      "Bash(docker stop marketai-postgres marketai-redis 2>&1 && docker rm nervous_jennings distracted_khorana upbeat_poitras 2>&1)",
+      "Bash(echo Killed servers + cleared sessions:*)",
+      "Bash(colima status:*)"
     ]
   }
 }
