@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Required by Google Play for apps that use Health Connect.
+    This file is referenced by HealthConnectRationaleActivity and tells the Play Store
+    exactly which health data types the app reads, and why.
+
+    Reference: https://developer.android.com/health-and-fitness/guides/health-connect/publish
+-->
+<health-permissions xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission
+        android:name="android.permission.health.READ_STEPS"
+        android:description="@string/health_perm_steps" />
+    <uses-permission
+        android:name="android.permission.health.READ_DISTANCE"
+        android:description="@string/health_perm_distance" />
+    <uses-permission
+        android:name="android.permission.health.READ_EXERCISE"
+        android:description="@string/health_perm_exercise" />
+</health-permissions>

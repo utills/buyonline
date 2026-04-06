@@ -1,0 +1,34 @@
+name: iosApp
+options:
+  bundleIdPrefix: com.prudential.health
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "16.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    ENABLE_BITCODE: NO
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: iosApp
+    entitlements:
+      path: iosApp/iosApp.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access: []
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.prudential.health
+        PRODUCT_NAME: "Pru Health"
+        FRAMEWORK_SEARCH_PATHS: "$(inherited) $(SRCROOT)/../composeApp/build/bin/iosSimulatorArm64/debugFramework"
+        OTHER_LDFLAGS: "$(inherited) -framework ComposeApp"
+        INFOPLIST_FILE: iosApp/Info.plist
+    scheme:
+      testTargets: []

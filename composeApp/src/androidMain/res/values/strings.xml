@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pru Health</string>
+
+    <!-- Health Connect permission rationale strings (shown in Play Store listing + system dialog) -->
+    <string name="health_perm_steps">Pru Health reads your daily step count to track progress toward your 10,000-step goal and calculate premium discount eligibility.</string>
+    <string name="health_perm_distance">Pru Health reads walking and running distance to accurately measure your daily activity alongside step counts.</string>
+    <string name="health_perm_exercise">Pru Health reads exercise session data to calculate active minutes, which contribute to your healthy day streak.</string>
+
+    <!-- Shown in the in-app rationale screen before requesting permissions -->
+    <string name="health_rationale_title">Why Pru Health needs your health data</string>
+    <string name="health_rationale_body">Pru Health reads steps, distance, and exercise data from Health Connect to:\n\n• Track your daily step goal (10,000 steps = a Healthy Day)\n• Calculate your premium discount after 75, 125, or 150 Healthy Days\n• Sync your activity history so your progress is never lost\n\nYour data is only used for your personal wellness journey and premium calculations. It is never sold or shared with third parties.</string>
+    <string name="health_rationale_button">Continue to Health Connect</string>
+    <string name="health_rationale_cancel">Not now</string>
+</resources>
